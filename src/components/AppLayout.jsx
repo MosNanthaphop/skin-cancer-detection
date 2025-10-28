@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
 import { GoSearch } from "react-icons/go";
-import Navbar from "./Navbar";
+import Navbar from "./NavBar";
 import Header from "./Header";
 import Footer from "./Footer";
 
