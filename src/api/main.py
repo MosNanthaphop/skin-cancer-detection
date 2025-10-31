@@ -22,16 +22,16 @@ app.add_middleware(
 
 # กำหนด Class Names (ปรับตามที่คุณเทรน)
 CLASS_NAMES = [
-    "actinic keratosis(akiec)",
-    "basal cell carcinoma(bcc)",
-    "benign keratosis-like(bkl)",
-    "dermatofibroma(df)",
-    "eczema(ez)",
-    "melanoma(mel)",
-    "nevus(nv)",
-    "squamous cell carcinoma(scc)",
-    "tinea(tn)",
-    "vascular lesion(vasc)",
+    "Actinic keratosis",
+    "Basal cell carcinoma",
+    "Benign keratosis-like",
+    "Dermatofibroma",
+    "Eczema",
+    "Melanoma",
+    "Nevus",
+    "Squamous cell carcinoma",
+    "Tinea",
+    "Vascular lesion",
 ]
 
 

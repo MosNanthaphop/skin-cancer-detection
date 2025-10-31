@@ -4,24 +4,34 @@ import { useNavigate } from "react-router-dom";
 import ImageUploader from "../components/ImageUploader";
 import UploadGuide from "../components/UploadGuide";
 import LoadingSpinner from "../components/LoadingSpinner";
-import Result from "../components/Result";
+import Result from "../components/Result"; // 1. Import ชื่อ 'Result' (ถูกต้องแล้ว)
+
 const UploadPage = () => {
   const [showGuide, setShowGuide] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [isFinalizing, setIsFinalizing] = useState(false);
 
-  const navigate = useNavigate(); // 2. เรียกใช้ Hook
+  // 2. [เพิ่ม] สร้าง State เพื่อเก็บ URL ของรูปที่วิเคราะห์
+  const [analyzedFileUrl, setAnalyzedFileUrl] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleAnalyze = async (file) => {
     setIsLoading(true);
     setIsFinalizing(false);
     setResult(null);
+    setAnalyzedFileUrl(null); // 3. รีเซ็ต URL
+    navigate("/upload");
 
-    navigate("/upload"); // 3. [ใหม่] เคลียร์ hash เมื่อเริ่มวิเคราะห์ใหม่
+    // 4. [เพิ่ม] อ่านไฟล์เป็น Data URL เพื่อเก็บไว้แสดงผล
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAnalyzedFileUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
 
     try {
-      // (Logic การ fetch API ของคุณ... เหมือนเดิม)
       const formData = new FormData();
       formData.append("file", file);
       const minLoadingTime = new Promise((resolve) =>
@@ -40,11 +50,13 @@ const UploadPage = () => {
       } else {
         alert("เกิดข้อผิดพลาด: " + data.error);
         setIsLoading(false);
+        setAnalyzedFileUrl(null); // 5. ล้าง URL ถ้า Error
       }
     } catch (error) {
       console.error("Error:", error);
       alert("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
       setIsLoading(false);
+      setAnalyzedFileUrl(null); // 6. ล้าง URL ถ้า Error
     }
   };
 
@@ -54,26 +66,29 @@ const UploadPage = () => {
 
   const handleLoadingComplete = () => {
     setIsFinalizing(false);
-    navigate("/upload#result"); // 4. [ใหม่] ตั้ง hash เป็น #result เมื่อโหลด 100%
+    navigate("/upload#result");
   };
 
   return (
-    // (ส่วน return ทั้งหมดเหมือนเดิมเป๊ะครับ)
     <React.Fragment>
       <section className="py-16 px-8">
         <div className="max-w-6xl mx-auto">
-          {/* ... (Title) ... */}
           {isLoading || isFinalizing ? (
             <LoadingSpinner
               isFinalizing={isFinalizing}
               onComplete={handleLoadingComplete}
             />
           ) : result ? (
-            <Result result={result} />
-          ) : showGuide ? (
-            <UploadGuide onClose={handleGuideClose} />
+            // 7. [แก้ไข] ส่ง 'previewUrl' ไปให้ Result
+            <Result result={result} previewUrl={analyzedFileUrl} />
           ) : (
-            <ImageUploader onAnalyze={handleAnalyze} />
+            <>
+              {showGuide ? (
+                <UploadGuide onClose={handleGuideClose} />
+              ) : (
+                <ImageUploader onAnalyze={handleAnalyze} />
+              )}
+            </>
           )}
         </div>
       </section>
