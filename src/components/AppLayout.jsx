@@ -6,40 +6,58 @@ import Navbar from "./NavBar";
 import Header from "./Header";
 import Footer from "./Footer";
 
-const pageBreadcrumbs = {
-  home: ["Home"],
-  upload: ["Upload"],
-  faq: ["FAQ"],
-  about: ["About"],
-  privacy: ["Privacy"],
-};
-
 const AppLayout = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(true);
   const [activePage, setActivePage] = useState("home");
-  const location = useLocation();
+  const location = useLocation(); // 2. เรียกใช้ useLocation
 
+  // 3. [ใหม่] สร้าง State สำหรับ Breadcrumb โดยเฉพาะ
+  const [breadcrumb, setBreadcrumb] = useState([]);
+
+  // 4. [แก้ไข] แก้ไข useEffect ให้ตรวจจับ hash ด้วย
   useEffect(() => {
-    const path = location.pathname;
-    const currentPage = path.substring(1).split("/")[0] || "home"; // ปรับปรุงเล็กน้อยเผื่อมี path ซ้อน
-    setActivePage(currentPage);
-  }, [location]);
+    const path = location.pathname; // เช่น "/upload"
+    const hash = location.hash; // เช่น "#result"
 
-  const currentBreadcrumb = pageBreadcrumbs[activePage] || [];
+    // 5. อัปเดต ActivePage (เหมือนเดิม)
+    const currentPage = path.substring(1).split("/")[0] || "home";
+    setActivePage(currentPage);
+
+    // 6. [ใหม่] สร้าง Array ของ Breadcrumb ตาม Path และ Hash
+    let newBreadcrumb = [];
+    if (currentPage === "home") {
+      newBreadcrumb = ["Home"]; // หน้า Home ไม่มี breadcrumb
+    } else if (currentPage === "upload") {
+      newBreadcrumb = ["Upload"]; // หน้า Upload พื้นฐาน
+      if (hash === "#result") {
+        newBreadcrumb.push("Result"); // ถ้ามี #result ให้เพิ่ม "Result"
+      }
+    } else if (currentPage === "faq") {
+      newBreadcrumb = ["FAQ"];
+    } else if (currentPage === "about") {
+      newBreadcrumb = ["About"];
+    } else if (currentPage === "privacy") {
+      newBreadcrumb = ["Privacy"];
+    }
+
+    setBreadcrumb(newBreadcrumb); // 7. อัปเดต State ของ Breadcrumb
+  }, [location]); // 8. สั่งให้ useEffect ทำงานใหม่ทุกครั้งที่ location เปลี่ยน
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <Navbar isOpen={isNavbarOpen} activePage={activePage} />
+
       <main className="flex-1 flex flex-col overflow-auto">
         <header className="sticky top-0 z-10 p-4 bg-white dark:bg-gray-800 shadow flex items-center gap-4">
           <button
             onClick={() => setIsNavbarOpen(!isNavbarOpen)}
-            className="p-2 rounded-lg text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-lg text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Toggle navigation"
           >
             <HiMenu size={24} />
           </button>
-          <Header breadcrumb={currentBreadcrumb} />
+          {/* 9. [แก้ไข] ส่ง State (Array) ใหม่นี้ไปให้ Header */}
+          <Header breadcrumb={breadcrumb} />
           <div className="relative ml-auto">
             <input
               type="text"
@@ -51,11 +69,8 @@ const AppLayout = () => {
             </div>
           </div>
         </header>
-
-        <div className="p-0 flex-1">
-          {/* นี่คือหัวใจหลัก! React Router จะนำเนื้อหาของ
-            HomePage, UploadPage, ฯลฯ มาใส่ตรงนี้
-          */}
+        {/* (ส่วน Outlet และ Footer เหมือนเดิม) */}
+        <div className="flex-1">
           <Outlet />
         </div>
         <Footer />

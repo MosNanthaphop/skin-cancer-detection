@@ -69,7 +69,7 @@ const LoadingSpinner = ({ isFinalizing, onComplete }) => {
   }, [isFinalizing, onComplete]);
 
   return (
-    <div className="max-w-md mx-auto my-10 text-center">
+    <div className="max-w-md mx-auto my-35 text-center">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-8">
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
           Analyzing

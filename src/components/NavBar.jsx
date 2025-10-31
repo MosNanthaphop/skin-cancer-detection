@@ -70,7 +70,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           className={`flex items-center gap-3 py-3 rounded-lg mb-2 transition-all ${
             activePage === "home"
               ? "bg-blue-500 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <TiHome size={20} className="mb-0.5" />
@@ -81,7 +81,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           className={`flex items-center gap-3 py-3 rounded-lg mb-2 transition-all ${
             activePage === "upload"
               ? "bg-blue-500 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <ImUpload size={20} className="mb-0.5" />
@@ -92,7 +92,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           className={`flex items-center gap-3 py-3 rounded-lg mb-2 transition-all ${
             activePage === "faq"
               ? "bg-blue-500 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <MdQuestionAnswer size={20} className="mb-0.5" />
@@ -103,7 +103,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           className={`flex items-center gap-3 py-3 rounded-lg mb-2 transition-all ${
             activePage === "about"
               ? "bg-blue-500 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <IoMdInformationCircle size={20} className="mb-0.5" />
@@ -114,7 +114,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           className={`flex items-center gap-3 py-3 rounded-lg mb-2 transition-all ${
             activePage === "privacy"
               ? "bg-blue-500 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <MdPrivacyTip size={20} className="mb-0.5" />

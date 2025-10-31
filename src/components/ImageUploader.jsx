@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import { X, Crop, Trash2, Check } from "lucide-react";
 import Cropper from "react-easy-crop";
+import UploadTitle from "../components/UploadTitle";
 
 // Helper Function: แปลง Data URL เป็น File (เหมือนเดิม)
 const dataURLtoFile = async (dataUrl, fileName) => {
@@ -157,6 +158,7 @@ const ImageUploader = ({ onAnalyze }) => {
 
   return (
     <div className="max-w-3xl mx-auto mb-5">
+      <UploadTitle />
       {/* Upload Area */}
       <div
         className={`border-2 border-dashed rounded-xl p-10 mb-8 text-center transition ${
