@@ -60,6 +60,22 @@ const HomePage = () => {
             ))}
           </motion.h1>
 
+          {/* 5. [เพิ่ม] Animation สโลแกน "ใครไม่ดีแต่สกินดี" */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.4, // หน่วงเวลา (อยู่ระหว่าง 0.08*6 ของ h1 และ 0.6 ของ p ถัดไป)
+              type: "spring",
+              stiffness: 100,
+            }}
+            // (ปรับขนาดและสีข้อความตามต้องการ)
+            className="text-lg sm:text-xl font-medium text-blue-600 dark:text-blue-400 mb-6"
+          >
+            "ใครไม่ดีแต่สกินดี"
+          </motion.p>
+
           {/* 6. [แก้ไข] Animation ให้ p (เพิ่ม Spring) */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
