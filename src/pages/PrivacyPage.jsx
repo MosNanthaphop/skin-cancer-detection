@@ -14,10 +14,12 @@ const PrivacyPage = () => {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            {/* [Dark Mode] */}
+            <h1 className="text-4xl font-bold text-gray-800 mb-4 dark:text-white">
               Privacy Policy
             </h1>
-            <div className="flex items-center gap-2 text-sm text-blue-600">
+            {/* [Dark Mode] */}
+            <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
               <Calendar className="w-4 h-4" />
               <span>Last Updated: September 2025</span>
             </div>
@@ -25,38 +27,56 @@ const PrivacyPage = () => {
 
           {/* Quick Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            {/* [Dark Mode] */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-green-600" />
+                {/* [Dark Mode] */}
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/50">
+                  <Shield className="w-5 h-5 text-green-600 dark:text-green-300" />
                 </div>
-                <h3 className="font-semibold text-gray-800">100% Secure</h3>
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  100% Secure
+                </h3>
               </div>
-              <p className="text-xs text-gray-600">
+              {/* [Dark Mode] */}
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 Your data is encrypted and protected
               </p>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            {/* [Dark Mode] */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Eye className="w-5 h-5 text-blue-600" />
+                {/* [Dark Mode] */}
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900/50">
+                  <Eye className="w-5 h-5 text-blue-600 dark:text-blue-300" />
                 </div>
-                <h3 className="font-semibold text-gray-800">No Tracking</h3>
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  No Tracking
+                </h3>
               </div>
-              <p className="text-xs text-gray-600">
+              {/* [Dark Mode] */}
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 We don't track your personal activities
               </p>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            {/* [Dark Mode] */}
+            <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Lock className="w-5 h-5 text-purple-600" />
+                {/* [Dark Mode] */}
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center dark:bg-purple-900/50">
+                  <Lock className="w-5 h-5 text-purple-600 dark:text-purple-300" />
                 </div>
-                <h3 className="font-semibold text-gray-800">Private</h3>
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  Private
+                </h3>
               </div>
-              <p className="text-xs text-gray-600">
+              {/* [Dark Mode] */}
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 Your images are never stored permanently
               </p>
             </div>
@@ -64,27 +84,36 @@ const PrivacyPage = () => {
 
           {/* Divider */}
           <div className="mb-12">
-            <hr className="border-t border-gray-300" />
+            {/* [Dark Mode] */}
+            <hr className="border-t border-gray-300 dark:border-gray-700" />
           </div>
 
           {/* Terms of Use Section */}
-          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm">
+          {/* [Dark Mode] */}
+          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-blue-600" />
+              {/* [Dark Mode] */}
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900/50">
+                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-300" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Terms of Use</h2>
+              {/* [Dark Mode] */}
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                Terms of Use
+              </h2>
             </div>
 
-            <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
+            {/* [Dark Mode] */}
+            <div className="space-y-4 text-gray-600 text-sm leading-relaxed dark:text-gray-300">
               <p>
                 ยินดีต้อนรับสู่ SkinDee
                 การใช้บริการของเราถือว่าคุณยอมรับข้อกำหนดและเงื่อนไขการใช้งานทั้งหมด
                 โปรดอ่านข้อกำหนดเหล่านี้อย่างละเอียดก่อนใช้บริการ
               </p>
 
-              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">
+              {/* [Dark Mode] */}
+              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg dark:bg-gray-700">
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
                   1. การใช้บริการ
                 </h3>
                 <p>
@@ -94,8 +123,10 @@ const PrivacyPage = () => {
                 </p>
               </div>
 
-              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">
+              {/* [Dark Mode] */}
+              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg dark:bg-gray-700">
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
                   2. ความรับผิดชอบของผู้ใช้
                 </h3>
                 <p>
@@ -104,8 +135,10 @@ const PrivacyPage = () => {
                 </p>
               </div>
 
-              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">
+              {/* [Dark Mode] */}
+              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg dark:bg-gray-700">
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
                   3. ทรัพย์สินทางปัญญา
                 </h3>
                 <p>
@@ -115,8 +148,10 @@ const PrivacyPage = () => {
                 </p>
               </div>
 
-              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">
+              {/* [Dark Mode] */}
+              <div className="pl-4 border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg dark:bg-gray-700">
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
                   4. การเก็บรักษาข้อมูล
                 </h3>
                 <p>
@@ -128,20 +163,29 @@ const PrivacyPage = () => {
           </div>
 
           {/* Disclaimer Section */}
-          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm">
+          {/* [Dark Mode] */}
+          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-yellow-600" />
+              {/* [Dark Mode] */}
+              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center dark:bg-yellow-900/50">
+                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-300" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Disclaimer</h2>
+              {/* [Dark Mode] */}
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                Disclaimer
+              </h2>
             </div>
 
-            <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg">
-                <p className="font-semibold text-yellow-800 mb-2">
+            {/* [Dark Mode] */}
+            <div className="space-y-4 text-gray-600 text-sm leading-relaxed dark:text-gray-300">
+              {/* [Dark Mode] */}
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-r-lg dark:bg-yellow-900/50">
+                {/* [Dark Mode] */}
+                <p className="font-semibold text-yellow-800 mb-2 dark:text-yellow-200">
                   ⚠️ ข้อจำกัดความรับผิดชอบ
                 </p>
-                <p>
+                {/* [Dark Mode] */}
+                <p className="dark:text-yellow-300">
                   SkinDee
                   เป็นเครื่องมือเพื่อการศึกษาและให้ข้อมูลเบื้องต้นเท่านั้น
                   ไม่ใช่อุปกรณ์ทางการแพทย์และไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ได้
@@ -161,8 +205,12 @@ const PrivacyPage = () => {
                 เป็นเกณฑ์เดียวในการตัดสินใจรักษา
               </p>
 
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">ข้อยกเว้น:</h3>
+              {/* [Dark Mode] */}
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg dark:bg-gray-700 dark:border-gray-600">
+                {/* [Dark Mode] */}
+                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
+                  ข้อยกเว้น:
+                </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-blue-500 mt-1">•</span>
@@ -184,16 +232,23 @@ const PrivacyPage = () => {
           </div>
 
           {/* Data Privacy Section */}
-          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm">
+          {/* [Dark Mode] */}
+          <div className="bg-white border border-gray-200 rounded-lg p-8 mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-green-600" />
+              {/* [Dark Mode] */}
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/50">
+                <Shield className="w-5 h-5 text-green-600 dark:text-green-300" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Data Privacy</h2>
+              {/* [Dark Mode] */}
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                Data Privacy
+              </h2>
             </div>
 
-            <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
-              <h3 className="font-semibold text-gray-800 text-base">
+            {/* [Dark Mode] */}
+            <div className="space-y-4 text-gray-600 text-sm leading-relaxed dark:text-gray-300">
+              {/* [Dark Mode] */}
+              <h3 className="font-semibold text-gray-800 text-base dark:text-white">
                 ข้อมูลที่เราเก็บรวบรวม
               </h3>
               <p>เราเก็บข้อมูลน้อยที่สุดเท่าที่จำเป็นสำหรับการให้บริการ:</p>
@@ -214,35 +269,54 @@ const PrivacyPage = () => {
                 </li>
               </ul>
 
-              <h3 className="font-semibold text-gray-800 text-base mt-6">
+              {/* [Dark Mode] */}
+              <h3 className="font-semibold text-gray-800 text-base mt-6 dark:text-white">
                 วิธีที่เราปกป้องข้อมูลของคุณ
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">
+                {/* [Dark Mode] */}
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg dark:bg-green-900/50 dark:border-green-700">
+                  {/* [Dark Mode] */}
+                  <h4 className="font-semibold text-green-800 mb-2 dark:text-green-200">
                     🔒 Encryption
                   </h4>
-                  <p className="text-xs">
+                  {/* [Dark Mode] */}
+                  <p className="text-xs dark:text-green-300">
                     ข้อมูลทั้งหมดถูกเข้ารหัสด้วย SSL/TLS
                   </p>
                 </div>
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">
+                {/* [Dark Mode] */}
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg dark:bg-green-900/50 dark:border-green-700">
+                  {/* [Dark Mode] */}
+                  <h4 className="font-semibold text-green-800 mb-2 dark:text-green-200">
                     🗑️ Auto-Delete
                   </h4>
-                  <p className="text-xs">รูปภาพถูกลบทันทีหลังการวิเคราะห์</p>
+                  {/* [Dark Mode] */}
+                  <p className="text-xs dark:text-green-300">
+                    รูปภาพถูกลบทันทีหลังการวิเคราะห์
+                  </p>
                 </div>
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">
+                {/* [Dark Mode] */}
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg dark:bg-green-900/50 dark:border-green-700">
+                  {/* [Dark Mode] */}
+                  <h4 className="font-semibold text-green-800 mb-2 dark:text-green-200">
                     🚫 No Sharing
                   </h4>
-                  <p className="text-xs">เราไม่แชร์ข้อมูลกับบุคคลที่สาม</p>
+                  {/* [Dark Mode] */}
+                  <p className="text-xs dark:text-green-300">
+                    เราไม่แชร์ข้อมูลกับบุคคลที่สาม
+                  </p>
                 </div>
-                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">
+                {/* [Dark Mode] */}
+                <div className="bg-green-50 border border-green-200 p-4 rounded-lg dark:bg-green-900/50 dark:border-green-700">
+                  {/* [Dark Mode] */}
+                  <h4 className="font-semibold text-green-800 mb-2 dark:text-green-200">
                     👁️ No Tracking
                   </h4>
-                  <p className="text-xs">ไม่มีการติดตามพฤติกรรมการใช้งาน</p>
+                  {/* [Dark Mode] */}
+                  <p className="text-xs dark:text-green-300">
+                    ไม่มีการติดตามพฤติกรรมการใช้งาน
+                  </p>
                 </div>
               </div>
             </div>
@@ -255,6 +329,7 @@ const PrivacyPage = () => {
               If you have any questions about our privacy policy, please contact
               us
             </p>
+            {/* [Dark Mode] */}
             <button className="bg-white text-blue-600 font-semibold px-6 py-2.5 rounded-lg hover:bg-blue-50 transition-all duration-200 cursor-pointer">
               Contact Support
             </button>
