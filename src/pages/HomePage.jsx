@@ -71,7 +71,7 @@ const HomePage = () => {
               stiffness: 100,
             }}
             // (ปรับขนาดและสีข้อความตามต้องการ)
-            className="text-lg sm:text-xl font-medium text-blue-600 dark:text-blue-400 mb-6"
+            className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-400 mb-6"
           >
             "ใครไม่ดีแต่สกินดี"
           </motion.p>

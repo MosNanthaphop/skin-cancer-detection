@@ -63,7 +63,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
         </div>
       </div>
 
-      {/* --- Navigation Menu (เหมือนเดิม) --- */}
+      {/* --- Navigation Menu --- */}
       <nav className={`flex-1 ${isOpen ? "p-4" : "p-2"}`}>
         <Link
           to="/"
