@@ -26,6 +26,7 @@ const itemVariant = {
 const Result = ({ result, previewUrl }) => {
   // --- Logic การแบ่ง Risk (เหมือนเดิม) ---
   const predictionName = result.prediction.toLowerCase();
+  // console.log("Prediction Name:", predictionName);
 
   const riskMap = new Map([
     ["melanoma", "high"],
@@ -33,7 +34,7 @@ const Result = ({ result, previewUrl }) => {
     ["actinic keratosis", "high"],
     ["squamous cell carcinoma", "high"],
     ["nevus", "low"],
-    ["benign keratosis", "low"],
+    ["benign keratosis-like", "low"],
     ["dermatofibroma", "low"],
     ["vascular lesion", "low"],
     ["tinea", "low"],
