@@ -49,7 +49,7 @@ model = create_model(num_classes=len(CLASS_NAMES))
 
 # หา path ของ model (แก้ตามโครงสร้างโฟลเดอร์ของคุณ)
 BASE_DIR = Path(__file__).resolve().parent
-model_path = BASE_DIR.parent.parent / "model" / "third_model.pth"
+model_path = BASE_DIR.parent.parent / "model" / "efficientnet_b2.pth"
 
 # ตรวจสอบว่าไฟล์มีจริง
 if not model_path.exists():
