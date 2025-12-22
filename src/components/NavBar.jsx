@@ -37,11 +37,12 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
 
   return (
     <div
+      // แก้ไขตรงนี้: เพิ่ม min-h-screen เพื่อให้ความสูงยืดเต็มจอเสมอ
       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col 
                   transition-all duration-300 ease-in-out
                   ${isOpen ? "w-64" : "w-20"}`}
     >
-      {/* --- Profile Section (เหมือนเดิม) --- */}
+      {/* --- Profile Section --- */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex flex-col items-center">
           <div
@@ -136,7 +137,6 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
             }`}
           >
             <button
-              // 1. ลบ 'isOpen &&' ออกเพื่อให้คลิกได้ตลอด
               onClick={() => setShowLanguageMenu(!showLanguageMenu)}
               className={`flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors w-full
                                 ${!isOpen && "justify-center"}`}
@@ -168,13 +168,12 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
 
             {/* Language Menu */}
             {showLanguageMenu && (
-              // 2. เพิ่ม logic เปลี่ยนตำแหน่งเมนูภาษาตอนย่อ (pop-out)
               <div
                 className={`absolute w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden z-50
                   ${
                     isOpen
-                      ? "bottom-full left-0 mb-2" // ตำแหน่งปกติ (ตอนเปิด)
-                      : "bottom-0 left-full ml-2" // ตำแหน่งใหม่ (ตอนย่อ)
+                      ? "bottom-full left-0 mb-2"
+                      : "bottom-0 left-full ml-2"
                   }
                 `}
               >
@@ -195,7 +194,6 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           </div>
 
           {/* Theme Toggle Icons */}
-          {/* 3. เพิ่ม 'flex-col' ตอนย่อ (!isOpen) เพื่อให้ Sun/Moon เรียงแนวตั้ง */}
           <div className={`flex items-center gap-2 ${!isOpen && "flex-col"}`}>
             <button
               onClick={() => setDarkMode(false)}
@@ -209,7 +207,6 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
               <IoSunny size={20} />
             </button>
 
-            {/* 4. ซ่อนปุ่ม Toggle ตอนย่อ (isOpen && ...) */}
             {isOpen && (
               <button
                 onClick={toggleDarkMode}

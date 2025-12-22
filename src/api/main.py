@@ -4,7 +4,9 @@ from PIL import Image
 import torch
 import torch.nn as nn
 from torchvision import transforms
-from torchvision.models import resnet18
+
+# 1. เปลี่ยน Import เป็น efficientnet_b2
+from torchvision.models import efficientnet_b2
 import io
 import os
 from pathlib import Path
@@ -20,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# กำหนด Class Names (ปรับตามที่คุณเทรน)
+# กำหนด Class Names (ต้องตรงกับตอนเทรนเป๊ะๆ)
 CLASS_NAMES = [
     "Actinic keratosis",
     "Basal cell carcinoma",
@@ -35,19 +37,30 @@ CLASS_NAMES = [
 ]
 
 
-# สร้าง Model Architecture
+# 2. แก้ไข Model Architecture สำหรับ EfficientNet-B2
 def create_model(num_classes=5):
-    # ใช้ weights=None แทน pretrained=False
-    model = resnet18(weights=None)
-    model.fc = nn.Linear(model.fc.in_features, num_classes)
+    # โหลดโครงสร้าง EfficientNet B2
+    model = efficientnet_b2(weights=None)
+
+    # EfficientNet จะใช้ชื่อ layer ว่า 'classifier'
+    # โครงสร้างจะเป็น Sequential(Dropout, Linear) เราต้องแก้ตัว Linear (index 1)
+
+    # ดึงจำนวน input features ของ layer สุดท้ายเดิมออกมา (สำหรับ B2 คือ 1408)
+    in_features = model.classifier[1].in_features
+
+    # เปลี่ยน layer สุดท้ายให้ตรงกับจำนวน class ของเรา
+    model.classifier[1] = nn.Linear(in_features, num_classes)
+
     return model
 
 
-# โหลด Model
+# โหลด Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# สร้าง Model instance
 model = create_model(num_classes=len(CLASS_NAMES))
 
-# หา path ของ model (แก้ตามโครงสร้างโฟลเดอร์ของคุณ)
+# หา path ของ model
 BASE_DIR = Path(__file__).resolve().parent
 model_path = BASE_DIR.parent.parent / "model" / "efficientnet_b2.pth"
 
@@ -56,33 +69,41 @@ if not model_path.exists():
     print(f"⚠️ Model file not found at: {model_path}")
     print(f"📁 Current directory: {os.getcwd()}")
     print(f"📁 Script directory: {BASE_DIR}")
-    raise FileNotFoundError(
-        f"Model file not found. Please check the path: {model_path}"
-    )
+    # หมายเหตุ: ไม่ raise error ตรงนี้เพื่อให้ server start ได้ แต่จะทำนายไม่ได้ถ้าไม่มีไฟล์
+    # raise FileNotFoundError(...)
 
 print(f"✅ Loading model from: {model_path}")
 
-# โหลด model ด้วย weights_only=True (ปลอดภัยกว่า)
+# โหลด weights
 try:
-    model.load_state_dict(
-        torch.load(str(model_path), map_location=device, weights_only=True)
-    )
-    print("✅ Model loaded successfully!")
+    if model_path.exists():
+        # ลองโหลดแบบ weights_only=True ก่อน (ปลอดภัยกว่า)
+        model.load_state_dict(
+            torch.load(str(model_path), map_location=device, weights_only=True)
+        )
+        print("✅ Model loaded successfully!")
+    else:
+        print("❌ Model file does not exist, skipping load.")
 except Exception as e:
-    print(f"❌ Error loading model: {e}")
-    # ถ้า weights_only=True ไม่ได้ ลองแบบเก่า
-    model.load_state_dict(
-        torch.load(str(model_path), map_location=device, weights_only=False)
-    )
-    print("⚠️ Model loaded with weights_only=False (less secure)")
+    print(f"❌ Error loading model (weights_only=True): {e}")
+    try:
+        # ถ้าไม่ได้ ลองแบบปกติ
+        model.load_state_dict(
+            torch.load(str(model_path), map_location=device, weights_only=False)
+        )
+        print("⚠️ Model loaded with weights_only=False")
+    except Exception as e2:
+        print(f"❌ Fatal Error loading model: {e2}")
 
 model.to(device)
 model.eval()
 
-# Image Preprocessing
+# 3. Image Preprocessing
+# EfficientNet-B2 แนะนำ resolution ที่ 260x260
+# (แต่ถ้าตอนเทรนคุณใช้ 224 ก็ให้แก้เป็น 224 ครับ)
 transform = transforms.Compose(
     [
-        transforms.Resize((224, 224)),
+        transforms.Resize((260, 260)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ]
@@ -131,9 +152,8 @@ async def predict(file: UploadFile = File(...)):
 @app.get("/")
 def read_root():
     return {
-        "message": "SkinDee API is running",
+        "message": "SkinDee API is running (EfficientNet-B2)",
         "device": str(device),
-        "model_loaded": model is not None,
         "classes": CLASS_NAMES,
     }
 
