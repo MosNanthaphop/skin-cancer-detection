@@ -26,7 +26,7 @@ app.add_middleware(
 CLASS_NAMES = [
     "Actinic keratosis",
     "Basal cell carcinoma",
-    "Benign keratosis-like",
+    "Seborrheic keratosis",
     "Dermatofibroma",
     "Eczema",
     "Melanoma",

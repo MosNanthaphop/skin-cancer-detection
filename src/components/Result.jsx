@@ -34,7 +34,7 @@ const Result = ({ result, previewUrl }) => {
     ["actinic keratosis", "high"],
     ["squamous cell carcinoma", "high"],
     ["nevus", "low"],
-    ["benign keratosis-like", "low"],
+    ["seborrheic keratosis", "low"],
     ["dermatofibroma", "low"],
     ["vascular lesion", "low"],
     ["tinea", "low"],
