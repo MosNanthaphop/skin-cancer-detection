@@ -152,7 +152,7 @@ const Result = ({ result, previewUrl }) => {
                     {currentRisk.conditionTitle}
                   </div>
                 </div>
-                <h3 className="text-3xl font-bold text-gray-800 dark:text-white">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
                   {result.prediction}
                 </h3>
               </div>
