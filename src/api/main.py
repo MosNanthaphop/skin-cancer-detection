@@ -170,6 +170,6 @@ def health_check():
 if __name__ == "__main__":
     import uvicorn
 
-    print(f"🚀 Starting server...")
-    print(f"🖥️  Device: {device}")
+    print(f"Starting server...")
+    print(f"Device: {device}")
     uvicorn.run(app, host="localhost", port=8000)
