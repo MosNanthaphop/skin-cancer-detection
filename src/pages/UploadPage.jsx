@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ImageUploader from "../components/ImageUploader";
 import UploadGuide from "../components/UploadGuide";
 import LoadingSpinner from "../components/LoadingSpinner";
-import Result from "../components/Result"; // 1. Import ชื่อ 'Result' (ถูกต้องแล้ว)
+import ResultPage from "./ResultPage";
 
 const UploadPage = () => {
   const [showGuide, setShowGuide] = useState(true);
@@ -80,7 +80,7 @@ const UploadPage = () => {
             />
           ) : result ? (
             // 7. [แก้ไข] ส่ง 'previewUrl' ไปให้ Result
-            <Result result={result} previewUrl={analyzedFileUrl} />
+            <ResultPage result={result} previewUrl={analyzedFileUrl} />
           ) : (
             <>
               {showGuide ? (
