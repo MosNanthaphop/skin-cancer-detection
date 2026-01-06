@@ -2,7 +2,7 @@
 import { Download, ShieldAlert, AlertTriangle, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { toPng } from "html-to-image"; // [เปลี่ยน] ใช้ html-to-image แทน
+import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 
 // Animation Variants
