@@ -1,29 +1,43 @@
 // src/components/ImageUploader.jsx
 
-import { useState, useCallback } from "react";
-import { X, Crop, Trash2, Check } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import {
+  X,
+  Crop,
+  Trash2,
+  Check,
+  Camera,
+  Image as ImageIcon,
+} from "lucide-react";
 import Cropper from "react-easy-crop";
-import UploadTitle from "../components/UploadTitle"; // (ที่คุณ Import มา)
+import UploadTitle from "../components/UploadTitle";
 
-// Helper Function: แปลง Data URL เป็น File (เหมือนเดิม)
+// --- Helper Functions ---
+
+// 1. แปลง Data URL เป็น File Object
 const dataURLtoFile = async (dataUrl, fileName) => {
   const res = await fetch(dataUrl);
   const blob = await res.blob();
   return new File([blob], fileName, { type: blob.type });
 };
 
-// Helper Function: ทำการ Crop รูปภาพด้วย Canvas (เหมือนเดิม)
+// 2. ฟังก์ชัน Crop รูปภาพ (ใช้ Canvas)
 const getCroppedImg = async (imageSrc, pixelCrop) => {
   const image = new Image();
   image.src = imageSrc;
+  image.crossOrigin = "anonymous"; // ป้องกันปัญหา CORS (เผื่อไว้)
+
   await new Promise((resolve, reject) => {
     image.onload = resolve;
     image.onerror = reject;
   });
+
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
+
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
+
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -35,17 +49,18 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
     pixelCrop.width,
     pixelCrop.height
   );
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-  return dataUrl;
+
+  return canvas.toDataURL("image/jpeg", 0.95);
 };
 
 // --- Component หลัก ---
-const ImageUploader = ({ onAnalyze }) => {
+const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [agree, setAgree] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  // States for Cropper
   const [isCropping, setIsCropping] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -58,7 +73,13 @@ const ImageUploader = ({ onAnalyze }) => {
     []
   );
 
-  // --- (Logic functions: processFile, handleFileChange, ... handleAnalyze - ทั้งหมดเหมือนเดิม) ---
+  const resetCropState = () => {
+    setIsCropping(false);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    // setCroppedAreaPixels(null); // ไม่ต้องเคลียร์ค่านี้ทันที เพื่อกัน error
+  };
+
   const processFile = (file) => {
     if (
       file &&
@@ -76,10 +97,48 @@ const ImageUploader = ({ onAnalyze }) => {
       alert("กรุณาเลือกไฟล์ JPG หรือ PNG ที่มีขนาดไม่เกิน 10 MB");
     }
   };
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    processFile(file);
+
+  // รับไฟล์จากกล้อง (externalFile)
+  useEffect(() => {
+    if (externalFile) {
+      processFile(externalFile);
+    }
+  }, [externalFile]);
+
+  // --- Logic การ Crop (แก้ไขใหม่) ---
+  const handleApplyCrop = async () => {
+    try {
+      if (previewUrl && croppedAreaPixels) {
+        // 1. สร้างรูปที่ Crop แล้ว (Base64)
+        const croppedDataUrl = await getCroppedImg(
+          previewUrl,
+          croppedAreaPixels
+        );
+
+        // 2. อัปเดต Preview ทันที
+        setPreviewUrl(croppedDataUrl);
+
+        // 3. สร้าง File Object ใหม่
+        const fileName = selectedFile ? selectedFile.name : "cropped_image.jpg";
+        const newFile = await dataURLtoFile(
+          croppedDataUrl,
+          `cropped_${fileName}`
+        );
+
+        // 4. บันทึกไฟล์ใหม่ลง State
+        setSelectedFile(newFile);
+
+        // 5. ปิดโหมด Crop
+        resetCropState();
+      }
+    } catch (e) {
+      console.error("Crop error:", e);
+      alert("เกิดข้อผิดพลาดในการตัดรูปภาพ");
+    }
   };
+
+  // --- Event Handlers อื่นๆ ---
+  const handleFileChange = (e) => processFile(e.target.files[0]);
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -91,36 +150,16 @@ const ImageUploader = ({ onAnalyze }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    processFile(file);
+    processFile(e.dataTransfer.files[0]);
   };
   const removeImage = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
     resetCropState();
   };
-  const resetCropState = () => {
-    setIsCropping(false);
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setCroppedAreaPixels(null);
-  };
-  const handleCropClick = () => {
-    setIsCropping(true);
-  };
-  const handleCancelCrop = () => {
-    resetCropState();
-  };
-  const handleApplyCrop = async () => {
-    if (previewUrl && croppedAreaPixels) {
-      const croppedDataUrl = await getCroppedImg(previewUrl, croppedAreaPixels);
-      setPreviewUrl(croppedDataUrl);
-      const newFileName = `cropped_${selectedFile.name}`;
-      const newCroppedFile = await dataURLtoFile(croppedDataUrl, newFileName);
-      setSelectedFile(newCroppedFile);
-      resetCropState();
-    }
-  };
+  const handleCropClick = () => setIsCropping(true);
+  const handleCancelCrop = () => resetCropState();
+
   const handleAnalyze = () => {
     if (!selectedFile) {
       alert("กรุณาอัปโหลดรูปภาพก่อน");
@@ -137,15 +176,12 @@ const ImageUploader = ({ onAnalyze }) => {
 
   return (
     <div className="max-w-3xl mx-auto mb-5">
-      {/* 1. Title Component (ที่คุณเพิ่มเข้ามา) */}
       <UploadTitle />
 
-      {/* 2. Upload Area (เพิ่ม Dark Mode) */}
       <div
-        className={`border-2 border-dashed rounded-xl p-10 mb-8 text-center transition ${
+        className={`border-2 border-dashed rounded-xl p-8 mb-8 text-center transition ${
           isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
         } dark:bg-gray-800 dark:border-gray-600 ${
-          // [Dark Mode]
           isDragging && "dark:bg-blue-900/50"
         }`}
         onDragOver={handleDragOver}
@@ -155,26 +191,24 @@ const ImageUploader = ({ onAnalyze }) => {
         {previewUrl ? (
           <div className="relative inline-block w-full max-w-[28rem] mx-auto">
             {!isCropping ? (
-              // ---- โหมด Preview ----
+              // --- โหมด Preview (แสดงรูปปกติ) ---
               <>
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="max-h-56 rounded-lg mx-auto"
+                  className="max-h-64 w-full object-contain rounded-lg mx-auto"
                 />
-
-                {/* [แก้ไข] ลบ mr-14 และ backdrop-blur, เพิ่ม Dark Mode */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2">
                   <button
                     onClick={handleCropClick}
-                    className="bg-gray-200/80 text-gray-800 rounded-md p-2 hover:bg-gray-300 transition dark:bg-gray-600/80 dark:text-white dark:hover:bg-gray-500"
+                    className="bg-white/90 text-gray-800 rounded-md p-2 hover:bg-white transition shadow-sm dark:bg-gray-800/90 dark:text-white dark:hover:bg-gray-700"
                     title="Crop Image"
                   >
                     <Crop size={18} />
                   </button>
                   <button
                     onClick={removeImage}
-                    className="bg-red-500/80 text-white rounded-md p-2 hover:bg-red-500 transition"
+                    className="bg-red-500/90 text-white rounded-md p-2 hover:bg-red-600 transition shadow-sm"
                     title="Delete Image"
                   >
                     <Trash2 size={18} />
@@ -182,7 +216,7 @@ const ImageUploader = ({ onAnalyze }) => {
                 </div>
               </>
             ) : (
-              // ---- โหมด Crop (เพิ่ม Dark Mode) ----
+              // --- โหมด Cropping (แสดงเครื่องมือตัด) ---
               <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                 <Cropper
                   image={previewUrl}
@@ -201,15 +235,15 @@ const ImageUploader = ({ onAnalyze }) => {
                 <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
                   <button
                     onClick={handleApplyCrop}
-                    className="bg-green-500/80 text-white rounded-md p-2 hover:bg-green-500 transition"
-                    title="Apply Crop"
+                    className="bg-green-500/90 text-white rounded-md p-2 hover:bg-green-600 transition shadow-sm"
+                    title="Apply"
                   >
                     <Check size={18} />
                   </button>
                   <button
                     onClick={handleCancelCrop}
-                    className="bg-red-500/80 text-white rounded-md p-2 hover:bg-red-500 transition"
-                    title="Cancel Crop"
+                    className="bg-red-500/90 text-white rounded-md p-2 hover:bg-red-600 transition shadow-sm"
+                    title="Cancel"
                   >
                     <X size={18} />
                   </button>
@@ -220,39 +254,35 @@ const ImageUploader = ({ onAnalyze }) => {
                   min={1}
                   max={3}
                   step={0.1}
-                  aria-labelledby="Zoom"
-                  onChange={(e) => {
-                    setZoom(parseFloat(e.target.value));
-                  }}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
                   className="absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5 z-10 accent-blue-500"
                 />
               </div>
             )}
           </div>
         ) : (
-          // --- โหมด Upload (เพิ่ม Dark Mode) ---
+          // --- โหมด Upload (ปุ่มเลือกไฟล์/ถ่ายรูป) ---
           <>
-            <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg mx-auto mb-3 flex items-center justify-center">
+            <div className="w-16 h-16 bg-blue-50 dark:bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
               <svg
-                className="w-8 h-8 text-gray-400 dark:text-gray-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
+                className="w-8 h-8 text-blue-500 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
                 <path
-                  fillRule="evenodd"
-                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                  clipRule="evenodd"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                 />
               </svg>
             </div>
-            <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-2">
-              ลากและวางรูปภาพที่นี่
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+              Upload your skin image
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">
-              หรือคลิกเพื่อเลือกไฟล์
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-              รองรับไฟล์ JPG, PNG (สูงสุด 10 MB)
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+              Drag & drop or click to choose file (JPG, PNG max 10MB)
             </p>
             <input
               type="file"
@@ -261,41 +291,59 @@ const ImageUploader = ({ onAnalyze }) => {
               className="hidden"
               id="fileInput"
             />
-            <label
-              htmlFor="fileInput"
-              className="inline-block px-5 py-2 bg-blue-500 text-white text-base rounded-lg cursor-pointer hover:bg-blue-600 transition"
-            >
-              เลือกไฟล์
-            </label>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <label
+                htmlFor="fileInput"
+                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition shadow-md w-full sm:w-auto justify-center"
+              >
+                <ImageIcon size={20} />
+                <span>Choose File</span>
+              </label>
+              <button
+                type="button"
+                onClick={onOpenCamera}
+                className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition shadow-md w-full sm:w-auto justify-center"
+              >
+                <Camera size={20} />
+                <span>Take Photo</span>
+              </button>
+            </div>
           </>
         )}
       </div>
 
-      {/* --- Terms Checkbox (เพิ่ม Dark Mode) --- */}
-      <div className="flex items-center justify-center gap-2 mb-5">
+      <div className="flex items-start justify-center gap-3 mb-6 px-4">
         <input
           type="checkbox"
           id="terms"
           checked={agree}
           onChange={(e) => setAgree(e.target.checked)}
-          className="w-4 h-4 text-blue-500 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+          className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
         />
         <label
           htmlFor="terms"
-          className="text-sm text-gray-600 dark:text-gray-300"
+          className="text-sm text-gray-600 dark:text-gray-300 text-left"
         >
-          "ฉันเข้าใจว่าและยอมรับว่าเครื่องมือนี้ไม่ใช่การวินิจฉัยทางการแพทย์"
+          I understand and agree that this AI tool is for{" "}
+          <span className="font-semibold text-gray-800 dark:text-white">
+            educational purposes only
+          </span>{" "}
+          and is not a medical diagnosis.
         </label>
       </div>
 
-      {/* --- Analyze Button (เหมือนเดิม) --- */}
       <div className="text-center">
         <button
           onClick={handleAnalyze}
-          className="px-10 py-2.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition disabled:bg-gray-300 disabled:cursor-not-allowed enabled:cursor-pointer"
+          className={`px-12 py-3 text-lg font-semibold text-white rounded-lg shadow-lg transition-all transform ${
+            !selectedFile || !agree || isCropping
+              ? "bg-gray-300 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500"
+              : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5 cursor-pointer"
+          }`}
           disabled={!selectedFile || !agree || isCropping}
         >
-          Analyze
+          Analyze Skin
         </button>
       </div>
     </div>
