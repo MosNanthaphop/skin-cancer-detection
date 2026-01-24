@@ -34,8 +34,8 @@ const itemVariant = {
 // --- [เพิ่ม 1] ฐานข้อมูลรูปภาพอ้างอิง (คุณควรหารูปจริงมาใส่ใน folder public แล้วเปลี่ยน path ตรงนี้) ---
 const diseaseReferenceData = {
   melanoma: [
+    "/public/assets/diseases/mel_01.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/6/6c/Melanoma.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Melanoma_1.jpg/279px-Melanoma_1.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Melanoma_2.jpg/320px-Melanoma_2.jpg",
   ],
   "basal cell carcinoma": [
