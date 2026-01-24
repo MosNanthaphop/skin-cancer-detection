@@ -1,5 +1,11 @@
-// src/components/ResultPage.jsx
-import { Download, ShieldAlert, AlertTriangle, Info } from "lucide-react";
+// src/pages/ResultPage.jsx
+import {
+  Download,
+  ShieldAlert,
+  AlertTriangle,
+  Info,
+  Image as ImageIcon,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { toPng } from "html-to-image";
@@ -25,11 +31,55 @@ const itemVariant = {
   },
 };
 
+// --- [เพิ่ม 1] ฐานข้อมูลรูปภาพอ้างอิง (คุณควรหารูปจริงมาใส่ใน folder public แล้วเปลี่ยน path ตรงนี้) ---
+const diseaseReferenceData = {
+  melanoma: [
+    "https://upload.wikimedia.org/wikipedia/commons/6/6c/Melanoma.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Melanoma_1.jpg/279px-Melanoma_1.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Melanoma_2.jpg/320px-Melanoma_2.jpg",
+  ],
+  "basal cell carcinoma": [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Basal_Cell_Carcinoma.jpg/320px-Basal_Cell_Carcinoma.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/96/Basal_cell_carcinoma_ulcerated.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Basal_cell_carcinoma.jpg/320px-Basal_cell_carcinoma.jpg",
+  ],
+  "actinic keratosis": [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Actinic_keratosis_on_forehead.jpg/320px-Actinic_keratosis_on_forehead.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Actinic_keratosis_close_up.jpg/320px-Actinic_keratosis_close_up.jpg",
+  ],
+  "squamous cell carcinoma": [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Squamous_Cell_Carcinoma.jpg/320px-Squamous_Cell_Carcinoma.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Squamous_cell_carcinoma_on_back_of_hand.jpg/320px-Squamous_cell_carcinoma_on_back_of_hand.jpg",
+  ],
+  nevus: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Melanocytic_nevus.jpg/320px-Melanocytic_nevus.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Skin_mole.jpg/320px-Skin_mole.jpg",
+  ],
+  "seborrheic keratosis": [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Seborrheic_keratosis.jpg/320px-Seborrheic_keratosis.jpg",
+  ],
+  dermatofibroma: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dermatofibroma.jpg/320px-Dermatofibroma.jpg",
+  ],
+  "vascular lesion": [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Cherry_angioma.jpg/320px-Cherry_angioma.jpg",
+  ],
+  tinea: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ringworm_on_the_arm_-_tinea_corporis.jpg/320px-Ringworm_on_the_arm_-_tinea_corporis.jpg",
+  ],
+  eczema: [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Eczema-arms.jpg/320px-Eczema-arms.jpg",
+  ],
+};
+
 const ResultPage = ({ result, previewUrl }) => {
-  const printRef = useRef(); // Ref สำหรับพื้นที่ที่จะ Export
+  const printRef = useRef();
 
   // --- Logic การแบ่ง Risk ---
   const predictionName = result.prediction.toLowerCase();
+
+  // [เพิ่ม 2] ดึงรูปภาพอ้างอิงตามผลทำนาย
+  const referenceImages = diseaseReferenceData[predictionName] || [];
 
   const riskMap = new Map([
     ["melanoma", "high"],
@@ -93,7 +143,6 @@ const ResultPage = ({ result, previewUrl }) => {
   ];
   const circleColorClass = "text-blue-500";
 
-  // --- Animation State ---
   const [animatedConfidence, setAnimatedConfidence] = useState(0);
   const targetConfidence = Math.round(result.confidence);
 
@@ -104,29 +153,24 @@ const ResultPage = ({ result, previewUrl }) => {
     return () => clearTimeout(timer);
   }, [targetConfidence]);
 
-  // --- ฟังก์ชัน Export PDF (แก้ไขใหม่: ใช้ html-to-image) ---
   const handleExportPDF = async () => {
     const element = printRef.current;
     if (!element) return;
 
     try {
-      // 1. แปลง DOM เป็นรูปภาพ PNG (รองรับสี oklch และ Modern CSS)
       const dataUrl = await toPng(element, {
         quality: 1.0,
-        backgroundColor: "#ffffff", // บังคับพื้นหลังขาว
+        backgroundColor: "#ffffff",
         filter: (node) => {
-          // กรอง element ที่มี class 'export-exclude' ออก (เช่น ปุ่มกด)
           return !node.classList?.contains("export-exclude");
         },
       });
 
-      // 2. สร้าง PDF
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      // 3. ใส่รูปลง PDF
       pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`SkinDee-Result-${Date.now()}.pdf`);
     } catch (error) {
@@ -149,7 +193,6 @@ const ResultPage = ({ result, previewUrl }) => {
         Result
       </motion.h1>
 
-      {/* พื้นที่ที่จะพิมพ์ (Print Area) */}
       <div ref={printRef} className="dark:bg-gray-900 p-1">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* คอลัมน์ซ้าย (เนื้อหาหลัก) */}
@@ -229,7 +272,45 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
             </div>
 
-            {/* การ์ด 2: คำแนะนำ */}
+            {/* --- [เพิ่ม 3] การ์ดแสดงภาพเปรียบเทียบ (Reference Images) --- */}
+            {referenceImages.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ImageIcon
+                    className="text-gray-500 dark:text-gray-300"
+                    size={24}
+                  />
+                  <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+                    Reference Images for Comparison
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Common examples of {result.prediction} for visual reference.
+                </p>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {referenceImages.map((imgSrc, index) => (
+                    <div
+                      key={index}
+                      className="aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                    >
+                      <img
+                        src={imgSrc}
+                        alt={`Reference ${index + 1}`}
+                        crossOrigin="anonymous" // สำคัญมากเพื่อให้ html-to-image ทำงานได้
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onClick={() => window.open(imgSrc, "_blank")} // คลิกเพื่อดูภาพใหญ่
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2 text-right italic">
+                  Images from public medical datasets
+                </p>
+              </div>
+            )}
+
+            {/* การ์ด 2: คำแนะนำ (เลื่อนลงมา) */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
                 Treatment Recommendations
@@ -267,7 +348,7 @@ const ResultPage = ({ result, previewUrl }) => {
                             </span>
                           </div>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </>
@@ -308,7 +389,6 @@ const ResultPage = ({ result, previewUrl }) => {
             </div>
 
             {/* ปุ่ม 5: Export */}
-            {/* เพิ่ม class export-exclude เพื่อให้ filter กรองออก */}
             <div className="export-exclude">
               <button
                 onClick={handleExportPDF}
