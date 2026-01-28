@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { TiHome } from "react-icons/ti";
 import { ImUpload } from "react-icons/im";
 import { MdQuestionAnswer } from "react-icons/md";
@@ -8,19 +9,25 @@ import { IoMoon, IoSunny } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 
 const Navbar = ({ activePage = "upload", isOpen = true }) => {
   const { darkMode, setDarkMode, toggleDarkMode } = useTheme();
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("language") || "English";
-  });
+
+  // [แก้ไข] 2. เรียกใช้ค่าภาษาและฟังก์ชันจาก Context แทน State เดิม
+  const { language, changeLanguage, t } = useLanguage();
+
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
-  // Change language
-  const changeLanguage = (lang) => {
-    setLanguage(lang);
-    localStorage.setItem("language", lang);
+  // [แก้ไข] 3. ฟังก์ชันเปลี่ยนภาษา เรียกใช้ changeLanguage ของ Context
+  const handleLanguageChange = (langCode) => {
+    changeLanguage(langCode); // ส่ง 'th' หรือ 'en'
     setShowLanguageMenu(false);
+  };
+
+  // Helper เพื่อแสดงชื่อภาษาบนปุ่ม (Map รหัสภาษา -> ชื่อที่แสดง)
+  const getDisplayLanguage = () => {
+    return language === "th" ? "ไทย" : "English";
   };
 
   // ปิด dropdown เมื่อคลิกข้างนอก
@@ -37,9 +44,8 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
 
   return (
     <div
-      // แก้ไขตรงนี้: เพิ่ม min-h-screen เพื่อให้ความสูงยืดเต็มจอเสมอ
       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col 
-                  transition-all duration-300 ease-in-out
+                  transition-all duration-300 ease-in-out min-h-screen
                   ${isOpen ? "w-64" : "w-20"}`}
     >
       {/* --- Profile Section --- */}
@@ -75,7 +81,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <TiHome size={20} className="mb-0.5" />
-          {isOpen && <span>Home</span>}
+          {isOpen && <span>{t.home}</span>}
         </Link>
         <Link
           to="/upload"
@@ -86,7 +92,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <ImUpload size={20} className="mb-0.5" />
-          {isOpen && <span>Upload</span>}
+          {isOpen && <span>{t.upload}</span>}
         </Link>
         <Link
           to="/faq"
@@ -97,7 +103,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <MdQuestionAnswer size={20} className="mb-0.5" />
-          {isOpen && <span>FAQ</span>}
+          {isOpen && <span>{t.faq}</span>}
         </Link>
         <Link
           to="/about"
@@ -108,7 +114,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <IoMdInformationCircle size={20} className="mb-0.5" />
-          {isOpen && <span>About</span>}
+          {isOpen && <span>{t.about}</span>}
         </Link>
         <Link
           to="/privacy"
@@ -119,7 +125,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
           } ${isOpen ? "px-4" : "justify-center px-4"}`}
         >
           <MdPrivacyTip size={20} className="mb-0.5" />
-          {isOpen && <span>Privacy</span>}
+          {isOpen && <span>{t.privacy}</span>}
         </Link>
       </nav>
 
@@ -146,7 +152,8 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
               </span>
               {isOpen && (
                 <>
-                  <span className="text-sm">{language}</span>
+                  {/* [แก้ไข] 4. แสดงชื่อภาษาจาก Helper function */}
+                  <span className="text-sm">{getDisplayLanguage()}</span>
                   <svg
                     className={`w-4 h-4 transition-transform ${
                       showLanguageMenu ? "rotate-180" : ""
@@ -177,15 +184,20 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
                   }
                 `}
               >
+                {/* [แก้ไข] 5. ส่งรหัสภาษา 'en' หรือ 'th' ไปให้ Context */}
                 <button
-                  onClick={() => changeLanguage("English")}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  onClick={() => handleLanguageChange("en")}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
+                    ${language === "en" ? "text-blue-600 font-bold bg-blue-50 dark:bg-gray-600 dark:text-blue-300" : "text-gray-700 dark:text-gray-200"}
+                  `}
                 >
                   English
                 </button>
                 <button
-                  onClick={() => changeLanguage("ไทย")}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  onClick={() => handleLanguageChange("th")}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
+                    ${language === "th" ? "text-blue-600 font-bold bg-blue-50 dark:bg-gray-600 dark:text-blue-300" : "text-gray-700 dark:text-gray-200"}
+                  `}
                 >
                   ไทย
                 </button>
@@ -193,7 +205,7 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
             )}
           </div>
 
-          {/* Theme Toggle Icons */}
+          {/* Theme Toggle Icons (ส่วนนี้เหมือนเดิม) */}
           <div className={`flex items-center gap-2 ${!isOpen && "flex-col"}`}>
             <button
               onClick={() => setDarkMode(false)}

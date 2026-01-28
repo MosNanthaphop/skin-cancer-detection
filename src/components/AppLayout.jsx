@@ -1,12 +1,13 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { HiMenu } from "react-icons/hi";
-import { GoSearch } from "react-icons/go";
 import Navbar from "./NavBar";
 import Header from "./Header";
 import Footer from "./Footer";
+import { useLanguage } from "../context/LanguageContext";
 
 const AppLayout = () => {
+  const { t } = useLanguage();
   const [isNavbarOpen, setIsNavbarOpen] = useState(true);
   const [activePage, setActivePage] = useState("home");
   const location = useLocation(); // 2. เรียกใช้ useLocation
@@ -26,18 +27,18 @@ const AppLayout = () => {
     // 6. [ใหม่] สร้าง Array ของ Breadcrumb ตาม Path และ Hash
     let newBreadcrumb = [];
     if (currentPage === "home") {
-      newBreadcrumb = ["Home"]; // หน้า Home ไม่มี breadcrumb
+      newBreadcrumb = [t.home]; // หน้า Home ไม่มี breadcrumb
     } else if (currentPage === "upload") {
-      newBreadcrumb = ["Upload"]; // หน้า Upload พื้นฐาน
+      newBreadcrumb = [t.upload]; // หน้า Upload พื้นฐาน
       if (hash === "#result") {
-        newBreadcrumb.push("Result"); // ถ้ามี #result ให้เพิ่ม "Result"
+        newBreadcrumb.push(t.result); // ถ้ามี #result ให้เพิ่ม "Result"
       }
     } else if (currentPage === "faq") {
-      newBreadcrumb = ["FAQ"];
+      newBreadcrumb = [t.faq];
     } else if (currentPage === "about") {
-      newBreadcrumb = ["About"];
+      newBreadcrumb = [t.about];
     } else if (currentPage === "privacy") {
-      newBreadcrumb = ["Privacy"];
+      newBreadcrumb = [t.privacy];
     }
 
     setBreadcrumb(newBreadcrumb); // 7. อัปเดต State ของ Breadcrumb
@@ -58,16 +59,6 @@ const AppLayout = () => {
           </button>
           {/* 9. [แก้ไข] ส่ง State (Array) ใหม่นี้ไปให้ Header */}
           <Header breadcrumb={breadcrumb} />
-          <div className="relative ml-auto">
-            <input
-              type="text"
-              placeholder="Search"
-              className="pl-10 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-full w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-200"
-            />
-            <div className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-              <GoSearch size={18} />
-            </div>
-          </div>
         </header>
         {/* (ส่วน Outlet และ Footer เหมือนเดิม) */}
         <div className="flex-1">

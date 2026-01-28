@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Cropper from "react-easy-crop";
 import UploadTitle from "../components/UploadTitle";
+import { useLanguage } from "../context/LanguageContext";
 
 // --- Helper Functions ---
 
@@ -47,7 +48,7 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
     0,
     0,
     pixelCrop.width,
-    pixelCrop.height
+    pixelCrop.height,
   );
 
   return canvas.toDataURL("image/jpeg", 0.95);
@@ -55,6 +56,7 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
 
 // --- Component หลัก ---
 const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
+  const { t } = useLanguage();
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [agree, setAgree] = useState(false);
@@ -70,7 +72,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
     (croppedArea, currentCroppedAreaPixels) => {
       setCroppedAreaPixels(currentCroppedAreaPixels);
     },
-    []
+    [],
   );
 
   const resetCropState = () => {
@@ -94,7 +96,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
       };
       reader.readAsDataURL(file);
     } else {
-      alert("กรุณาเลือกไฟล์ JPG หรือ PNG ที่มีขนาดไม่เกิน 10 MB");
+      alert(t.alertTypeSize);
     }
   };
 
@@ -112,7 +114,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
         // 1. สร้างรูปที่ Crop แล้ว (Base64)
         const croppedDataUrl = await getCroppedImg(
           previewUrl,
-          croppedAreaPixels
+          croppedAreaPixels,
         );
 
         // 2. อัปเดต Preview ทันที
@@ -122,7 +124,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
         const fileName = selectedFile ? selectedFile.name : "cropped_image.jpg";
         const newFile = await dataURLtoFile(
           croppedDataUrl,
-          `cropped_${fileName}`
+          `cropped_${fileName}`,
         );
 
         // 4. บันทึกไฟล์ใหม่ลง State
@@ -133,7 +135,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
       }
     } catch (e) {
       console.error("Crop error:", e);
-      alert("เกิดข้อผิดพลาดในการตัดรูปภาพ");
+      alert(t.alertCrop);
     }
   };
 
@@ -162,11 +164,11 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
 
   const handleAnalyze = () => {
     if (!selectedFile) {
-      alert("กรุณาอัปโหลดรูปภาพก่อน");
+      alert(t.alertNoFile);
       return;
     }
     if (!agree) {
-      alert("กรุณายอมรับข้อกำหนดและเงื่อนไขการใช้งาน");
+      alert(t.alertTerms);
       return;
     }
     if (onAnalyze) {
@@ -279,10 +281,10 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-              Upload your skin image
+              {t.uploadTitle}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-              Drag & drop or click to choose file (JPG, PNG max 10MB)
+              {t.dragDrop}
             </p>
             <input
               type="file"
@@ -298,7 +300,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
                 className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition shadow-md w-full sm:w-auto justify-center"
               >
                 <ImageIcon size={20} />
-                <span>Choose File</span>
+                <span>{t.chooseFile}</span>
               </label>
               <button
                 type="button"
@@ -306,7 +308,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
                 className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition shadow-md w-full sm:w-auto justify-center"
               >
                 <Camera size={20} />
-                <span>Take Photo</span>
+                <span>{t.takePhoto}</span>
               </button>
             </div>
           </>
@@ -325,11 +327,11 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
           htmlFor="terms"
           className="text-sm text-gray-600 dark:text-gray-300 text-left"
         >
-          I understand and agree that this AI tool is for{" "}
+          {t.understandTerms}{" "}
           <span className="font-semibold text-gray-800 dark:text-white">
-            educational purposes only
+            {t.educationTerms}
           </span>{" "}
-          and is not a medical diagnosis.
+          {t.disclaimerTerms}
         </label>
       </div>
 
@@ -343,7 +345,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
           }`}
           disabled={!selectedFile || !agree || isCropping}
         >
-          Analyze Skin
+          {t.analyzeBtn}
         </button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import React from "react";
 import { TiHome } from "react-icons/ti";
-import { Link } from "react-router-dom"; // 1. Import Link
+import { Link } from "react-router-dom";
 
 // 2. ตั้งค่า default เป็น array ว่าง
 const Header = ({ breadcrumb = [] }) => {
