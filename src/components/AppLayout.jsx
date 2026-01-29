@@ -42,14 +42,14 @@ const AppLayout = () => {
     }
 
     setBreadcrumb(newBreadcrumb); // 7. อัปเดต State ของ Breadcrumb
-  }, [location]); // 8. สั่งให้ useEffect ทำงานใหม่ทุกครั้งที่ location เปลี่ยน
+  }, [location, t]); // 8. สั่งให้ useEffect ทำงานใหม่ทุกครั้งที่ location เปลี่ยน
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <Navbar isOpen={isNavbarOpen} activePage={activePage} />
 
       <main className="flex-1 flex flex-col overflow-auto">
-        <header className="sticky top-0 z-10 p-4 bg-white dark:bg-gray-800 shadow flex items-center gap-4">
+        <header className="sticky top-0 z-50 p-4 bg-white dark:bg-gray-800 shadow flex items-center gap-4">
           <button
             onClick={() => setIsNavbarOpen(!isNavbarOpen)}
             className="p-2 rounded-lg text-gray-500 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"

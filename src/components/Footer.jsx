@@ -1,7 +1,10 @@
 import { IoMail } from "react-icons/io5";
 import { MdLanguage } from "react-icons/md";
+import { useLanguage } from "../context/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-8 py-8">
@@ -13,14 +16,14 @@ const Footer = () => {
               SkinDee
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-              AI-powered skin analysis platform for educational purposes.
+              {t.footerText}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
-              Quick Links
+              {t.quickLinks}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -28,7 +31,7 @@ const Footer = () => {
                   href="/"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  Home
+                  {t.homeLink}
                 </a>
               </li>
               <li>
@@ -36,7 +39,7 @@ const Footer = () => {
                   href="/upload"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  Upload
+                  {t.uploadLink}
                 </a>
               </li>
               <li>
@@ -44,7 +47,7 @@ const Footer = () => {
                   href="/faq"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  FAQ
+                  {t.faqLink}
                 </a>
               </li>
               <li>
@@ -52,7 +55,7 @@ const Footer = () => {
                   href="/about"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  About
+                  {t.aboutLink}
                 </a>
               </li>
             </ul>
@@ -61,7 +64,7 @@ const Footer = () => {
           {/* Legal */}
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
-              Legal
+              {t.legal}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -69,7 +72,7 @@ const Footer = () => {
                   href="/privacy"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
                 >
-                  Privacy Policy
+                  {t.privacyPolicy}
                 </a>
               </li>
               <li>
@@ -94,7 +97,7 @@ const Footer = () => {
           {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
-              Contact
+              {t.contact}
             </h3>
             <ul className="space-y-2">
               <li className="text-sm text-gray-600 dark:text-gray-400 flex">
@@ -161,12 +164,9 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            © 2025 SkinDee - Educational. All rights reserved
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t.cc}</p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-            ⚠️ For educational purposes only. Not a substitute for professional
-            medical advice.
+            ⚠️ {t.disc}
           </p>
         </div>
       </div>

@@ -31,7 +31,7 @@ const itemVariant = {
   },
 };
 
-// --- [เพิ่ม 1] ฐานข้อมูลรูปภาพอ้างอิง (คุณควรหารูปจริงมาใส่ใน folder public แล้วเปลี่ยน path ตรงนี้) ---
+// --- ฐานข้อมูลรูปภาพอ้างอิง ---
 const diseaseReferenceData = {
   melanoma: [
     "/public/assets/diseases/mel_01.jpg",
@@ -72,14 +72,88 @@ const diseaseReferenceData = {
   ],
 };
 
+// --- [เพิ่ม] ข้อมูลคำแนะนำการรักษาแยกตามโรค ---
+const diseaseTreatmentData = {
+  melanoma: [
+    "Requires immediate attention from a specialist.",
+    "Surgical excision (wide local excision) is the primary treatment.",
+    "Sentinel lymph node biopsy may be needed to check for spread.",
+    "Advanced stages may require immunotherapy, targeted therapy, or chemotherapy.",
+    "Strict sun protection and regular follow-ups are essential.",
+  ],
+  "basal cell carcinoma": [
+    "Standard surgical excision to remove the cancer.",
+    "Mohs micrographic surgery (often for face or sensitive areas).",
+    "Electrodessication and curettage (scraping and burning).",
+    "Topical creams (e.g., Imiquimod) for superficial cases.",
+    "Cryotherapy (freezing) for small lesions.",
+  ],
+  "squamous cell carcinoma": [
+    "Surgical excision is the most common treatment.",
+    "Mohs surgery for high-risk areas or large lesions.",
+    "Radiation therapy if surgery isn't an option.",
+    "Regular skin checks to detect recurrence.",
+  ],
+  "actinic keratosis": [
+    "Cryotherapy (freezing with liquid nitrogen) is commonly used.",
+    "Topical medications (5-fluorouracil, Imiquimod).",
+    "Photodynamic therapy (PDT).",
+    "This is a pre-cancerous condition; treatment prevents progression to SCC.",
+  ],
+  nevus: [
+    "Usually, no treatment is required for benign moles.",
+    "Routine observation (watch for ABCDE changes).",
+    "Surgical removal if the mole is irritated by clothing or for cosmetic reasons.",
+    "Biopsy if there are suspicious changes.",
+  ],
+  "seborrheic keratosis": [
+    "Generally harmless and requires no treatment.",
+    "Cryotherapy (freezing) if the lesion is irritated or itchy.",
+    "Electrocautery or curettage for removal.",
+    "Do not scratch or pick at the lesion to avoid infection.",
+  ],
+  dermatofibroma: [
+    "Typically benign and no treatment is needed.",
+    "Surgical excision if it is painful, bleeding, or aesthetically concerning.",
+    "Cryotherapy can flatten the bump but may not remove it completely.",
+  ],
+  "vascular lesion": [
+    "Often benign (e.g., Cherry Angioma) and needs no treatment.",
+    "Laser therapy (Pulsed Dye Laser) for cosmetic removal.",
+    "Electrosurgery can be used for small lesions.",
+  ],
+  tinea: [
+    "Topical antifungal creams (Clotrimazole, Terbinafine).",
+    "Keep the area clean and dry.",
+    "Oral antifungal medication for extensive or stubborn infections.",
+    "Wash clothes and bedding in hot water to prevent reinfection.",
+  ],
+  eczema: [
+    "Apply moisturizers regularly to keep skin hydrated.",
+    "Topical corticosteroids to reduce inflammation and itching.",
+    "Identify and avoid triggers (soaps, allergens, stress).",
+    "Antihistamines may help with severe itching.",
+  ],
+};
+
+const defaultTreatments = [
+  "Consult a healthcare professional for an accurate diagnosis.",
+  "Monitor the lesion for any changes in size, shape, or color.",
+  "Keep the area clean and avoid scratching.",
+];
+
 const ResultPage = ({ result, previewUrl }) => {
   const printRef = useRef();
 
   // --- Logic การแบ่ง Risk ---
   const predictionName = result.prediction.toLowerCase();
 
-  // [เพิ่ม 2] ดึงรูปภาพอ้างอิงตามผลทำนาย
+  // ดึงรูปภาพอ้างอิง
   const referenceImages = diseaseReferenceData[predictionName] || [];
+
+  // [แก้ไข] ดึงคำแนะนำตามโรค
+  const specificTreatments =
+    diseaseTreatmentData[predictionName] || defaultTreatments;
 
   const riskMap = new Map([
     ["melanoma", "high"],
@@ -135,12 +209,6 @@ const ResultPage = ({ result, previewUrl }) => {
     },
   };
   const currentRisk = riskStyles[riskCategory];
-  const dummyTreatments = [
-    "Consult a dermatologist for a biopsy to confirm the diagnosis.",
-    "Surgical excision is the primary treatment for early-stage melanoma.",
-    "Further treatment may include immunotherapy, targeted therapy, or chemotherapy depending on the stage.",
-    "Regular skin self-examinations and follow-up appointments are crucial.",
-  ];
   const circleColorClass = "text-blue-500";
 
   const [animatedConfidence, setAnimatedConfidence] = useState(0);
@@ -272,7 +340,7 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
             </div>
 
-            {/* --- [เพิ่ม 3] การ์ดแสดงภาพเปรียบเทียบ (Reference Images) --- */}
+            {/* การ์ด Reference Images */}
             {referenceImages.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -297,9 +365,9 @@ const ResultPage = ({ result, previewUrl }) => {
                       <img
                         src={imgSrc}
                         alt={`Reference ${index + 1}`}
-                        crossOrigin="anonymous" // สำคัญมากเพื่อให้ html-to-image ทำงานได้
+                        crossOrigin="anonymous"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onClick={() => window.open(imgSrc, "_blank")} // คลิกเพื่อดูภาพใหญ่
+                        onClick={() => window.open(imgSrc, "_blank")}
                       />
                     </div>
                   ))}
@@ -316,7 +384,8 @@ const ResultPage = ({ result, previewUrl }) => {
                 Treatment Recommendations
               </h3>
               <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
-                {dummyTreatments.map((item, index) => (
+                {/* [แก้ไข] แสดงคำแนะนำตามโรคที่เลือก */}
+                {specificTreatments.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ol>
@@ -356,12 +425,12 @@ const ResultPage = ({ result, previewUrl }) => {
             </div>
           </motion.div>
 
-          {/* คอลัมน์ขวา (Sidebar) */}
+          {/* คอลัมน์ขวา (Sidebar) - เหมือนเดิม */}
           <motion.div
             className="lg:col-span-2 flex flex-col gap-6"
             variants={itemVariant}
           >
-            {/* การ์ด 3: กล่อง Risk */}
+            {/* Risk Box */}
             <div
               className={`p-5 rounded-lg border ${currentRisk.bg} ${currentRisk.border}`}
             >
@@ -376,7 +445,7 @@ const ResultPage = ({ result, previewUrl }) => {
               </p>
             </div>
 
-            {/* การ์ด 4: Disclaimer */}
+            {/* Disclaimer */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5">
               <h4 className="text-base font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Disclaimer
@@ -388,7 +457,7 @@ const ResultPage = ({ result, previewUrl }) => {
               </p>
             </div>
 
-            {/* ปุ่ม 5: Export */}
+            {/* Export */}
             <div className="export-exclude">
               <button
                 onClick={handleExportPDF}

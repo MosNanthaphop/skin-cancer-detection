@@ -14,6 +14,38 @@ export const translations = {
     themeDark: "โหมดกลางคืน",
     themeLight: "โหมดกลางวัน",
 
+    // --- Home Page (เพิ่มใหม่) ---
+    heroBadge: "ผู้ช่วยดูแลผิวหนังด้วย AI",
+    heroDesc:
+      "สัมผัสความชัดเจนของการวิเคราะห์ด้วย AI ขั้นสูง ตรวจสุขภาพผิวของคุณได้ทันทีด้วยเครื่องมือคัดกรองที่ชาญฉลาด ปลอดภัย และเป็นส่วนตัว",
+    featureTitle: "ทำไมต้องเลือก SkinDee?",
+    featureSubtitle: "เทคโนโลยีที่เชื่อถือได้ ออกแบบมาโดยคำนึงถึงสุขภาพของคุณ",
+
+    // Features
+    feat1Title: "อัปโหลดหรือถ่ายภาพ",
+    feat1Desc:
+      "เพียงถ่ายภาพรอยโรคหรืออัปโหลดรูปภาพที่มีอยู่ รองรับไฟล์มาตรฐานอย่างปลอดภัย",
+    feat2Title: "วิเคราะห์ทันที",
+    feat2Desc:
+      "AI ของเราประมวลผลภาพในไม่กี่วินาที โดยเปรียบเทียบกับฐานข้อมูลทางการแพทย์เพื่อระบุรูปแบบ",
+    feat3Title: "ข้อมูลเชิงลึกเพื่อการศึกษา",
+    feat3Desc:
+      "รับการประเมินความเสี่ยงทันทีพร้อมภาพเปรียบเทียบ เพื่อให้เข้าใจอาการที่อาจเกิดขึ้นได้ดียิ่งขึ้น",
+
+    // Privacy Section
+    privacySectionTitle: "ออกแบบโดยเน้นความเป็นส่วนตัว",
+    privacySectionDesc:
+      "รูปภาพของคุณจะถูกประมวลผลแบบเรียลไทม์และจะไม่ถูกจัดเก็บถาวรบนเซิร์ฟเวอร์ของเรา เราเชื่อในเทคโนโลยีที่เคารพความเป็นส่วนตัวเท่าๆ กับสุขภาพของคุณ",
+
+    // How It Works
+    howItWorksTitle: "ขั้นตอนการทำงาน",
+    step1Title: "อัปโหลดรูปภาพ",
+    step1Desc: "ถ่ายภาพรอยโรคให้ชัดเจน",
+    step2Title: "AI ประมวลผล",
+    step2Desc: "ระบบจะวิเคราะห์รูปแบบของรอยโรค",
+    step3Title: "รับผลลัพธ์",
+    step3Desc: "ดูการประเมินความเสี่ยงและคำแนะนำ",
+
     // --- Upload Page / ImageUploader ---
     uploadTop: "อัปโหลดรูปภาพของคุณ",
     uploadSuggest:
@@ -61,6 +93,19 @@ export const translations = {
         "ตรวจพบความผิดปกติ ควรเฝ้าระวังอาการหรือปรึกษาแพทย์เฉพาะทางเพื่อความแน่ใจ",
       msgLow: "ตรวจพบความผิดปกติ แต่อยู่ในกลุ่มที่มักไม่อันตราย (Benign)",
     },
+
+    // --- Footer ---
+    footerText: "แพลตฟอร์มวิเคราะห์ผิวหนังด้วย AI เพื่อการศึกษา",
+    quickLinks: "ลิงก์ด่วน",
+    homeLink: "หน้าแรก",
+    uploadLink: "อัปโหลด",
+    faqLink: "คำถามที่พบบ่อย",
+    aboutLink: "เกี่ยวกับเรา",
+    legal: "กฎหมาย",
+    privacyPolicy: "นโยบายความเป็นส่วนตัว",
+    contact: "ติดต่อเรา",
+    cc: "© 2025 SkinDee - เพื่อการศึกษา ขอสงวนลิขสิทธิ์ทุกประการ",
+    disc: "เพื่อการศึกษาเท่านั้น ไม่สามารถใช้แทนคำแนะนำทางการแพทย์จากผู้เชี่ยวชาญได้",
   },
   en: {
     // --- General / Navbar ---
@@ -74,6 +119,39 @@ export const translations = {
     language: "ภาษาไทย",
     themeDark: "Dark Mode",
     themeLight: "Light Mode",
+
+    // --- Home Page (Added) ---
+    heroBadge: "AI-Powered Dermatology Assistant",
+    heroDesc:
+      "Experience the clarity of advanced AI analysis. Check your skin health instantly with our intelligent, secure, and private screening tool.",
+    featureTitle: "Why Choose SkinDee?",
+    featureSubtitle:
+      "Trusted technology designed with your well-being in mind.",
+
+    // Features
+    feat1Title: "Upload or Capture",
+    feat1Desc:
+      "Simply take a photo of the skin lesion or upload an existing image. Our system accepts standard formats securely.",
+    feat2Title: "Instant Analysis",
+    feat2Desc:
+      "Our AI processes the image in seconds, comparing it against a vast medical database to identify patterns.",
+    feat3Title: "Educational Insight",
+    feat3Desc:
+      "Receive an immediate risk assessment and visual comparisons to understand potential conditions better.",
+
+    // Privacy Section
+    privacySectionTitle: "Privacy First Design",
+    privacySectionDesc:
+      "Your images are processed in real-time and are never permanently stored on our servers. We believe in technology that respects your privacy as much as your health.",
+
+    // How It Works
+    howItWorksTitle: "How It Works",
+    step1Title: "Upload Image",
+    step1Desc: "Take a clear photo of the skin lesion.",
+    step2Title: "AI Processing",
+    step2Desc: "Our system analyzes patterns in the image.",
+    step3Title: "Get Result",
+    step3Desc: "View risk assessment and recommendations.",
 
     // --- Upload Page / ImageUploader ---
     uploadTop: "Upload your image",
@@ -123,5 +201,18 @@ export const translations = {
       msgLow:
         "A condition has been detected. This is generally considered benign (non-cancerous).",
     },
+
+    // --- Footer ---
+    footerText: "AI-powered skin analysis platform for educational purposes.",
+    quickLinks: "Quick Links",
+    homeLink: "Home",
+    uploadLink: "Upload",
+    faqLink: "FAQ",
+    aboutLink: "About Us",
+    legal: "Legal",
+    privacyPolicy: "Privacy Policy",
+    contact: "Contact",
+    cc: "© 2025 SkinDee - Educational. All rights reserved.",
+    disc: "For educational purposes only. Not a substitute for professional medical advice.",
   },
 };
