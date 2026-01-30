@@ -186,20 +186,20 @@ const Navbar = ({ activePage = "upload", isOpen = true }) => {
               >
                 {/* [แก้ไข] 5. ส่งรหัสภาษา 'en' หรือ 'th' ไปให้ Context */}
                 <button
-                  onClick={() => handleLanguageChange("en")}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
-                    ${language === "en" ? "text-blue-600 font-bold bg-blue-50 dark:bg-gray-600 dark:text-blue-300" : "text-gray-700 dark:text-gray-200"}
-                  `}
-                >
-                  English
-                </button>
-                <button
                   onClick={() => handleLanguageChange("th")}
                   className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
                     ${language === "th" ? "text-blue-600 font-bold bg-blue-50 dark:bg-gray-600 dark:text-blue-300" : "text-gray-700 dark:text-gray-200"}
                   `}
                 >
                   ไทย
+                </button>
+                <button
+                  onClick={() => handleLanguageChange("en")}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors
+                    ${language === "en" ? "text-blue-600 font-bold bg-blue-50 dark:bg-gray-600 dark:text-blue-300" : "text-gray-700 dark:text-gray-200"}
+                  `}
+                >
+                  English
                 </button>
               </div>
             )}

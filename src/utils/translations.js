@@ -14,12 +14,23 @@ export const translations = {
     themeDark: "โหมดกลางคืน",
     themeLight: "โหมดกลางวัน",
 
-    // --- Home Page (เพิ่มใหม่) ---
-    heroBadge: "ผู้ช่วยดูแลผิวหนังด้วย AI",
+    // --- Home Page ---
+    heroBadge: "ใครไม่ดีแต่สกินดี",
     heroDesc:
       "สัมผัสความชัดเจนของการวิเคราะห์ด้วย AI ขั้นสูง ตรวจสุขภาพผิวของคุณได้ทันทีด้วยเครื่องมือคัดกรองที่ชาญฉลาด ปลอดภัย และเป็นส่วนตัว",
     featureTitle: "ทำไมต้องเลือก SkinDee?",
     featureSubtitle: "เทคโนโลยีที่เชื่อถือได้ ออกแบบมาโดยคำนึงถึงสุขภาพของคุณ",
+
+    // --- Hero Slider (เพิ่มใหม่) ---
+    slider1Title: "เทคโนโลยี AI ที่แม่นยำ",
+    slider1Desc:
+      "ขับเคลื่อนด้วยโมเดล Machine Learning ขั้นสูงที่ผ่านการเรียนรู้จากภาพทางคลินิกนับพัน",
+    slider2Title: "วิเคราะห์ผลรวดเร็ว",
+    slider2Desc:
+      "รับผลการประเมินผิวหนังเบื้องต้นได้ในไม่กี่วินาที ผ่านเบราว์เซอร์ของคุณโดยตรง",
+    slider3Title: "เน้นความเป็นส่วนตัว 100%",
+    slider3Desc:
+      "รูปภาพของคุณจะถูกประมวลผลอย่างปลอดภัย และไม่มีการบันทึกเก็บไว้บนเซิร์ฟเวอร์",
 
     // Features
     feat1Title: "อัปโหลดหรือถ่ายภาพ",
@@ -65,6 +76,14 @@ export const translations = {
     alertNoFile: "กรุณาอัปโหลดรูปภาพก่อน",
     alertTerms: "กรุณายอมรับข้อกำหนดและเงื่อนไขการใช้งาน",
     cameraPlace: "วางตำแหน่งรอยโรคให้อยู่ในกรอบ",
+
+    // --- Upload Guide ---
+    guideTitle: "วิธีการถ่ายภาพที่เหมาะสม",
+    guideSlide1: "ถ่ายภาพในที่มีแสงสว่างเพียงพอ หลีกเลี่ยงเงาและภาพเบลอ",
+    guideSlide2:
+      "ตรวจสอบให้แน่ใจว่าภาพโฟกัสชัดเจนและเห็นบริเวณที่ต้องการครบถ้วน",
+    guideSlide3: "ห้ามใช้ฟิลเตอร์ การตกแต่ง หรือเอฟเฟกต์ใดๆ กับรูปภาพ",
+    guideGotIt: "รับทราบ",
 
     // --- Result Page ---
     resultTitle: "ผลการวิเคราะห์",
@@ -120,13 +139,24 @@ export const translations = {
     themeDark: "Dark Mode",
     themeLight: "Light Mode",
 
-    // --- Home Page (Added) ---
-    heroBadge: "AI-Powered Dermatology Assistant",
+    // --- Home Page ---
+    heroBadge: "Not everyone is good, but your skin can be",
     heroDesc:
       "Experience the clarity of advanced AI analysis. Check your skin health instantly with our intelligent, secure, and private screening tool.",
     featureTitle: "Why Choose SkinDee?",
     featureSubtitle:
       "Trusted technology designed with your well-being in mind.",
+
+    // --- Hero Slider (Added) ---
+    slider1Title: "AI Precision Technology",
+    slider1Desc:
+      "Powered by advanced machine learning models trained on thousands of clinical images.",
+    slider2Title: "Lightning Fast Analysis",
+    slider2Desc:
+      "Get your preliminary skin assessment in seconds, right from your browser.",
+    slider3Title: "100% Privacy Focused",
+    slider3Desc:
+      "Your images are processed securely and are never stored on our servers.",
 
     // Features
     feat1Title: "Upload or Capture",
@@ -172,6 +202,15 @@ export const translations = {
     alertNoFile: "Please upload an image first.",
     alertTerms: "Please accept the terms and conditions.",
     cameraPlace: "Place the lesion in the box",
+
+    // --- Upload Guide ---
+    guideTitle: "How to make a suitable photo",
+    guideSlide1:
+      "Take a clear, well-lit photo of the skin area. Avoid shadows and blur.",
+    guideSlide2:
+      "Ensure the photo is in focus and shows the entire area of concern.",
+    guideSlide3: "Do not use filters, makeup, or any effects on the photo.",
+    guideGotIt: "Got it",
 
     // --- Result Page ---
     resultTitle: "Analysis Result",

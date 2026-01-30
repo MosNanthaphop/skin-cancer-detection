@@ -8,26 +8,28 @@ import {
 } from "react-icons/io5";
 import { MdCenterFocusStrong } from "react-icons/md"; // ไอคอนโฟกัส (สไลด์ 2)
 import UploadTitle from "./UploadTitle";
+import { useLanguage } from "../context/LanguageContext";
 
-// 1. ข้อมูลของสไลด์
-const slides = [
-  {
-    icon: IoCameraOutline,
-    text: "Take a clear, well-lit photo of the skin area. Avoid shadows and blur.",
-  },
-  {
-    icon: MdCenterFocusStrong,
-    text: "Ensure the photo is in focus and shows the entire area of concern.",
-  },
-  {
-    icon: IoBan,
-    text: "Do not use filters, makeup, or any effects on the photo.",
-  },
-];
-
-// 2. รับ prop 'onClose' จากแม่ (UploadPage)
+// 1. รับ prop 'onClose' จากแม่ (UploadPage)
 const UploadGuide = ({ onClose }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { t } = useLanguage();
+
+  // 2. ข้อมูลของสไลด์
+  const slides = [
+    {
+      icon: IoCameraOutline,
+      text: t.guideSlide1,
+    },
+    {
+      icon: MdCenterFocusStrong,
+      text: t.guideSlide2,
+    },
+    {
+      icon: IoBan,
+      text: t.guideSlide3,
+    },
+  ];
 
   const nextSlide = () => {
     // วนกลับไปสไลด์ 0 ถ้าถึงสไลด์สุดท้ายแล้ว
@@ -60,7 +62,7 @@ const UploadGuide = ({ onClose }) => {
             <IoChevronBack size={20} />
           </button>
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-            How to make a suitable photo
+            {t.guideTitle}
           </h2>
           <button
             onClick={nextSlide}
@@ -104,7 +106,7 @@ const UploadGuide = ({ onClose }) => {
           onClick={onClose} // เมื่อคลิก ให้เรียกฟังก์ชัน 'onClose' ที่ได้รับมา
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors duration-200"
         >
-          Got it
+          {t.guideGotIt}
         </button>
       </div>
     </div>
