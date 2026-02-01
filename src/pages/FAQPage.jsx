@@ -1,411 +1,256 @@
-import { useState } from "react";
-import {
-  Search,
-  Shield,
-  Users,
-  Zap,
-  Mail,
-  MessageCircle,
-  Book,
-  Video,
-  HelpCircle,
-} from "lucide-react";
+// src/pages/FAQPage.jsx
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Shield, Zap, HelpCircle, ChevronDown } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 const FAQPage = () => {
-  const [openIndex, setOpenIndex] = useState("");
+  const { t, language } = useLanguage();
+  const [openIndex, setOpenIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const faqs = [
-    {
-      category: "General",
-      question: "What is this tool?",
-      answer:
-        "นี่คือ SkinDee เป็นเครื่องมือที่ช่วยให้คุณดูแลสุขภาพผิวหนังได้อย่างรายงตาและสะดวกสบายพิเศษ เราใช้เทคโนโลยี AI เพื่อวิเคราะห์สภาพผิวของคุณและให้คำแนะนำส่วนบุคคลในการดูแลผิว",
-    },
+  useEffect(() => {
+    setOpenIndex(null);
+  }, [selectedCategory, searchQuery, language]);
 
-    {
-      category: "General",
-      question: "Who should use it?",
-      answer:
-        "SkinDee เหมาะสำหรับทุกคนที่ต้องการดูแลสุขภาพผิวหนัง ไม่ว่าจะเป็นผู้ที่มีปัญหาผิว ต้องการตรวจสอบอาการเบื้องต้น หรือแค่อยากทราบข้อมูลเกี่ยวกับสภาพผิวของตนเอง อย่างไรก็ตาม หากมีอาการรุนแรงควรปรึกษาแพทย์ผู้เชี่ยวชาญ",
-    },
+  const currentFaqs = t.faqList || [];
 
-    {
-      category: "Medical",
-      question: "Is this a medical device?",
-      answer:
-        "ไม่ SkinDee เป็นเครื่องมือเพื่อการศึกษาและให้ข้อมูลเบื้องต้นเท่านั้น ไม่ใช่อุปกรณ์ทางการแพทย์และไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ได้ ผลการวิเคราะห์ควรใช้เป็นข้อมูลประกอบการพิจารณาเท่านั้น หากมีข้อสงสัยหรือปัญหาสุขภาพ กรุณาปรึกษาแพทย์ผู้เชี่ยวชาญ",
-    },
+  // ดึง Category ทั้งหมดที่มีใน Data (ที่เป็นภาษาอังกฤษ เช่น General, Medical)
+  const categories = ["All", ...new Set(currentFaqs.map((f) => f.category))];
 
-    {
-      category: "Privacy",
-      question: "Do you store my images or personal data?",
-      answer:
-        "เราให้ความสำคัญกับความเป็นส่วนตัวของคุณเป็นอย่างมาก รูปภาพที่คุณอัพโหลดจะถูกใช้เพื่อการวิเคราะห์เท่านั้นและจะไม่ถูกเก็บไว้ในระบบของเราหลังจากการวิเคราะห์เสร็จสิ้น เราไม่เก็บรวบรวมข้อมูลส่วนบุคคลใดๆ และไม่แชร์ข้อมูลของคุณกับบุคคลที่สาม",
-    },
-
-    {
-      category: "Usage",
-      question: "How do I get started?",
-      answer:
-        "การเริ่มต้นใช้งาน SkinDee ง่ายมาก เพียงอัพโหลดรูปภาพผิวของคุณในหน้า Upload ระบบจะวิเคราะห์และแสดงผลลัพธ์พร้อมคำแนะนำในการดูแลผิวที่เหมาะสม คุณสามารถดูประวัติการวิเคราะห์ทั้งหมดได้ในหน้า History",
-    },
-
-    {
-      category: "Technical",
-      question: "What image formats are supported?",
-      answer:
-        "SkinDee รองรับไฟล์รูปภาพทั่วไป เช่น JPG, JPEG, PNG และ WebP ขนาดไฟล์ไม่ควรเกิน 10 MB และควรมีความละเอียดที่ชัดเจนเพื่อผลการวิเคราะห์ที่แม่นยำ",
-    },
-
-    {
-      category: "Technical",
-      question: "How long does the analysis take?",
-      answer:
-        "โดยทั่วไปการวิเคราะห์ใช้เวลาเพียง 3-5 วินาที ขึ้นอยู่กับขนาดและคุณภาพของรูปภาพ ระบบ AI ของเราได้รับการออกแบบให้ทำงานได้รวดเร็วและมีประสิทธิภาพ",
-    },
-
-    {
-      category: "Pricing",
-      question: "Is SkinDee free to use?",
-      answer:
-        "ใช่ SkinDee ให้บริการฟรีสำหรับการใช้งานพื้นฐาน คุณสามารถอัพโหลดและวิเคราะห์รูปภาพได้โดยไม่มีค่าใช้จ่าย เป้าหมายของเราคือให้ทุกคนเข้าถึงเครื่องมือดูแลสุขภาพผิวได้ง่าย",
-    },
-  ];
-
-  // [Dark Mode] แก้ไข Array นี้
-  const features = [
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Fast Analysis",
-      description: "Get results in seconds",
-      color:
-        "bg-yellow-50 text-yellow-600 border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700",
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: "100% Private",
-      description: "Your data is secure",
-      color:
-        "bg-green-50 text-green-600 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
-    },
-    {
-      icon: <Users className="w-6 h-6" />,
-      title: "AI-Powered",
-      description: "Advanced technology",
-      color:
-        "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-700",
-    },
-    {
-      icon: <HelpCircle className="w-6 h-6" />,
-      title: "24/7 Support",
-      description: "Always here to help",
-      color:
-        "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/50 dark:text-purple-300 dark:border-purple-700",
-    },
-  ];
-
-  const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? -1 : index);
+  // [เพิ่ม] สร้าง Map สำหรับแปลงชื่อหมวดหมู่เป็นภาษาตาม Context
+  const categoryLabels = {
+    All: t.faqCatAll || "All",
+    General: t.faqCatGeneral || "General",
+    Medical: t.faqCatMedical || "Medical",
+    Privacy: t.faqCatPrivacy || "Privacy",
+    Usage: t.faqCatUsage || "Usage",
+    Technical: t.faqCatTechnical || "Technical",
+    Pricing: t.faqCatPricing || "Pricing",
   };
 
-  const filteredFaqs = faqs.filter(
-    (faq) =>
+  const filteredFaqs = currentFaqs.filter((faq) => {
+    const matchesSearch =
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || faq.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
-    // [Dark Mode] พื้นหลังของ AppLayout จะจัดการส่วนนี้
-    <div>
-      <section className="py-16 px-8">
-        {/* Hero Section */}
-        <div className="mb-10 max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3 dark:text-white">
-            Frequently Asked Questions
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* --- Hero Section --- */}
+      <section className="relative bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-900 dark:to-gray-900 py-16 px-6 text-center text-white overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
+          <div className="absolute top-[-50px] left-[-50px] w-64 h-64 bg-white rounded-full mix-blend-overlay blur-3xl"></div>
+          <div className="absolute bottom-[-50px] right-[-50px] w-96 h-96 bg-blue-300 rounded-full mix-blend-overlay blur-3xl"></div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 max-w-4xl mx-auto"
+        >
+          <h1 className="text-3xl md:text-5xl font-bold mb-4 drop-shadow-md">
+            {t.faqTitle}
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Everything you need to know about SkinDee
+          <p className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto">
+            {t.faqSubtitle}
           </p>
-        </div>
-
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 max-w-6xl mx-auto">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              // [Dark Mode] คลาสสีจะถูกดึงมาจาก Array ที่แก้ไขแล้ว
-              className={`${feature.color} border rounded-lg p-5 hover:shadow-md transition-all cursor-pointer`}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                {feature.icon}
-                <h3 className="font-semibold">{feature.title}</h3>
-              </div>
-              <p className="text-sm opacity-80">{feature.description}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Content below */}
-        <div className="max-w-6xl mx-auto">
-          {/* Search Box */}
-          {/* [Dark Mode] เพิ่ม dark:bg-gray-800 */}
-          <div className="max-w-xl mb-8 bg-white dark:bg-gray-800">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 dark:text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search for answers"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                // [Dark Mode] เพิ่มคลาสสำหรับ Input
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-            {searchQuery && (
-              <p className="text-sm text-gray-600 mt-2 dark:text-gray-300">
-                Found {filteredFaqs.length} result
-                {filteredFaqs.length !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
-
-          {/* FAQ Accordion */}
-          <div className="max-w-auto mx-auto mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-white">
-              Common Questions
-            </h2>
-            <div className="space-y-4">
-              {filteredFaqs.length > 0 ? (
-                filteredFaqs.map((faq, index) => (
-                  <div
-                    key={index}
-                    // [Dark Mode]
-                    className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden dark:bg-gray-800 dark:border-gray-700"
-                  >
-                    {/* Question */}
-                    <button
-                      onClick={() => toggleFAQ(index)}
-                      // [Dark Mode]
-                      className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors duration-200 dark:hover:bg-gray-700/50"
-                    >
-                      <div className="flex-1">
-                        {/* [Dark Mode] */}
-                        <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded mb-2 dark:bg-blue-900 dark:text-blue-200">
-                          {faq.category}
-                        </span>
-                        {/* [Dark Mode] */}
-                        <div className="text-base font-medium text-gray-800 dark:text-white">
-                          {faq.question}
-                        </div>
-                      </div>
-                      <span className="ml-4 flex-shrink-0">
-                        {openIndex === index ? (
-                          <div className="w-8 h-8 flex items-center justify-center bg-blue-500 text-white rounded-full">
-                            {/* ... (SVG icon -) ... */}
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              {" "}
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M20 12H4"
-                              />{" "}
-                            </svg>
-                          </div>
-                        ) : (
-                          // [Dark Mode]
-                          <div className="w-8 h-8 flex items-center justify-center bg-gray-300 text-gray-600 rounded-full dark:bg-gray-600 dark:text-gray-200">
-                            {/* ... (SVG icon +) ... */}
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              {" "}
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4v16m8-8H4"
-                              />{" "}
-                            </svg>
-                          </div>
-                        )}
-                      </span>
-                    </button>
-
-                    {/* Answer */}
-                    {openIndex === index && (
-                      <div className="px-6 pb-6 pt-0">
-                        {/* [Dark Mode] */}
-                        <div className="pl-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                          <div className="pl-6 pt-2 border-l-4 border-blue-500">
-                            {/* [Dark Mode] */}
-                            <p className="text-sm text-gray-600 leading-relaxed dark:text-gray-300">
-                              {faq.answer}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))
-              ) : (
-                // [Dark Mode]
-                <div className="text-center py-12 bg-white rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                  <Search className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600 dark:text-gray-300">
-                    No results found for "{searchQuery}"
-                  </p>
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="mt-3 text-blue-500 hover:text-blue-600 font-medium"
-                  >
-                    Clear search
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Quick Tips */}
-          <div className="max-w-auto mx-auto mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-white">
-              Getting Started Tips
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* [Dark Mode] */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mb-3">
-                  1
-                </div>
-                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
-                  Upload Photo
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Take a clear photo of your skin in good lighting
-                </p>
-              </div>
-              {/* [Dark Mode] */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
-                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mb-3">
-                  2
-                </div>
-                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
-                  Get Analysis
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  AI analyzes your skin and provides insights
-                </p>
-              </div>
-              {/* [Dark Mode] */}
-              <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
-                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mb-3">
-                  3
-                </div>
-                <h3 className="font-semibold text-gray-800 mb-2 dark:text-white">
-                  Follow Tips
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Get personalized skincare recommendations
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact Section (Gradient ไม่จำเป็นต้องแก้) */}
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-8 text-white shadow-lg">
-              <div className="text-center mb-6">
-                <h3 className="text-2xl font-bold mb-2">
-                  Still have questions?
-                </h3>
-                <p className="text-blue-100">
-                  Can't find the answer you're looking for? Our support team is
-                  here to help.
-                </p>
-              </div>
-              <div className="flex flex-wrap justify-center gap-4">
-                {/* [Dark Mode] ปรับปุ่มสีขาวเล็กน้อย */}
-                <button className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 flex items-center gap-2 cursor-pointer">
-                  <Mail className="w-4 h-4" />
-                  Email Support
-                </button>
-                <button className="bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-800 transition-all duration-200 flex items-center gap-2 cursor-pointer">
-                  <MessageCircle className="w-4 h-4" />
-                  Live Chat
-                </button>
-              </div>
-            </div>
-
-            {/* Additional Resources */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              {/* [Dark Mode] */}
-              <a
-                href="#"
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 dark:bg-gray-800 dark:border-gray-700"
-              >
-                <Book className="w-5 h-5 text-blue-500" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-sm dark:text-white">
-                    Documentation
-                  </h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Read detailed guides
-                  </p>
-                </div>
-              </a>
-              {/* [Dark Mode] */}
-              <a
-                href="#"
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 dark:bg-gray-800 dark:border-gray-700"
-              >
-                <Video className="w-5 h-5 text-blue-500" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-sm dark:text-white">
-                    Video Tutorials
-                  </h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Watch how-to videos
-                  </p>
-                </div>
-              </a>
-              {/* [Dark Mode] */}
-              <a
-                href="#"
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-3 dark:bg-gray-800 dark:border-gray-700"
-              >
-                <Users className="w-5 h-5 text-blue-500" />
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-sm dark:text-white">
-                    Community
-                  </h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
-                    Join discussions
-                  </p>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
+        </motion.div>
       </section>
+
+      {/* --- Main Content --- */}
+      <div className="max-w-4xl mx-auto px-6 py-12 -mt-5 relative z-20">
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-lg flex items-center mb-8 border border-gray-100 dark:border-gray-700"
+        >
+          <Search className="ml-4 text-gray-400 dark:text-gray-500 w-6 h-6" />
+          <input
+            type="text"
+            placeholder={t.faqSearchPlaceholder}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-3 bg-transparent focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 text-lg"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="mr-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              ✕
+            </button>
+          )}
+        </motion.div>
+
+        {/* Category Filters */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex flex-wrap gap-2 mb-8 justify-center"
+        >
+          {categories.map((cat, idx) => (
+            <button
+              key={idx}
+              // Logic การเลือกยังคงใช้ Key ภาษาอังกฤษ (General, Medical) เพื่อไม่ให้บั๊ก
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                selectedCategory === cat
+                  ? "bg-blue-600 text-white shadow-md transform scale-105"
+                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+            >
+              {/* [แก้ไข] แสดงผลโดยใช้คำที่แปลแล้ว */}
+              {categoryLabels[cat] || cat}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* FAQ List */}
+        <motion.div
+          key={selectedCategory + searchQuery + language}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-4"
+        >
+          {filteredFaqs.length > 0 ? (
+            filteredFaqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+              >
+                <button
+                  onClick={() => toggleFAQ(index)}
+                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                >
+                  <div className="flex items-start gap-4">
+                    <span
+                      className={`mt-1 flex-shrink-0 p-2 rounded-full ${
+                        faq.category === "Privacy"
+                          ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                          : faq.category === "Medical"
+                            ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+                            : faq.category === "Technical"
+                              ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+                              : "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                      }`}
+                    >
+                      {faq.category === "Privacy" ? (
+                        <Shield size={20} />
+                      ) : faq.category === "Medical" ? (
+                        <ActivityIcon size={20} />
+                      ) : faq.category === "Technical" ? (
+                        <Zap size={20} />
+                      ) : (
+                        <HelpCircle size={20} />
+                      )}
+                    </span>
+                    <div>
+                      <div className="text-lg font-semibold text-gray-800 dark:text-white">
+                        {faq.question}
+                      </div>
+                      <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        {/* [แก้ไข] แสดงหมวดหมู่ภาษาไทยตรงนี้ด้วย */}
+                        {categoryLabels[faq.category] || faq.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  <motion.div
+                    animate={{ rotate: openIndex === index ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex-shrink-0 ml-4 text-gray-400 dark:text-gray-500"
+                  >
+                    <ChevronDown size={24} />
+                  </motion.div>
+                </button>
+
+                <AnimatePresence>
+                  {openIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <div className="px-6 pb-6 pl-[4.5rem] pt-0">
+                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-700"
+            >
+              <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 dark:text-gray-400">
+                {t.faqNoResults} "{searchQuery}"
+              </p>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="mt-3 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                {t.faqClearSearch}
+              </button>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
     </div>
   );
 };
+
+// Helper Icon for Medical category
+const ActivityIcon = ({ size, className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+  </svg>
+);
 
 export default FAQPage;

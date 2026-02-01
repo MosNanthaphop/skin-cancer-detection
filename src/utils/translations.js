@@ -2,7 +2,7 @@
 
 export const translations = {
   th: {
-    // --- General / Navbar ---
+    // ... (ส่วนอื่นๆ เหมือนเดิม) ...
     appName: "SkinDee",
     home: "หน้าแรก",
     upload: "อัปโหลด",
@@ -10,7 +10,7 @@ export const translations = {
     faq: "คำถามที่พบบ่อย",
     about: "เกี่ยวกับเรา",
     privacy: "นโยบายความเป็นส่วนตัว",
-    language: "English", // ข้อความบนปุ่มเพื่อสลับภาษา
+    language: "English",
     themeDark: "โหมดกลางคืน",
     themeLight: "โหมดกลางวัน",
 
@@ -20,8 +20,6 @@ export const translations = {
       "สัมผัสความชัดเจนของการวิเคราะห์ด้วย AI ขั้นสูง ตรวจสุขภาพผิวของคุณได้ทันทีด้วยเครื่องมือคัดกรองที่ชาญฉลาด ปลอดภัย และเป็นส่วนตัว",
     featureTitle: "ทำไมต้องเลือก SkinDee?",
     featureSubtitle: "เทคโนโลยีที่เชื่อถือได้ ออกแบบมาโดยคำนึงถึงสุขภาพของคุณ",
-
-    // --- Hero Slider (เพิ่มใหม่) ---
     slider1Title: "เทคโนโลยี AI ที่แม่นยำ",
     slider1Desc:
       "ขับเคลื่อนด้วยโมเดล Machine Learning ขั้นสูงที่ผ่านการเรียนรู้จากภาพทางคลินิกนับพัน",
@@ -31,8 +29,6 @@ export const translations = {
     slider3Title: "เน้นความเป็นส่วนตัว 100%",
     slider3Desc:
       "รูปภาพของคุณจะถูกประมวลผลอย่างปลอดภัย และไม่มีการบันทึกเก็บไว้บนเซิร์ฟเวอร์",
-
-    // Features
     feat1Title: "อัปโหลดหรือถ่ายภาพ",
     feat1Desc:
       "เพียงถ่ายภาพรอยโรคหรืออัปโหลดรูปภาพที่มีอยู่ รองรับไฟล์มาตรฐานอย่างปลอดภัย",
@@ -42,13 +38,9 @@ export const translations = {
     feat3Title: "ข้อมูลเชิงลึกเพื่อการศึกษา",
     feat3Desc:
       "รับการประเมินความเสี่ยงทันทีพร้อมภาพเปรียบเทียบ เพื่อให้เข้าใจอาการที่อาจเกิดขึ้นได้ดียิ่งขึ้น",
-
-    // Privacy Section
     privacySectionTitle: "ออกแบบโดยเน้นความเป็นส่วนตัว",
     privacySectionDesc:
       "รูปภาพของคุณจะถูกประมวลผลแบบเรียลไทม์และจะไม่ถูกจัดเก็บถาวรบนเซิร์ฟเวอร์ของเรา เราเชื่อในเทคโนโลยีที่เคารพความเป็นส่วนตัวเท่าๆ กับสุขภาพของคุณ",
-
-    // How It Works
     howItWorksTitle: "ขั้นตอนการทำงาน",
     step1Title: "อัปโหลดรูปภาพ",
     step1Desc: "ถ่ายภาพรอยโรคให้ชัดเจน",
@@ -57,7 +49,7 @@ export const translations = {
     step3Title: "รับผลลัพธ์",
     step3Desc: "ดูการประเมินความเสี่ยงและคำแนะนำ",
 
-    // --- Upload Page / ImageUploader ---
+    // --- Upload Page ---
     uploadTop: "อัปโหลดรูปภาพของคุณ",
     uploadSuggest:
       "คำแนะนำการถ่ายภาพ: ถ่ายภาพในที่ที่มีแสงสว่างและไม่ใกล้หรือไกลจนเกินไป",
@@ -76,8 +68,6 @@ export const translations = {
     alertNoFile: "กรุณาอัปโหลดรูปภาพก่อน",
     alertTerms: "กรุณายอมรับข้อกำหนดและเงื่อนไขการใช้งาน",
     cameraPlace: "วางตำแหน่งรอยโรคให้อยู่ในกรอบ",
-
-    // --- Upload Guide ---
     guideTitle: "วิธีการถ่ายภาพที่เหมาะสม",
     guideSlide1: "ถ่ายภาพในที่มีแสงสว่างเพียงพอ หลีกเลี่ยงเงาและภาพเบลอ",
     guideSlide2:
@@ -97,8 +87,6 @@ export const translations = {
     disclaimerText:
       "ผลลัพธ์นี้มีไว้เพื่อการศึกษาเท่านั้น ไม่สามารถใช้แทนคำแนะนำ การวินิจฉัย หรือการรักษาจากแพทย์ผู้เชี่ยวชาญได้ โปรดปรึกษาแพทย์หากมีความกังวลเกี่ยวกับอาการทางผิวหนัง",
     exportPdf: "บันทึกเป็น PDF",
-
-    // --- Risk Levels & Messages ---
     risk: {
       high: "ความเสี่ยงสูง",
       moderate: "ความเสี่ยงปานกลาง / ไม่แน่ชัด",
@@ -112,6 +100,121 @@ export const translations = {
         "ตรวจพบความผิดปกติ ควรเฝ้าระวังอาการหรือปรึกษาแพทย์เฉพาะทางเพื่อความแน่ใจ",
       msgLow: "ตรวจพบความผิดปกติ แต่อยู่ในกลุ่มที่มักไม่อันตราย (Benign)",
     },
+
+    // --- FAQ Page (เพิ่มใหม่) ---
+    faqTitle: "คำถามที่พบบ่อย",
+    faqSubtitle:
+      "รวบรวมคำตอบสำหรับทุกข้อสงสัยเกี่ยวกับ SkinDee การใช้งาน และเทคโนโลยีของเรา",
+    faqSearchPlaceholder: "ค้นหาคำถาม...",
+    faqNoResults: "ไม่พบผลลัพธ์สำหรับ",
+    faqClearSearch: "ล้างคำค้นหา",
+    faqCatAll: "ทั้งหมด",
+    faqCatGeneral: "ทั่วไป",
+    faqCatMedical: "การแพทย์",
+    faqCatPrivacy: "ความเป็นส่วนตัว",
+    faqCatUsage: "การใช้งาน",
+    faqCatTechnical: "เทคนิค",
+    faqCatPricing: "ค่าใช้จ่าย",
+    faqList: [
+      {
+        category: "General",
+        question: "เครื่องมือนี้คืออะไร?",
+        answer:
+          "SkinDee คือผู้ช่วยดูแลสุขภาพผิวด้วย AI ที่ช่วยวิเคราะห์รอยโรคทางผิวหนังเบื้องต้นจากรูปภาพ และให้คำแนะนำในการดูแลรักษาที่เหมาะสม เพื่อให้คุณเข้าใจสุขภาพผิวของตนเองได้ดียิ่งขึ้น",
+      },
+      {
+        category: "General",
+        question: "ใครควรใช้งาน SkinDee?",
+        answer:
+          "เหมาะสำหรับทุกคนที่กังวลเรื่องสุขภาพผิว ต้องการคัดกรองความเสี่ยงเบื้องต้น หรือต้องการข้อมูลเกี่ยวกับโรคผิวหนัง อย่างไรก็ตาม หากมีอาการรุนแรง ควรพบแพทย์ทันที",
+      },
+      {
+        category: "Medical",
+        question: "เชื่อถือผลลัพธ์ได้แค่ไหน เป็นเครื่องมือแพทย์หรือไม่?",
+        answer:
+          "SkinDee เป็นเครื่องมือเพื่อการศึกษา (Educational Tool) เท่านั้น ไม่ใช่อุปกรณ์ทางการแพทย์ ผลการวิเคราะห์มีความแม่นยำสูงในระดับคัดกรอง แต่ไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ผู้เชี่ยวชาญได้",
+      },
+      {
+        category: "Privacy",
+        question: "เก็บรูปภาพหรือข้อมูลส่วนตัวของฉันไว้หรือไม่?",
+        answer:
+          "เราให้ความสำคัญกับความเป็นส่วนตัวสูงสุด รูปภาพจะถูกประมวลผลแบบ Real-time และจะถูกลบออกจากหน่วยความจำทันทีหลังวิเคราะห์เสร็จสิ้น ไม่มีการเก็บไฟล์รูปภาพถาวรบนเซิร์ฟเวอร์",
+      },
+      {
+        category: "Usage",
+        question: "เริ่มต้นใช้งานอย่างไร?",
+        answer:
+          "ง่ายมาก! เพียงไปที่หน้า 'อัปโหลด' ถ่ายภาพหรือเลือกรูปภาพผิวหนังของคุณ ระบบจะวิเคราะห์และแสดงผลลัพธ์ภายในไม่กี่วินาที",
+      },
+      {
+        category: "Technical",
+        question: "รองรับไฟล์รูปภาพแบบไหนบ้าง?",
+        answer:
+          "รองรับไฟล์มาตรฐาน เช่น JPG, JPEG, PNG และ WebP ขนาดไม่เกิน 10 MB เพื่อความแม่นยำสูงสุด ควรใช้ภาพที่คมชัดและมีแสงสว่างเพียงพอ",
+      },
+      {
+        category: "Pricing",
+        question: "มีค่าใช้จ่ายหรือไม่?",
+        answer:
+          "SkinDee เปิดให้ใช้งานฟรีสำหรับการวิเคราะห์พื้นฐาน เพื่อให้ทุกคนสามารถเข้าถึงการดูแลสุขภาพผิวเบื้องต้นได้",
+      },
+    ],
+
+    // --- About Page (เพิ่มใหม่) ---
+    aboutTitle: "เกี่ยวกับ",
+    aboutSubtitle: "แพลตฟอร์มวิเคราะห์ผิวหนังด้วย AI เพื่อการดูแลผิวที่ดีกว่า",
+
+    // Objectives
+    objTitle: "วัตถุประสงค์ของโครงการ",
+    objList: [
+      "เพื่อพัฒนาโมเดล Deep Learning ให้สามารถคัดกรองมะเร็งหรือโรคผิวหนังที่ลักษณะคล้ายคลึงกันได้",
+      "เพื่อพัฒนาโมเดล Deep Learning ให้รองรับโทนสีผิวที่หลากหลาย โดยเฉพาะกลุ่มคนผิวคล้ำ",
+      "เพื่อให้ชาวบ้านหรือคนที่อยู่ห่างไกลสามารถประเมินความเสี่ยงเบื้องต้นได้ เข้ารับการรักษาได้ทันเวลา",
+    ],
+
+    // Scope
+    scopeTitle: "ขอบเขตของโครงการ",
+    scopeDesc: [
+      "แสดงผลวิเคราะห์จากรูปภาพว่าเป็นโรคผิวหนังอะไร หรือมะเร็งผิวหนังชนิดใด",
+      "รองรับภาพรอยโรคทั้งโทนสีผิวขาวและเข้ม",
+      "สามารถคัดกรองโรคผิวหนังและมะเร็งผิวหนังได้ 10 ชนิด",
+    ],
+
+    // Project Info
+    infoTitle: "ข้อมูลโครงการ",
+    infoTypeTitle: "ประเภท",
+    infoTypeVal: "โครงงานปริญญานิพนธ์",
+    infoStatusTitle: "สถานะ",
+    infoStatusVal: "กำลังพัฒนา",
+    infoStartTitle: "วันที่เริ่ม",
+    infoStartVal: "กรกฎาคม 2568",
+    infoEndTitle: "สิ้นสุด",
+    infoEndVal: "มีนาคม 2569",
+
+    // Team
+    teamTitle: "ทีมผู้พัฒนา",
+    roleStudent: "ผู้จัดทำ",
+    roleAdvisor: "อาจารย์ที่ปรึกษา",
+    studentName: "นาย นันทภพ วีระหงษ์",
+    studentId: "รหัสนักศึกษา: 6510710084",
+    studentDept: "วิทยาการคอมพิวเตอร์",
+    advisorName: "ผศ. ดร. กฤษณะ สีพนมวัน",
+    advisorDept: "คณะวิทยาศาสตร์",
+    advisorDept2: "ภาควิชาคอมพิวเตอร์",
+
+    // Tags
+    tagDept: "ภาควิชาวิทยาการคอมพิวเตอร์",
+    tagFac: "คณะวิทยาศาสตร์",
+    tagYear: "ปีการศึกษา 2568",
+    tagTech: "ปัญญาประดิษฐ์ และการเรียนรู้เชิงลึก",
+
+    // Feedback
+    feedTitle: "ข้อเสนอแนะ",
+    feedDesc:
+      "ช่วยเราปรับปรุง SkinDee ให้ดียิ่งขึ้นโดยการแบ่งปันความคิดเห็นของคุณ",
+    feedPlaceholder: "พิมพ์ข้อเสนอแนะของคุณที่นี่...",
+    feedBtn: "ส่งข้อเสนอแนะ",
+    feedThanks: "ขอบคุณสำหรับข้อเสนอแนะ!",
 
     // --- Footer ---
     footerText: "แพลตฟอร์มวิเคราะห์ผิวหนังด้วย AI เพื่อการศึกษา",
@@ -127,7 +230,7 @@ export const translations = {
     disc: "เพื่อการศึกษาเท่านั้น ไม่สามารถใช้แทนคำแนะนำทางการแพทย์จากผู้เชี่ยวชาญได้",
   },
   en: {
-    // --- General / Navbar ---
+    // ... (ส่วนอื่นๆ เหมือนเดิม) ...
     appName: "SkinDee",
     home: "Home",
     upload: "Upload",
@@ -146,8 +249,6 @@ export const translations = {
     featureTitle: "Why Choose SkinDee?",
     featureSubtitle:
       "Trusted technology designed with your well-being in mind.",
-
-    // --- Hero Slider (Added) ---
     slider1Title: "AI Precision Technology",
     slider1Desc:
       "Powered by advanced machine learning models trained on thousands of clinical images.",
@@ -157,8 +258,6 @@ export const translations = {
     slider3Title: "100% Privacy Focused",
     slider3Desc:
       "Your images are processed securely and are never stored on our servers.",
-
-    // Features
     feat1Title: "Upload or Capture",
     feat1Desc:
       "Simply take a photo of the skin lesion or upload an existing image. Our system accepts standard formats securely.",
@@ -168,13 +267,9 @@ export const translations = {
     feat3Title: "Educational Insight",
     feat3Desc:
       "Receive an immediate risk assessment and visual comparisons to understand potential conditions better.",
-
-    // Privacy Section
     privacySectionTitle: "Privacy First Design",
     privacySectionDesc:
       "Your images are processed in real-time and are never permanently stored on our servers. We believe in technology that respects your privacy as much as your health.",
-
-    // How It Works
     howItWorksTitle: "How It Works",
     step1Title: "Upload Image",
     step1Desc: "Take a clear photo of the skin lesion.",
@@ -183,7 +278,7 @@ export const translations = {
     step3Title: "Get Result",
     step3Desc: "View risk assessment and recommendations.",
 
-    // --- Upload Page / ImageUploader ---
+    // --- Upload Page ---
     uploadTop: "Upload your image",
     uploadSuggest:
       "Photo tips: Take the photo in a well-lit area, not too close or too far",
@@ -202,8 +297,6 @@ export const translations = {
     alertNoFile: "Please upload an image first.",
     alertTerms: "Please accept the terms and conditions.",
     cameraPlace: "Place the lesion in the box",
-
-    // --- Upload Guide ---
     guideTitle: "How to make a suitable photo",
     guideSlide1:
       "Take a clear, well-lit photo of the skin area. Avoid shadows and blur.",
@@ -224,8 +317,6 @@ export const translations = {
     disclaimerText:
       "This analysis is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician.",
     exportPdf: "Export as PDF",
-
-    // --- Risk Levels & Messages ---
     risk: {
       high: "High Risk",
       moderate: "Moderate Risk / Unknown",
@@ -240,6 +331,121 @@ export const translations = {
       msgLow:
         "A condition has been detected. This is generally considered benign (non-cancerous).",
     },
+
+    // --- FAQ Page (เพิ่มใหม่) ---
+    faqTitle: "Frequently Asked Questions",
+    faqSubtitle:
+      "Everything you need to know about SkinDee, our technology, and how to use it.",
+    faqSearchPlaceholder: "Search for answers...",
+    faqNoResults: "No results found for",
+    faqClearSearch: "Clear search",
+    faqCatAll: "All",
+    faqCatGeneral: "General",
+    faqCatMedical: "Medical",
+    faqCatPrivacy: "Privacy",
+    faqCatUsage: "Usage",
+    faqCatTechnical: "Technical",
+    faqCatPricing: "Pricing",
+    faqList: [
+      {
+        category: "General",
+        question: "What is SkinDee?",
+        answer:
+          "SkinDee is an AI-powered skin health assistant that analyzes skin lesions from images and provides personalized care recommendations and risk assessments.",
+      },
+      {
+        category: "General",
+        question: "Who is this for?",
+        answer:
+          "It is suitable for anyone concerned about skin health, wanting a preliminary screening, or seeking information. However, for severe conditions, always consult a doctor.",
+      },
+      {
+        category: "Medical",
+        question: "Is this a medical diagnosis?",
+        answer:
+          "No. SkinDee is an educational tool for informational purposes only. It is NOT a medical device and should not replace professional medical advice or diagnosis.",
+      },
+      {
+        category: "Privacy",
+        question: "Do you store my photos?",
+        answer:
+          "We prioritize your privacy. Images are processed in real-time for analysis and are immediately discarded. We do not permanently store your personal skin images.",
+      },
+      {
+        category: "Usage",
+        question: "How do I start?",
+        answer:
+          "Simply navigate to the 'Upload' page, take a photo or upload an image of the skin concern. The AI will analyze it and provide results in seconds.",
+      },
+      {
+        category: "Technical",
+        question: "What file formats are supported?",
+        answer:
+          "We support standard formats like JPG, JPEG, PNG, and WebP (Max 10MB). Clear, well-lit photos provide the best accuracy.",
+      },
+      {
+        category: "Pricing",
+        question: "Is it free?",
+        answer:
+          "Yes, SkinDee is free to use for standard analysis, aiming to make preliminary skin health screening accessible to everyone.",
+      },
+    ],
+
+    // --- About Page (Added) ---
+    aboutTitle: "About",
+    aboutSubtitle: "AI-powered skin analysis platform for better skincare",
+
+    // Objectives
+    objTitle: "Project Objective",
+    objList: [
+      "Develop Deep Learning models to screen for skin cancer and similar conditions.",
+      "Develop Deep Learning models that accommodate diverse skin tones, especially darker skin types.",
+      "Enable rural and underserved populations to perform preliminary risk assessments and seek timely care.",
+    ],
+
+    // Scope
+    scopeTitle: "Scope of the Project",
+    scopeDesc: [
+      "Display analysis results from images indicating skin conditions or types of skin cancer.",
+      "Support images of lesions on both light and dark skin tones.",
+      "Screen for 10 types of skin conditions and skin cancers.",
+    ],
+
+    // Project Info
+    infoTitle: "Project Information",
+    infoTypeTitle: "Project Type",
+    infoTypeVal: "Senior Project",
+    infoStatusTitle: "Status",
+    infoStatusVal: "In Development",
+    infoStartTitle: "Start Date",
+    infoStartVal: "July 2025",
+    infoEndTitle: "Expected End",
+    infoEndVal: "March 2026",
+
+    // Team
+    teamTitle: "Our Team",
+    roleStudent: "Student",
+    roleAdvisor: "Advisor",
+    studentName: "Nanthaphop Weerahong",
+    studentId: "Student ID: 6510710084",
+    studentDept: "Computer Science",
+    advisorName: "Asst. Prof. Dr. Kristsana Seepanomwan",
+    advisorDept: "Faculty of Science",
+    advisorDept2: "Department of Computer",
+
+    // Tags
+    tagDept: "Department of Computer Science",
+    tagFac: "Faculty of Science",
+    tagYear: "Academic Year 2025",
+    tagTech: "AI & Machine Learning",
+
+    // Feedback
+    feedTitle: "We'd Love Your Feedback",
+    feedDesc:
+      "Help us improve SkinDee by sharing your thoughts and suggestions.",
+    feedPlaceholder: "Share your thoughts with us...",
+    feedBtn: "Submit Feedback",
+    feedThanks: "Thanks for your feedback!",
 
     // --- Footer ---
     footerText: "AI-powered skin analysis platform for educational purposes.",
