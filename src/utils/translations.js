@@ -78,7 +78,7 @@ export const translations = {
     // --- Loading Component ---
     loadingTitle: "กำลังวิเคราะห์...",
     loadingComplete: "วิเคราะห์เสร็จสิ้น!",
-    // รายการสถานะที่จะวนลูปแสดง
+    loadingReady: "พร้อมดูผลลัพธ์",
     loadingSteps: [
       "กำลังตรวจสอบคุณภาพรูปภาพ...",
       "AI กำลังตรวจจับจุดสังเกตบนผิวหนัง...",
@@ -87,30 +87,101 @@ export const translations = {
       "เตรียมข้อมูลเพื่อแสดงผล...",
     ],
 
-    // --- Result Page ---
-    resultTitle: "ผลการวิเคราะห์",
-    analyzedImage: "รูปที่วิเคราะห์",
-    confidence: "ความมั่นใจ",
-    refImages: "รูปภาพตัวอย่างเพื่อเปรียบเทียบ",
-    refDesc: "ตัวอย่างลักษณะของโรคนี้จากฐานข้อมูลสาธารณะ",
-    treatmentTitle: "คำแนะนำเบื้องต้น",
-    allPredictions: "ความเป็นไปได้อื่นๆ",
-    disclaimerTitle: "ข้อควรระวัง (Disclaimer)",
-    disclaimerText:
+    // --- Result Page (Content) ---
+    resTitle: "ผลลัพธ์การวิเคราะห์",
+    resSubtitle: "รายงานการวิเคราะห์โดย AI",
+    resAnalyzedImg: "รูปที่วิเคราะห์",
+    resConfidence: "ความมั่นใจ",
+    resAiScore: "คะแนนความแน่นอนของ AI",
+    resRefImg: "รูปภาพตัวอย่างเพื่อเปรียบเทียบ",
+    resRefDesc: "ตัวอย่างลักษณะของโรคนี้จากฐานข้อมูลสาธารณะ",
+    resSkinDee: "ทำนายโดยปัญญาประดิษฐ์ของ SkinDee",
+    resTreatTitle: "คำแนะนำเบื้องต้นและการรักษา",
+    resTreatSteps: "ขั้นตอนการปฏิบัติเบื้องต้น",
+    resDisclaimerTitle: "ข้อควรระวัง (Disclaimer)",
+    resDisclaimerText:
       "ผลลัพธ์นี้มีไว้เพื่อการศึกษาเท่านั้น ไม่สามารถใช้แทนคำแนะนำ การวินิจฉัย หรือการรักษาจากแพทย์ผู้เชี่ยวชาญได้ โปรดปรึกษาแพทย์หากมีความกังวลเกี่ยวกับอาการทางผิวหนัง",
-    exportPdf: "บันทึกเป็น PDF",
-    risk: {
-      high: "ความเสี่ยงสูง",
-      moderate: "ความเสี่ยงปานกลาง / ไม่แน่ชัด",
-      low: "ความเสี่ยงต่ำ",
-      malignant: "มีความเสี่ยง (Malignant)",
-      detected: "ตรวจพบเงื่อนไข",
-      benign: "ไม่อันตราย (Benign)",
-      msgHigh:
-        "มีความเสี่ยงที่อาจเป็นมะเร็งผิวหนัง หรือรอยโรคที่ต้องได้รับการดูแล โปรดปรึกษาแพทย์ผู้เชี่ยวชาญทันทีเพื่อการวินิจฉัยที่แน่นอน",
-      msgModerate:
-        "ตรวจพบความผิดปกติ ควรเฝ้าระวังอาการหรือปรึกษาแพทย์เฉพาะทางเพื่อความแน่ใจ",
-      msgLow: "ตรวจพบความผิดปกติ แต่อยู่ในกลุ่มที่มักไม่อันตราย (Benign)",
+    resExportBtn: "บันทึกผลเป็น PDF",
+    resImgSource: "ภาพจากฐานข้อมูลทางการแพทย์สาธารณะ",
+
+    // Risk Levels
+    riskHigh: "ความเสี่ยงสูง",
+    riskHighTitle: "มีความเสี่ยง (Malignant)",
+    riskHighMsg:
+      "มีความเสี่ยงที่อาจเป็นมะเร็งผิวหนัง หรือรอยโรคที่ต้องได้รับการดูแล โปรดปรึกษาแพทย์ผู้เชี่ยวชาญทันที",
+
+    riskMod: "ความเสี่ยงปานกลาง / ไม่แน่ชัด",
+    riskModTitle: "ตรวจพบเงื่อนไข",
+    riskModMsg:
+      "ตรวจพบความผิดปกติ ควรเฝ้าระวังอาการหรือปรึกษาแพทย์เฉพาะทางเพื่อความแน่ใจ",
+
+    riskLow: "ความเสี่ยงต่ำ",
+    riskLowTitle: "ไม่อันตราย (Benign)",
+    riskLowMsg: "ตรวจพบความผิดปกติ แต่อยู่ในกลุ่มที่มักไม่อันตราย (Benign)",
+
+    basedAI: "อิงจากรูปแบบการวิเคราะห์ของ AI",
+
+    // Treatment Data (Key เป็นชื่อโรคภาษาอังกฤษ เพื่อ Map กับผล AI)
+    treatments: {
+      melanoma: [
+        "ต้องได้รับการดูแลจากแพทย์ผู้เชี่ยวชาญทันที",
+        "การผ่าตัดเอาเนื้อร้ายออกเป็นวิธีรักษาหลัก",
+        "อาจต้องตรวจต่อมน้ำเหลืองเพื่อดูการแพร่กระจาย",
+        "หลีกเลี่ยงแสงแดดจัดและติดตามอาการอย่างใกล้ชิด",
+      ],
+      "basal cell carcinoma": [
+        "การผ่าตัดมาตรฐานเพื่อเอามะเร็งออก",
+        "การผ่าตัด Mohs (มักใช้กับบริเวณใบหน้า)",
+        "การขูดและจี้ด้วยไฟฟ้า (Electrodessication and curettage)",
+        "ยาครีมทาเฉพาะที่สำหรับเคสตื้นๆ",
+      ],
+      "squamous cell carcinoma": [
+        "การผ่าตัดเป็นวิธีรักษาที่พบบ่อยที่สุด",
+        "การผ่าตัด Mohs สำหรับบริเวณที่มีความเสี่ยงสูง",
+        "การฉายรังสีหากไม่สามารถผ่าตัดได้",
+        "ตรวจผิวหนังเป็นประจำเพื่อป้องกันการกลับมาเป็นซ้ำ",
+      ],
+      "actinic keratosis": [
+        "การจี้เย็น (Cryotherapy) ด้วยไนโตรเจนเหลว",
+        "ยาทาเฉพาะที่ (เช่น 5-fluorouracil)",
+        "ภาวะนี้อาจพัฒนากลายเป็นมะเร็งได้ ควรได้รับการรักษา",
+      ],
+      nevus: [
+        "ไฝปกติมักไม่ต้องรักษา",
+        "สังเกตอาการตามหลัก ABCDE",
+        "ผ่าตัดออกหากมีการเสียดสีหรือเพื่อความสวยงาม",
+        "หากมีการเปลี่ยนแปลงผิดปกติ ควรพบแพทย์",
+      ],
+      "seborrheic keratosis": [
+        "ไม่อันตรายและมักไม่ต้องรักษา",
+        "จี้เย็นหรือขูดออกหากมีอาการคันหรือระคายเคือง",
+        "ห้ามเกาหรือแกะเกาเพื่อป้องกันการติดเชื้อ",
+      ],
+      dermatofibroma: [
+        "ส่วนใหญ่ไม่อันตราย ไม่ต้องรักษา",
+        "ผ่าตัดออกหากเจ็บหรือกังวลเรื่องความสวยงาม",
+      ],
+      "vascular lesion": [
+        "ส่วนใหญ่ไม่อันตราย (เช่น Cherry Angioma)",
+        "เลเซอร์ (Pulsed Dye Laser) เพื่อความสวยงาม",
+        "จี้ไฟฟ้าสำหรับรอยโรคขนาดเล็ก",
+      ],
+      tinea: [
+        "ใช้ยาฆ่าเชื้อราแบบทา (Antifungal cream)",
+        "รักษาความสะอาดและให้ผิวแห้งอยู่เสมอ",
+        "ซักเสื้อผ้าและเครื่องนอนด้วยน้ำร้อนเพื่อฆ่าเชื้อ",
+      ],
+      eczema: [
+        "ทามอยส์เจอร์ไรเซอร์สม่ำเสมอ",
+        "ใช้ยาทาสเตียรอยด์เพื่อลดอาการคันและอักเสบ",
+        "หลีกเลี่ยงสิ่งที่กระตุ้นให้เกิดอาการแพ้",
+        "ทานยาแก้แพ้หากมีอาการคันมาก",
+      ],
+      default: [
+        "ปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อการวินิจฉัยที่แม่นยำ",
+        "สังเกตความเปลี่ยนแปลงของรอยโรค",
+        "รักษาความสะอาดบริเวณที่เป็น",
+      ],
     },
 
     // --- FAQ Page (เพิ่มใหม่) ---
@@ -366,6 +437,7 @@ export const translations = {
     // --- Loading Component ---
     loadingTitle: "Analyzing...",
     loadingComplete: "Analysis Complete!",
+    laodingReady: "Ready to view",
     loadingSteps: [
       "Checking image quality...",
       "AI is detecting skin features...",
@@ -374,31 +446,99 @@ export const translations = {
       "Finalizing results...",
     ],
 
-    // --- Result Page ---
-    resultTitle: "Analysis Result",
-    analyzedImage: "Analyzed Image",
-    confidence: "Confidence",
-    refImages: "Reference Images for Comparison",
-    refDesc: "Common examples of this condition from public datasets",
-    treatmentTitle: "Treatment Recommendations",
-    allPredictions: "All Predictions",
-    disclaimerTitle: "Disclaimer",
-    disclaimerText:
+    // --- Result Page (Content) ---
+    resTitle: "Analysis Result",
+    resSubtitle: "AI Analysis Report",
+    resAnalyzedImg: "Analyzed Image",
+    resConfidence: "Confidence",
+    resAiScore: "AI Certainty Score",
+    resRefImg: "Reference Images",
+    resRefDesc: "Common examples of this condition for visual reference.",
+    resSkinDee: "Predicted by SkinDee AI",
+    resTreatTitle: "Treatment Recommendations",
+    resTreatSteps: "Actionable steps for you",
+    resDisclaimerTitle: "Disclaimer",
+    resDisclaimerText:
       "This analysis is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician.",
-    exportPdf: "Export as PDF",
-    risk: {
-      high: "High Risk",
-      moderate: "Moderate Risk / Unknown",
-      low: "Low Risk",
-      malignant: "Malignant",
-      detected: "Detected Condition",
-      benign: "Benign",
-      msgHigh:
-        "There is a potential risk of skin cancer. Please consult a healthcare professional immediately for a definitive diagnosis.",
-      msgModerate:
-        "A condition has been detected. Further observation or consultation with a specialist is recommended.",
-      msgLow:
-        "A condition has been detected. This is generally considered benign (non-cancerous).",
+    resExportBtn: "Export Result as PDF",
+    resImgSource: "Images from public medical datasets",
+
+    // Risk Levels
+    riskHigh: "High Risk",
+    riskHighTitle: "Malignant",
+    riskHighMsg:
+      "There is a potential risk of skin cancer. Please consult a healthcare professional immediately.",
+
+    riskMod: "Moderate Risk / Unknown",
+    riskModTitle: "Detected Condition",
+    riskModMsg:
+      "A condition has been detected. Further observation or consultation with a specialist is recommended.",
+
+    riskLow: "Low Risk",
+    riskLowTitle: "Benign",
+    riskLowMsg:
+      "A condition has been detected. This is generally considered benign (non-cancerous).",
+
+    basedAI: "Based on AI analysis pattern",
+
+    // Treatment Data
+    treatments: {
+      melanoma: [
+        "Requires immediate attention from a specialist.",
+        "Surgical excision is the primary treatment.",
+        "Sentinel lymph node biopsy may be needed.",
+        "Strict sun protection and regular follow-ups are essential.",
+      ],
+      "basal cell carcinoma": [
+        "Standard surgical excision.",
+        "Mohs micrographic surgery (for face/sensitive areas).",
+        "Electrodessication and curettage.",
+        "Topical creams for superficial cases.",
+      ],
+      "squamous cell carcinoma": [
+        "Surgical excision is the most common treatment.",
+        "Mohs surgery for high-risk areas.",
+        "Radiation therapy if surgery isn't an option.",
+        "Regular skin checks required.",
+      ],
+      "actinic keratosis": [
+        "Cryotherapy (freezing).",
+        "Topical medications (5-fluorouracil).",
+        "This is a pre-cancerous condition; treatment prevents progression.",
+      ],
+      nevus: [
+        "Usually no treatment required.",
+        "Routine observation (ABCDE rule).",
+        "Surgical removal if irritated or for cosmetic reasons.",
+      ],
+      "seborrheic keratosis": [
+        "Generally harmless, no treatment needed.",
+        "Cryotherapy if irritated.",
+        "Do not scratch or pick.",
+      ],
+      dermatofibroma: [
+        "Typically benign, no treatment needed.",
+        "Surgical excision if painful.",
+      ],
+      "vascular lesion": [
+        "Often benign, no treatment needed.",
+        "Laser therapy for cosmetic removal.",
+      ],
+      tinea: [
+        "Topical antifungal creams.",
+        "Keep area clean and dry.",
+        "Wash clothes in hot water.",
+      ],
+      eczema: [
+        "Apply moisturizers regularly.",
+        "Topical corticosteroids for inflammation.",
+        "Avoid triggers and allergens.",
+      ],
+      default: [
+        "Consult a healthcare professional.",
+        "Monitor for changes.",
+        "Keep the area clean.",
+      ],
     },
 
     // --- FAQ Page (เพิ่มใหม่) ---

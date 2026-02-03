@@ -117,7 +117,7 @@ const LoadingSpinner = ({ isFinalizing, onComplete }) => {
                 className="text-green-600 dark:text-green-400 font-medium flex items-center justify-center gap-2"
               >
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                Ready to view
+                {t.loadingReady}
               </motion.div>
             ) : (
               <motion.div

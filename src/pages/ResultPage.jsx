@@ -3,45 +3,27 @@ import {
   Download,
   ShieldAlert,
   AlertTriangle,
-  Info,
   Image as ImageIcon,
+  CheckCircle,
+  Activity,
+  ArrowRight,
+  Info,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
+import { useLanguage } from "../context/LanguageContext";
 
-// Animation Variants
-const containerVariant = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 100 },
-  },
-};
-
-// --- ฐานข้อมูลรูปภาพอ้างอิง ---
+// --- ข้อมูล Reference Images (ใช้ URL เดิม) ---
 const diseaseReferenceData = {
   melanoma: [
-    "/public/assets/diseases/mel_01.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/6/6c/Melanoma.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Melanoma_2.jpg/320px-Melanoma_2.jpg",
   ],
   "basal cell carcinoma": [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Basal_Cell_Carcinoma.jpg/320px-Basal_Cell_Carcinoma.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/9/96/Basal_cell_carcinoma_ulcerated.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Basal_cell_carcinoma.jpg/320px-Basal_cell_carcinoma.jpg",
   ],
   "actinic keratosis": [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Actinic_keratosis_on_forehead.jpg/320px-Actinic_keratosis_on_forehead.jpg",
@@ -72,88 +54,14 @@ const diseaseReferenceData = {
   ],
 };
 
-// --- [เพิ่ม] ข้อมูลคำแนะนำการรักษาแยกตามโรค ---
-const diseaseTreatmentData = {
-  melanoma: [
-    "Requires immediate attention from a specialist.",
-    "Surgical excision (wide local excision) is the primary treatment.",
-    "Sentinel lymph node biopsy may be needed to check for spread.",
-    "Advanced stages may require immunotherapy, targeted therapy, or chemotherapy.",
-    "Strict sun protection and regular follow-ups are essential.",
-  ],
-  "basal cell carcinoma": [
-    "Standard surgical excision to remove the cancer.",
-    "Mohs micrographic surgery (often for face or sensitive areas).",
-    "Electrodessication and curettage (scraping and burning).",
-    "Topical creams (e.g., Imiquimod) for superficial cases.",
-    "Cryotherapy (freezing) for small lesions.",
-  ],
-  "squamous cell carcinoma": [
-    "Surgical excision is the most common treatment.",
-    "Mohs surgery for high-risk areas or large lesions.",
-    "Radiation therapy if surgery isn't an option.",
-    "Regular skin checks to detect recurrence.",
-  ],
-  "actinic keratosis": [
-    "Cryotherapy (freezing with liquid nitrogen) is commonly used.",
-    "Topical medications (5-fluorouracil, Imiquimod).",
-    "Photodynamic therapy (PDT).",
-    "This is a pre-cancerous condition; treatment prevents progression to SCC.",
-  ],
-  nevus: [
-    "Usually, no treatment is required for benign moles.",
-    "Routine observation (watch for ABCDE changes).",
-    "Surgical removal if the mole is irritated by clothing or for cosmetic reasons.",
-    "Biopsy if there are suspicious changes.",
-  ],
-  "seborrheic keratosis": [
-    "Generally harmless and requires no treatment.",
-    "Cryotherapy (freezing) if the lesion is irritated or itchy.",
-    "Electrocautery or curettage for removal.",
-    "Do not scratch or pick at the lesion to avoid infection.",
-  ],
-  dermatofibroma: [
-    "Typically benign and no treatment is needed.",
-    "Surgical excision if it is painful, bleeding, or aesthetically concerning.",
-    "Cryotherapy can flatten the bump but may not remove it completely.",
-  ],
-  "vascular lesion": [
-    "Often benign (e.g., Cherry Angioma) and needs no treatment.",
-    "Laser therapy (Pulsed Dye Laser) for cosmetic removal.",
-    "Electrosurgery can be used for small lesions.",
-  ],
-  tinea: [
-    "Topical antifungal creams (Clotrimazole, Terbinafine).",
-    "Keep the area clean and dry.",
-    "Oral antifungal medication for extensive or stubborn infections.",
-    "Wash clothes and bedding in hot water to prevent reinfection.",
-  ],
-  eczema: [
-    "Apply moisturizers regularly to keep skin hydrated.",
-    "Topical corticosteroids to reduce inflammation and itching.",
-    "Identify and avoid triggers (soaps, allergens, stress).",
-    "Antihistamines may help with severe itching.",
-  ],
-};
-
-const defaultTreatments = [
-  "Consult a healthcare professional for an accurate diagnosis.",
-  "Monitor the lesion for any changes in size, shape, or color.",
-  "Keep the area clean and avoid scratching.",
-];
-
 const ResultPage = ({ result, previewUrl }) => {
+  const { t } = useLanguage();
   const printRef = useRef();
 
-  // --- Logic การแบ่ง Risk ---
   const predictionName = result.prediction.toLowerCase();
-
-  // ดึงรูปภาพอ้างอิง
   const referenceImages = diseaseReferenceData[predictionName] || [];
-
-  // [แก้ไข] ดึงคำแนะนำตามโรค
   const specificTreatments =
-    diseaseTreatmentData[predictionName] || defaultTreatments;
+    t.treatments[predictionName] || t.treatments.default;
 
   const riskMap = new Map([
     ["melanoma", "high"],
@@ -169,47 +77,59 @@ const ResultPage = ({ result, previewUrl }) => {
   ]);
 
   const riskCategory = riskMap.get(predictionName) || "moderate";
+
   const riskStyles = {
     high: {
-      level: "High Risk",
-      conditionTitle: "Malignant",
-      message:
-        "There is a potential risk of skin cancer. Please consult a healthcare professional immediately for a definitive diagnosis and treatment plan.",
-      bg: "bg-red-50 dark:bg-red-900",
-      border: "border-red-200 dark:border-red-700",
-      text: "text-red-700 dark:text-red-200",
-      iconColor: "text-red-500 dark:text-red-200",
+      level: t.riskHigh,
+      conditionTitle: t.riskHighTitle,
+      message: t.riskHighMsg,
+      bg: "bg-red-50 dark:bg-red-900/20",
+      border: "border-red-200 dark:border-red-800",
+      text: "text-red-700 dark:text-red-300",
+      iconColor: "text-red-500 dark:text-red-400",
       Icon: ShieldAlert,
       titleBg: "bg-red-100 dark:bg-red-900",
       titleText: "text-red-700 dark:text-red-200",
     },
     moderate: {
-      level: "Moderate Risk / Unknown",
-      conditionTitle: "Detected Condition",
-      message: `A condition (${result.prediction}) has been detected. Further observation or consultation with a specialist is recommended.`,
-      bg: "bg-blue-50 dark:bg-blue-900",
-      border: "border-blue-200 dark:border-blue-700",
-      text: "text-blue-700 dark:text-blue-200",
-      iconColor: "text-blue-500 dark:text-blue-200",
+      level: t.riskMod,
+      conditionTitle: t.riskModTitle,
+      message: t.riskModMsg,
+      bg: "bg-orange-50 dark:bg-orange-900/20",
+      border: "border-orange-200 dark:border-orange-800",
+      text: "text-orange-700 dark:text-orange-300",
+      iconColor: "text-orange-500 dark:text-orange-400",
       Icon: AlertTriangle,
-      titleBg: "bg-blue-100 dark:bg-blue-900",
-      titleText: "text-blue-700 dark:text-blue-200",
+      titleBg: "bg-orange-100 dark:bg-orange-900",
+      titleText: "text-orange-700 dark:text-orange-200",
     },
     low: {
-      level: "Low Risk",
-      conditionTitle: "Benign",
-      message: `A condition (${result.prediction}) has been detected. This is generally considered benign (non-cancerous).`,
-      bg: "bg-green-50 dark:bg-green-900",
-      border: "border-green-200 dark:border-green-700",
-      text: "text-green-700 dark:text-green-200",
-      iconColor: "text-green-500 dark:text-green-200",
-      Icon: Info,
+      level: t.riskLow,
+      conditionTitle: t.riskLowTitle,
+      message: t.riskLowMsg,
+      bg: "bg-green-50 dark:bg-green-900/20",
+      border: "border-green-200 dark:border-green-800",
+      text: "text-green-700 dark:text-green-300",
+      iconColor: "text-green-500 dark:text-green-400",
+      Icon: CheckCircle,
       titleBg: "bg-green-100 dark:bg-green-900",
       titleText: "text-green-700 dark:text-green-200",
     },
   };
   const currentRisk = riskStyles[riskCategory];
-  const circleColorClass = "text-blue-500";
+
+  const circleColorClass =
+    riskCategory === "high"
+      ? "text-red-500"
+      : riskCategory === "moderate"
+        ? "text-orange-500"
+        : "text-green-500";
+  const circleStroke =
+    riskCategory === "high"
+      ? "#EF4444"
+      : riskCategory === "moderate"
+        ? "#F97316"
+        : "#22C55E";
 
   const [animatedConfidence, setAnimatedConfidence] = useState(0);
   const targetConfidence = Math.round(result.confidence);
@@ -226,248 +146,305 @@ const ResultPage = ({ result, previewUrl }) => {
     if (!element) return;
 
     try {
+      // 1. ซ่อนปุ่ม Export ชั่วคราว (ใช้ class 'export-exclude')
+      const buttons = document.querySelectorAll(".export-exclude");
+      buttons.forEach((el) => (el.style.display = "none"));
+
+      // 2. แปลง DOM เป็นรูปภาพ PNG
       const dataUrl = await toPng(element, {
-        quality: 1.0,
+        quality: 0.95, // ลดลงนิดนึงเพื่อความเร็ว
         backgroundColor: "#ffffff",
-        filter: (node) => {
-          return !node.classList?.contains("export-exclude");
-        },
+        cacheBust: true, // บังคับโหลดรูปใหม่ (แก้ปัญหา cache)
+        // [สำคัญ] ตั้งค่าเพื่อพยายามโหลดรูปข้ามโดเมน
+        useCORS: true,
+        allowTaint: true,
       });
 
+      // 3. แสดงปุ่มกลับมาเหมือนเดิม
+      buttons.forEach((el) => (el.style.display = "block"));
+
+      // 4. สร้าง PDF
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
+
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+      // ถ้าสูงเกินหน้ากระดาษ A4 ให้แบ่งหน้า (Optional: แต่ตอนนี้เอาแบบหน้าเดียวก่อน)
       pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`SkinDee-Result-${Date.now()}.pdf`);
     } catch (error) {
       console.error("Export PDF Failed:", error);
-      alert("Failed to export PDF. Please check console for details.");
+
+      // คืนค่าปุ่มหากเกิด Error
+      const buttons = document.querySelectorAll(".export-exclude");
+      buttons.forEach((el) => (el.style.display = "block"));
+
+      alert(
+        "Failed to export PDF. Please try again or check your internet connection.",
+      );
     }
   };
 
   return (
     <motion.div
-      className="max-w-6xl mx-auto mb-16"
-      variants={containerVariant}
-      initial="hidden"
-      animate="visible"
+      className="max-w-6xl mx-auto mb-16 px-4 md:px-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <motion.h1
-        className="text-4xl font-bold text-gray-800 dark:text-white mb-6"
-        variants={itemVariant}
-      >
-        Result
-      </motion.h1>
-
-      <div ref={printRef} className="dark:bg-gray-900 p-1">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* คอลัมน์ซ้าย (เนื้อหาหลัก) */}
-          <motion.div
-            className="lg:col-span-3 flex flex-col gap-6"
-            variants={itemVariant}
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 pt-6">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-1">
+            {t.resTitle}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
+            {t.resSubtitle}
+          </p>
+        </div>
+        <div className="export-exclude">
+          <button
+            onClick={handleExportPDF}
+            className="group flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all font-medium"
           >
-            {/* การ์ด 1: ผลวินิจฉัย */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div className="md:col-span-1">
-                  <div className="w-full aspect-square bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden border dark:border-gray-600">
+            <Download
+              size={18}
+              className="group-hover:-translate-y-0.5 transition-transform"
+            />
+            {t.resExportBtn}
+          </button>
+        </div>
+      </div>
+
+      <div ref={printRef} className="bg-transparent dark:text-gray-100">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+          {/* --- Column Left (Main Content: 3 cols) --- */}
+          <div className="lg:col-span-3 flex flex-col gap-8">
+            {/* 1. Main Result Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
+              {/* Decorative Background Blob */}
+              <div
+                className={`absolute top-0 right-0 w-64 h-64 ${currentRisk.bg} rounded-full blur-3xl opacity-50 -mr-16 -mt-16 pointer-events-none`}
+              ></div>
+
+              {/* Risk Strip */}
+              <div
+                className={`h-1.5 w-full ${currentRisk.bg.replace("/20", "")} bg-opacity-100`}
+              ></div>
+
+              <div className="p-6 md:p-8 relative z-10">
+                <div className="flex flex-col md:flex-row gap-8 items-center">
+                  {/* Image Block */}
+                  <div className="w-full md:w-5/12 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900">
                     {previewUrl ? (
                       <img
                         src={previewUrl}
                         alt="Analyzed"
-                        crossOrigin="anonymous"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <span className="text-gray-400">Analyzed Image</span>
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        No Image
+                      </div>
                     )}
-                  </div>
-                </div>
 
-                <div className="md:col-span-1 text-center md:text-left">
-                  <div className="mb-2">
-                    <div
-                      className={`inline-block rounded-lg px-3 py-1 text-sm font-medium ${currentRisk.titleBg} ${currentRisk.titleText}`}
-                    >
-                      {currentRisk.conditionTitle}
+                    {/* [แก้ไข] Bar ด้านล่าง: เพิ่ม rounded-b-[10px] เพื่อให้มุมโค้งรับกับกรอบพอดี ไม่ล้น */}
+                    <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 py-1.5 backdrop-blur-sm rounded-b-[10px]">
+                      <p className="text-white text-xs font-medium text-center shadow-sm tracking-wide">
+                        {t.resAnalyzedImg}
+                      </p>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
-                    {result.prediction}
-                  </h3>
-                </div>
 
-                <div className="md:col-span-1 flex justify-center">
-                  <div className="relative w-40 h-40">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
-                      <circle
-                        className="text-gray-200 dark:text-gray-600"
-                        strokeWidth="10"
-                        stroke="#E5E7EB"
-                        fill="transparent"
-                        r="40"
-                        cx="50"
-                        cy="50"
-                      />
-                      <circle
-                        className={circleColorClass}
-                        strokeWidth="10"
-                        strokeDasharray={`${animatedConfidence * 2.51}, 251`}
-                        strokeDashoffset="0"
-                        stroke="#3B82F6"
-                        fill="transparent"
-                        r="40"
-                        cx="50"
-                        cy="50"
-                        style={{
-                          transform: "rotate(-90deg)",
-                          transformOrigin: "50% 50%",
-                          transition: "stroke-dasharray 0.8s ease-out",
-                        }}
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Result Details */}
+                  <div className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left gap-6">
+                    <div>
                       <span
-                        className={`text-3xl text-gray-800 font-bold dark:text-white ${circleColorClass}`}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 ${currentRisk.titleBg} ${currentRisk.titleText}`}
                       >
-                        {Math.round(result.confidence)}%
+                        <Activity size={12} />
+                        {currentRisk.conditionTitle}
                       </span>
+                      <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-1 capitalize leading-tight">
+                        {result.prediction}
+                      </h2>
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        {t.resSkinDee}
+                      </p>
+                    </div>
+
+                    {/* Confidence Gauge */}
+                    <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border border-gray-100 dark:border-gray-600">
+                      <div className="relative w-16 h-16 flex-shrink-0">
+                        <svg className="w-full h-full transform -rotate-90">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            stroke="currentColor"
+                            strokeWidth="6"
+                            fill="transparent"
+                            className="text-gray-200 dark:text-gray-600"
+                          />
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            stroke={circleStroke}
+                            strokeWidth="6"
+                            fill="transparent"
+                            strokeDasharray={175.9}
+                            strokeDashoffset={
+                              175.9 - (175.9 * animatedConfidence) / 100
+                            }
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-out"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span
+                            className={`text-sm font-bold ${circleColorClass}`}
+                          >
+                            {Math.round(result.confidence)}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-left">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
+                          {t.resConfidence}
+                        </p>
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                          {t.resAiScore}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* การ์ด Reference Images */}
-            {referenceImages.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <ImageIcon
-                    className="text-gray-500 dark:text-gray-300"
+            {/* 2. Treatment Recommendations (Improved List) */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                  <CheckCircle
+                    className="text-blue-600 dark:text-blue-400"
                     size={24}
                   />
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white">
-                    Reference Images for Comparison
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-white leading-none mb-1">
+                    {t.resTreatTitle}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t.resTreatSteps}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                {specificTreatments.map((item, index) => (
+                  <div
+                    key={index}
+                    className="group flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/20 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors border border-transparent hover:border-blue-100 dark:hover:border-gray-600"
+                  >
+                    <span className="flex-shrink-0 w-6 h-6 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border border-gray-100 dark:border-gray-600 mt-0.5 group-hover:scale-110 transition-transform">
+                      {index + 1}
+                    </span>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. Reference Images */}
+            {referenceImages.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <ImageIcon className="text-gray-400" size={20} />
+                  <h3 className="text-base font-bold text-gray-800 dark:text-white">
+                    {t.resRefImg}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  Common examples of {result.prediction} for visual reference.
-                </p>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   {referenceImages.map((imgSrc, index) => (
                     <div
                       key={index}
-                      className="aspect-square rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                      className="aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative"
+                      onClick={() => window.open(imgSrc, "_blank")}
                     >
                       <img
                         src={imgSrc}
-                        alt={`Reference ${index + 1}`}
+                        alt={`Ref ${index}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         crossOrigin="anonymous"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onClick={() => window.open(imgSrc, "_blank")}
                       />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400 mt-2 text-right italic">
-                  Images from public medical datasets
+                <p className="text-[10px] text-gray-400 mt-2 text-right flex justify-end gap-1 items-center">
+                  <Info size={10} /> {t.resImgSource}
                 </p>
               </div>
             )}
+          </div>
 
-            {/* การ์ด 2: คำแนะนำ (เลื่อนลงมา) */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">
-                Treatment Recommendations
-              </h3>
-              <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
-                {/* [แก้ไข] แสดงคำแนะนำตามโรคที่เลือก */}
-                {specificTreatments.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ol>
-              {result.all_predictions && (
-                <>
-                  <hr className="my-6 border-gray-200 dark:border-gray-700" />
-                  <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-3">
-                    All Predictions
-                  </h4>
-                  <div className="space-y-3">
-                    {Object.entries(result.all_predictions).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          className="flex justify-between items-center gap-4"
-                        >
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {key}:
-                          </span>
-                          <div className="flex items-center gap-2 flex-1 max-w-[180px]">
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                              <div
-                                className="bg-blue-500 h-2 rounded-full"
-                                style={{ width: `${value}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 w-10 text-right">
-                              {Math.round(value)}%
-                            </span>
-                          </div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          </motion.div>
-
-          {/* คอลัมน์ขวา (Sidebar) - เหมือนเดิม */}
-          <motion.div
-            className="lg:col-span-2 flex flex-col gap-6"
-            variants={itemVariant}
-          >
-            {/* Risk Box */}
+          {/* --- Column Right (Sidebar - Sticky) --- */}
+          <div className="lg:col-span-2 flex flex-col gap-6 sticky top-24">
+            {/* Risk Analysis Box */}
             <div
-              className={`p-5 rounded-lg border ${currentRisk.bg} ${currentRisk.border}`}
+              className={`rounded-2xl p-6 shadow-md border ${currentRisk.bg} ${currentRisk.border} relative overflow-hidden`}
             >
-              <div className="flex items-center gap-3 mb-2">
-                <currentRisk.Icon size={24} className={currentRisk.iconColor} />
-                <h3 className={`text-xl font-bold ${currentRisk.text}`}>
-                  {currentRisk.level}
-                </h3>
+              {/* Background Icon Watermark */}
+              <currentRisk.Icon
+                className={`absolute -right-4 -bottom-4 w-32 h-32 opacity-10 ${currentRisk.iconColor} transform rotate-12`}
+              />
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`p-2 rounded-full bg-white/50 dark:bg-black/20 backdrop-blur-md`}
+                  >
+                    <currentRisk.Icon
+                      size={24}
+                      className={currentRisk.iconColor}
+                    />
+                  </div>
+                  <h3 className={`text-xl font-bold ${currentRisk.text}`}>
+                    {currentRisk.level}
+                  </h3>
+                </div>
+
+                <div className="bg-white/60 dark:bg-black/20 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+                  <p
+                    className={`text-sm ${currentRisk.text} font-medium leading-relaxed`}
+                  >
+                    {currentRisk.message}
+                  </p>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2 text-xs opacity-70 font-medium">
+                  <ArrowRight size={14} />
+                  <span>{t.basedAI}</span>
+                </div>
               </div>
-              <p className={`text-sm ${currentRisk.text}`}>
-                {currentRisk.message}
-              </p>
             </div>
 
-            {/* Disclaimer */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-5">
-              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                Disclaimer
+            {/* Disclaimer Box */}
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-200 dark:border-gray-700/50">
+              <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <AlertTriangle size={14} />
+                {t.resDisclaimerTitle}
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                This analysis is for educational purposes only and is not a
-                substitute for professional medical advice, diagnosis, or
-                treatment.
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed text-justify">
+                {t.resDisclaimerText}
               </p>
             </div>
-
-            {/* Export */}
-            <div className="export-exclude">
-              <button
-                onClick={handleExportPDF}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition mt-4 cursor-pointer"
-              >
-                <Download size={18} />
-                Export as PDF
-              </button>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </motion.div>
