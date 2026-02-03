@@ -58,7 +58,7 @@ const UploadPage = () => {
       const formData = new FormData();
       formData.append("file", file);
       const minLoadingTime = new Promise((resolve) =>
-        setTimeout(resolve, 3000)
+        setTimeout(resolve, 3000),
       );
       const apiRequest = fetch("http://localhost:8000/predict", {
         method: "POST",

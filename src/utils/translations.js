@@ -75,6 +75,18 @@ export const translations = {
     guideSlide3: "ห้ามใช้ฟิลเตอร์ การตกแต่ง หรือเอฟเฟกต์ใดๆ กับรูปภาพ",
     guideGotIt: "รับทราบ",
 
+    // --- Loading Component ---
+    loadingTitle: "กำลังวิเคราะห์...",
+    loadingComplete: "วิเคราะห์เสร็จสิ้น!",
+    // รายการสถานะที่จะวนลูปแสดง
+    loadingSteps: [
+      "กำลังตรวจสอบคุณภาพรูปภาพ...",
+      "AI กำลังตรวจจับจุดสังเกตบนผิวหนัง...",
+      "ประมวลผลความเสี่ยง...",
+      "กำลังสร้างรายงานผลลัพธ์...",
+      "เตรียมข้อมูลเพื่อแสดงผล...",
+    ],
+
     // --- Result Page ---
     resultTitle: "ผลการวิเคราะห์",
     analyzedImage: "รูปที่วิเคราะห์",
@@ -216,6 +228,52 @@ export const translations = {
     feedBtn: "ส่งข้อเสนอแนะ",
     feedThanks: "ขอบคุณสำหรับข้อเสนอแนะ!",
 
+    // --- Privacy Page (เพิ่มใหม่) ---
+    privTitle: "นโยบายความเป็นส่วนตัว",
+    privSubtitle:
+      "เราให้ความสำคัญกับข้อมูลและความเป็นส่วนตัวของคุณ โปรดอ่านรายละเอียดเกี่ยวกับวิธีการที่เราจัดการข้อมูลของคุณ",
+    privLastUpdated: "อัปเดตล่าสุด: 1 กุมภาพันธ์ 2569",
+
+    // Key Highlights (การ์ดจุดเด่นด้านบน)
+    privHigh1Title: "ไม่เก็บรูปภาพถาวร",
+    privHigh1Desc:
+      "รูปภาพจะถูกประมวลผลในหน่วยความจำชั่วคราวและลบทำลายทันทีหลังวิเคราะห์จบ",
+    privHigh2Title: "ข้อมูลนิรนาม",
+    privHigh2Desc:
+      "เราไม่เก็บข้อมูลที่ระบุตัวตนได้ (PII) เชื่อมโยงกับผลการวิเคราะห์ผิวหนัง",
+    privHigh3Title: "ความปลอดภัยสูง",
+    privHigh3Desc:
+      "การรับส่งข้อมูลทั้งหมดถูกเข้ารหัสด้วยมาตรฐาน SSL/TLS เพื่อความปลอดภัยสูงสุด",
+
+    // Policy Sections
+    privSections: [
+      {
+        title: "1. ข้อมูลที่เราเก็บรวบรวม",
+        content:
+          "เราเก็บรวบรวมเฉพาะข้อมูลที่จำเป็นต่อการทำงานของแอปพลิเคชัน ได้แก่ รูปภาพที่คุณอัปโหลดเพื่อทำการวิเคราะห์ และข้อมูลทางเทคนิค (เช่น ประเภทอุปกรณ์, เบราว์เซอร์) เพื่อปรับปรุงประสิทธิภาพการใช้งาน ทั้งนี้ เราไม่มีนโยบายเก็บรูปภาพใบหน้าหรือผิวหนังของคุณลงในฐานข้อมูลถาวร",
+      },
+      {
+        title: "2. การใช้งานข้อมูล",
+        content:
+          "รูปภาพของคุณจะถูกนำไปใช้เพื่อประมวลผลผ่าน AI Model เพื่อให้ผลลัพธ์การวิเคราะห์ผิวหนังเท่านั้น ข้อมูลเหล่านี้จะไม่ถูกนำไปขาย, เผยแพร่, หรือใช้เพื่อการโฆษณาโดยเด็ดขาด",
+      },
+      {
+        title: "3. เทคโนโลยีและการประมวลผล",
+        content:
+          "SkinDee ใช้เทคโนโลยีปัญญาประดิษฐ์ (AI) ในการวิเคราะห์ การประมวลผลเกิดขึ้นบนเซิร์ฟเวอร์ที่มีความปลอดภัยสูง และผลลัพธ์จะถูกส่งกลับไปยังอุปกรณ์ของคุณโดยตรง",
+      },
+      {
+        title: "4. สิทธิ์ของผู้ใช้งาน",
+        content:
+          "เนื่องจากเราไม่ได้จัดเก็บข้อมูลส่วนบุคคลถาวร คุณจึงไม่ต้องกังวลเรื่องการขอลบข้อมูล อย่างไรก็ตาม หากคุณมีการติดต่อผ่านแบบฟอร์ม Feedback คุณมีสิทธิ์ที่จะขอให้เราลบข้อความเหล่านั้นได้ทุกเมื่อ",
+      },
+    ],
+
+    privContactTitle: "มีข้อสงสัยเกี่ยวกับความเป็นส่วนตัว?",
+    privContactDesc:
+      "หากคุณมีคำถามหรือข้อกังวลเกี่ยวกับนโยบายความเป็นส่วนตัว สามารถติดต่อเจ้าหน้าที่คุ้มครองข้อมูลของเราได้",
+    privContactBtn: "ติดต่อทีม Privacy",
+
     // --- Footer ---
     footerText: "แพลตฟอร์มวิเคราะห์ผิวหนังด้วย AI เพื่อการศึกษา",
     quickLinks: "ลิงก์ด่วน",
@@ -304,6 +362,17 @@ export const translations = {
       "Ensure the photo is in focus and shows the entire area of concern.",
     guideSlide3: "Do not use filters, makeup, or any effects on the photo.",
     guideGotIt: "Got it",
+
+    // --- Loading Component ---
+    loadingTitle: "Analyzing...",
+    loadingComplete: "Analysis Complete!",
+    loadingSteps: [
+      "Checking image quality...",
+      "AI is detecting skin features...",
+      "Calculating risk assessment...",
+      "Building your report...",
+      "Finalizing results...",
+    ],
 
     // --- Result Page ---
     resultTitle: "Analysis Result",
@@ -446,6 +515,52 @@ export const translations = {
     feedPlaceholder: "Share your thoughts with us...",
     feedBtn: "Submit Feedback",
     feedThanks: "Thanks for your feedback!",
+
+    // --- Privacy Page (Added) ---
+    privTitle: "Privacy Policy",
+    privSubtitle:
+      "We value your privacy and data security. Please read the details on how we handle your information.",
+    privLastUpdated: "Last Updated: February 1, 2026",
+
+    // Key Highlights
+    privHigh1Title: "No Permanent Storage",
+    privHigh1Desc:
+      "Images are processed in temporary memory and are permanently deleted immediately after analysis.",
+    privHigh2Title: "Anonymous Data",
+    privHigh2Desc:
+      "We do not store Personally Identifiable Information (PII) linked to skin analysis results.",
+    privHigh3Title: "High Security",
+    privHigh3Desc:
+      "All data transmission is encrypted with industry-standard SSL/TLS protocols.",
+
+    // Policy Sections
+    privSections: [
+      {
+        title: "1. Information We Collect",
+        content:
+          "We collect only data necessary for the application's functionality, such as the images you upload for analysis and technical data (device type, browser) for performance improvements. We do not permanently store your face or skin images.",
+      },
+      {
+        title: "2. How We Use Data",
+        content:
+          "Your images are used solely to be processed by our AI Model to provide skin analysis results. This data is never sold, published, or used for advertising purposes.",
+      },
+      {
+        title: "3. Technology & Processing",
+        content:
+          "SkinDee utilizes Artificial Intelligence (AI) for analysis. Processing occurs on secure servers, and results are transmitted directly back to your device.",
+      },
+      {
+        title: "4. User Rights",
+        content:
+          "Since we do not permanently store personal data, you don't need to worry about deletion requests. However, if you contact us via Feedback, you have the right to request deletion of those messages at any time.",
+      },
+    ],
+
+    privContactTitle: "Privacy Concerns?",
+    privContactDesc:
+      "If you have any questions regarding our privacy policy, please contact our Data Protection Officer.",
+    privContactBtn: "Contact Privacy Team",
 
     // --- Footer ---
     footerText: "AI-powered skin analysis platform for educational purposes.",

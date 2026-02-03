@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HiMenu } from "react-icons/hi";
 import Navbar from "./NavBar";
 import Header from "./Header";
@@ -7,6 +7,8 @@ import Footer from "./Footer";
 import { useLanguage } from "../context/LanguageContext";
 
 const AppLayout = () => {
+  const { pathname } = useLocation(); // [ใหม่] ดึง path ปัจจุบัน
+  const mainContentRef = useRef(null); // [ใหม่] สร้าง ref เพื่อจับกล่องเนื้อหา
   const { t } = useLanguage();
   const [isNavbarOpen, setIsNavbarOpen] = useState(true);
   const [activePage, setActivePage] = useState("home");
@@ -16,6 +18,15 @@ const AppLayout = () => {
   const [breadcrumb, setBreadcrumb] = useState([]);
 
   // 4. [แก้ไข] แก้ไข useEffect ให้ตรวจจับ hash ด้วย
+
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo(0, 0);
+    }
+    // กันเหนียว: สั่ง Window scroll ด้วยเผื่อโครงสร้างเปลี่ยน
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   useEffect(() => {
     const path = location.pathname; // เช่น "/upload"
     const hash = location.hash; // เช่น "#result"
@@ -48,7 +59,10 @@ const AppLayout = () => {
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       <Navbar isOpen={isNavbarOpen} activePage={activePage} />
 
-      <main className="flex-1 flex flex-col overflow-auto">
+      <main
+        ref={mainContentRef}
+        className="flex-grow overflow-y-auto scroll-smooth"
+      >
         <header className="sticky top-0 z-50 p-4 bg-white dark:bg-gray-800 shadow flex items-center gap-4">
           <button
             onClick={() => setIsNavbarOpen(!isNavbarOpen)}
@@ -61,7 +75,7 @@ const AppLayout = () => {
           <Header breadcrumb={breadcrumb} />
         </header>
         {/* (ส่วน Outlet และ Footer เหมือนเดิม) */}
-        <div className="flex-1">
+        <div className="min-h-full">
           <Outlet />
         </div>
         <Footer />

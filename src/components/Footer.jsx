@@ -75,22 +75,6 @@ const Footer = () => {
                   {t.privacyPolicy}
                 </a>
               </li>
-              <li>
-                <a
-                  href="/terms"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-                >
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/disclaimer"
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-                >
-                  Medical Disclaimer
-                </a>
-              </li>
             </ul>
           </div>
 

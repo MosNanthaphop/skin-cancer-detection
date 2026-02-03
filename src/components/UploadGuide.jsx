@@ -1,113 +1,168 @@
 // src/components/UploadGuide.jsx
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // [เพิ่ม]
 import {
   IoChevronBack,
   IoChevronForward,
-  IoCameraOutline, // ไอคอนกล้อง (สไลด์ 1)
-  IoBan, // ไอคอน "ห้าม" (สไลด์ 3)
+  IoCameraOutline,
+  IoBan,
 } from "react-icons/io5";
-import { MdCenterFocusStrong } from "react-icons/md"; // ไอคอนโฟกัส (สไลด์ 2)
+import { MdCenterFocusStrong } from "react-icons/md";
 import UploadTitle from "./UploadTitle";
 import { useLanguage } from "../context/LanguageContext";
 
-// 1. รับ prop 'onClose' จากแม่ (UploadPage)
 const UploadGuide = ({ onClose }) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const { t } = useLanguage();
+  // เก็บ state เป็น tuple [page, direction] เพื่อรู้ทิศทางการเลื่อน
+  const [[page, direction], setPage] = useState([0, 0]);
 
-  // 2. ข้อมูลของสไลด์
   const slides = [
     {
       icon: IoCameraOutline,
       text: t.guideSlide1,
+      color: "text-blue-500", // [เพิ่ม] แยกสีให้แต่ละไอคอน
     },
     {
       icon: MdCenterFocusStrong,
       text: t.guideSlide2,
+      color: "text-green-500",
     },
     {
       icon: IoBan,
       text: t.guideSlide3,
+      color: "text-red-500",
     },
   ];
 
-  const nextSlide = () => {
-    // วนกลับไปสไลด์ 0 ถ้าถึงสไลด์สุดท้ายแล้ว
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  // คำนวณ index ปัจจุบันจากการวนลูป (Infinite Loop Logic)
+  const imageIndex = Math.abs(page % slides.length);
+  const currentSlide = slides[imageIndex];
+
+  const paginate = (newDirection) => {
+    setPage([page + newDirection, newDirection]);
   };
 
-  const prevSlide = () => {
-    // วนกลับไปสไลด์สุดท้าย ถ้าอยู่ที่สไลด์ 0
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  // Animation Variants
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+    }),
   };
 
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
+  // Swipe Settings
+  const swipeConfidenceThreshold = 10000;
+  const swipePower = (offset, velocity) => {
+    return Math.abs(offset) * velocity;
   };
-
-  // ดึงข้อมูลสไลด์ปัจจุบัน
-  const { icon: Icon, text } = slides[currentSlide];
 
   return (
     <div className="max-w-3xl mx-auto mb-5">
       <UploadTitle />
-      {/* 3. การ์ดสีขาวที่ครอบทั้งหมด (เหมือนในรูป) */}
-      <div className="mt-15 mb-12 w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-        {/* 4. ส่วนหัว (ลูกศร และ Title) */}
-        <div className="flex items-center justify-between mb-4">
+
+      {/* Card Container */}
+      <div className="mt-8 mb-12 w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 pb-2">
           <button
-            onClick={prevSlide}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => paginate(-1)}
+            className="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white transition-colors"
           >
-            <IoChevronBack size={20} />
+            <IoChevronBack size={24} />
           </button>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+
+          <h2 className="text-lg font-bold text-gray-800 dark:text-white">
             {t.guideTitle}
           </h2>
+
           <button
-            onClick={nextSlide}
-            className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700"
+            onClick={() => paginate(1)}
+            className="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-white transition-colors"
           >
-            <IoChevronForward size={20} />
+            <IoChevronForward size={24} />
           </button>
         </div>
 
-        {/* 5. ส่วนเนื้อหา (Icon และ Text) */}
-        <div className="text-center my-6 min-h-[120px]">
-          {" "}
-          {/* เพิ่ม min-h เพื่อกันกระตุก */}
-          <Icon
-            size={64}
-            className="text-blue-500 mx-auto mb-4 transition-all duration-300"
-          />
-          <p className="text-gray-600 dark:text-gray-300 px-4">{text}</p>
+        {/* Content Area (Slide) */}
+        <div className="relative h-[220px] flex flex-col items-center justify-center overflow-hidden">
+          <AnimatePresence initial={false} custom={direction} mode="popLayout">
+            <motion.div
+              key={page} // สำคัญ! เปลี่ยน key เพื่อ trigger animation
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 },
+              }}
+              drag="x" // เปิดใช้งานการลากแนวนอน
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+                if (swipe < -swipeConfidenceThreshold) {
+                  paginate(1); // ปัดซ้าย -> หน้าถัดไป
+                } else if (swipe > swipeConfidenceThreshold) {
+                  paginate(-1); // ปัดขวา -> หน้าก่อนหน้า
+                }
+              }}
+              className="absolute w-full flex flex-col items-center px-8 text-center cursor-grab active:cursor-grabbing"
+            >
+              <div
+                className={`mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-full ${currentSlide.color}`}
+              >
+                <currentSlide.icon size={64} />
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 text-lg font-medium leading-relaxed">
+                {currentSlide.text}
+              </p>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* 6. จุด Pagination */}
-        <div className="flex justify-center gap-2 mb-6">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all
-              ${
-                index === currentSlide
-                  ? "bg-blue-500"
-                  : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
-              }
-            `}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+        {/* Footer Area */}
+        <div className="p-6 pt-2">
+          {/* Pagination Dots */}
+          <div className="flex justify-center gap-2 mb-6">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  const diff = idx - imageIndex;
+                  paginate(diff); // คำนวณทิศทางกระโดดไปหน้าจุดนั้น
+                }}
+                className={`transition-all duration-300 rounded-full h-2 
+                  ${
+                    idx === imageIndex
+                      ? "w-8 bg-blue-500"
+                      : "w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
+                  }
+                `}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
 
-        {/* 7. ปุ่ม "Got it" */}
-        <button
-          onClick={onClose} // เมื่อคลิก ให้เรียกฟังก์ชัน 'onClose' ที่ได้รับมา
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-colors duration-200"
-        >
-          {t.guideGotIt}
-        </button>
+          {/* Button */}
+          <button
+            onClick={onClose}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+          >
+            {t.guideGotIt}
+          </button>
+        </div>
       </div>
     </div>
   );
