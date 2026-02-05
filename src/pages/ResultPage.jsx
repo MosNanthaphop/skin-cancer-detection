@@ -18,39 +18,54 @@ import { useLanguage } from "../context/LanguageContext";
 // --- ข้อมูล Reference Images (ใช้ URL เดิม) ---
 const diseaseReferenceData = {
   melanoma: [
-    "https://upload.wikimedia.org/wikipedia/commons/6/6c/Melanoma.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Melanoma_2.jpg/320px-Melanoma_2.jpg",
+    "/public/assets/ref_mel/mel_01.jpg",
+    "/public/assets/ref_mel/mel_02.jpg",
+    "/public/assets/ref_mel/mel_03.jpg",
   ],
   "basal cell carcinoma": [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Basal_Cell_Carcinoma.jpg/320px-Basal_Cell_Carcinoma.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/9/96/Basal_cell_carcinoma_ulcerated.jpg",
+    "/public/assets/ref_bcc/bcc_01.png",
+    "/public/assets/ref_bcc/bcc_02.jpg",
+    "/public/assets/ref_bcc/bcc_03.jpg",
   ],
   "actinic keratosis": [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Actinic_keratosis_on_forehead.jpg/320px-Actinic_keratosis_on_forehead.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Actinic_keratosis_close_up.jpg/320px-Actinic_keratosis_close_up.jpg",
+    "/public/assets/ref_akiec/akiec_01.jpg",
+    "/public/assets/ref_akiec/akiec_02.jpg",
+    "/public/assets/ref_akiec/akiec_03.jpeg",
   ],
   "squamous cell carcinoma": [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Squamous_Cell_Carcinoma.jpg/320px-Squamous_Cell_Carcinoma.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Squamous_cell_carcinoma_on_back_of_hand.jpg/320px-Squamous_cell_carcinoma_on_back_of_hand.jpg",
+    "/public/assets/ref_scc/scc_01.jpg",
+    "/public/assets/ref_scc/scc_02.jpg",
+    "/public/assets/ref_scc/scc_03.png",
   ],
   nevus: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Melanocytic_nevus.jpg/320px-Melanocytic_nevus.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Skin_mole.jpg/320px-Skin_mole.jpg",
+    "/public/assets/ref_nv/nv_01.webp",
+    "/public/assets/ref_nv/nv_02.jpg",
+    "/public/assets/ref_nv/nv_03.jpg",
   ],
   "seborrheic keratosis": [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Seborrheic_keratosis.jpg/320px-Seborrheic_keratosis.jpg",
+    "/public/assets/ref_sk/sk_01.jpg",
+    "/public/assets/ref_sk/sk_02.jpg",
+    "/public/assets/ref_sk/sk_03.jpg",
   ],
   dermatofibroma: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dermatofibroma.jpg/320px-Dermatofibroma.jpg",
+    "/public/assets/ref_df/df_01.webp",
+    "/public/assets/ref_df/df_02.jpg",
+    "/public/assets/ref_df/df_03.jpg",
   ],
   "vascular lesion": [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Cherry_angioma.jpg/320px-Cherry_angioma.jpg",
+    "/public/assets/ref_vasc/vasc_01.jpeg",
+    "/public/assets/ref_vasc/vasc_02.jpg",
+    "/public/assets/ref_vasc/vasc_03.jpg",
   ],
   tinea: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ringworm_on_the_arm_-_tinea_corporis.jpg/320px-Ringworm_on_the_arm_-_tinea_corporis.jpg",
+    "/public/assets/ref_tn/tn_01.jpg",
+    "/public/assets/ref_tn/tn_02.jpg",
+    "/public/assets/ref_tn/tn_03.jpg",
   ],
   eczema: [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Eczema-arms.jpg/320px-Eczema-arms.jpg",
+    "/public/assets/ref_ez/ez_01.webp",
+    "/public/assets/ref_ez/ez_02.jpg",
+    "/public/assets/ref_ez/ez_03.jpg",
   ],
 };
 
