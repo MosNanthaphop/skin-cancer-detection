@@ -1,6 +1,6 @@
 // src/components/ImageUploader.jsx
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   X,
   Crop,
@@ -8,37 +8,32 @@ import {
   Check,
   Camera,
   Image as ImageIcon,
+  UploadCloud,
+  ZoomIn,
 } from "lucide-react";
 import Cropper from "react-easy-crop";
 import UploadTitle from "../components/UploadTitle";
 import { useLanguage } from "../context/LanguageContext";
 
-// --- Helper Functions ---
-
-// 1. แปลง Data URL เป็น File Object
+// --- Helper Functions (เหมือนเดิม) ---
 const dataURLtoFile = async (dataUrl, fileName) => {
   const res = await fetch(dataUrl);
   const blob = await res.blob();
   return new File([blob], fileName, { type: blob.type });
 };
 
-// 2. ฟังก์ชัน Crop รูปภาพ (ใช้ Canvas)
 const getCroppedImg = async (imageSrc, pixelCrop) => {
   const image = new Image();
   image.src = imageSrc;
-  image.crossOrigin = "anonymous"; // ป้องกันปัญหา CORS (เผื่อไว้)
-
+  image.crossOrigin = "anonymous";
   await new Promise((resolve, reject) => {
     image.onload = resolve;
     image.onerror = reject;
   });
-
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
-
   canvas.width = pixelCrop.width;
   canvas.height = pixelCrop.height;
-
   ctx.drawImage(
     image,
     pixelCrop.x,
@@ -50,7 +45,6 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
     pixelCrop.width,
     pixelCrop.height,
   );
-
   return canvas.toDataURL("image/jpeg", 0.95);
 };
 
@@ -61,8 +55,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [agree, setAgree] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-
-  // States for Cropper
+  const fileInputRef = useRef(null);
   const [isCropping, setIsCropping] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -79,68 +72,54 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
     setIsCropping(false);
     setCrop({ x: 0, y: 0 });
     setZoom(1);
-    // setCroppedAreaPixels(null); // ไม่ต้องเคลียร์ค่านี้ทันที เพื่อกัน error
   };
 
   const processFile = (file) => {
-    if (
-      file &&
-      (file.type === "image/jpeg" || file.type === "image/png") &&
-      file.size <= 10 * 1024 * 1024
-    ) {
-      resetCropState();
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      alert(t.alertTypeSize);
+    if (!file) return;
+    const validTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      alert(t.alertTypeSize || "Invalid file type. Please upload an image.");
+      return;
     }
+    if (file.size > 10 * 1024 * 1024) {
+      alert(t.alertTypeSize || "File is too large. Max 10MB.");
+      return;
+    }
+    resetCropState();
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
-  // รับไฟล์จากกล้อง (externalFile)
   useEffect(() => {
-    if (externalFile) {
-      processFile(externalFile);
-    }
+    if (externalFile) processFile(externalFile);
   }, [externalFile]);
 
-  // --- Logic การ Crop (แก้ไขใหม่) ---
   const handleApplyCrop = async () => {
     try {
       if (previewUrl && croppedAreaPixels) {
-        // 1. สร้างรูปที่ Crop แล้ว (Base64)
         const croppedDataUrl = await getCroppedImg(
           previewUrl,
           croppedAreaPixels,
         );
-
-        // 2. อัปเดต Preview ทันที
         setPreviewUrl(croppedDataUrl);
-
-        // 3. สร้าง File Object ใหม่
         const fileName = selectedFile ? selectedFile.name : "cropped_image.jpg";
         const newFile = await dataURLtoFile(
           croppedDataUrl,
           `cropped_${fileName}`,
         );
-
-        // 4. บันทึกไฟล์ใหม่ลง State
         setSelectedFile(newFile);
-
-        // 5. ปิดโหมด Crop
         resetCropState();
       }
     } catch (e) {
       console.error("Crop error:", e);
-      alert(t.alertCrop);
+      alert(t.alertCrop || "Failed to crop image.");
     }
   };
 
-  // --- Event Handlers อื่นๆ ---
-  const handleFileChange = (e) => processFile(e.target.files[0]);
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -152,17 +131,19 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    processFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0)
+      processFile(e.dataTransfer.files[0]);
   };
+  const handleFileChange = (e) => processFile(e.target.files[0]);
+
   const removeImage = () => {
     setSelectedFile(null);
     setPreviewUrl(null);
     resetCropState();
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
-  const handleCropClick = () => setIsCropping(true);
-  const handleCancelCrop = () => resetCropState();
 
-  const handleAnalyze = () => {
+  const handleAnalyzeClick = () => {
     if (!selectedFile) {
       alert(t.alertNoFile);
       return;
@@ -171,181 +152,183 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
       alert(t.alertTerms);
       return;
     }
-    if (onAnalyze) {
-      onAnalyze(selectedFile);
-    }
+    if (onAnalyze) onAnalyze(selectedFile);
   };
 
   return (
-    <div className="max-w-3xl mx-auto mb-5">
+    <div className="max-w-3xl mx-auto mb-8">
       <UploadTitle />
 
+      {/* --- Main Upload Area (ปรับความสูงลง) --- */}
       <div
-        className={`border-2 border-dashed rounded-xl p-8 mb-8 text-center transition ${
-          isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
-        } dark:bg-gray-800 dark:border-gray-600 ${
-          isDragging && "dark:bg-blue-900/50"
-        }`}
+        className={`relative border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 ease-in-out ${
+          isDragging
+            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]"
+            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+        } shadow-sm hover:shadow-md`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
         {previewUrl ? (
-          <div className="relative inline-block w-full max-w-[28rem] mx-auto">
+          <div className="relative w-full">
             {!isCropping ? (
-              // --- โหมด Preview (แสดงรูปปกติ) ---
-              <>
+              // --- VIEW MODE (ปรับ max-h ลงเหลือ 300px) ---
+              <div className="relative group">
                 <img
                   src={previewUrl}
                   alt="Preview"
-                  className="max-h-64 w-full object-contain rounded-lg mx-auto"
+                  className="max-h-[250px] w-full object-contain rounded-xl mx-auto shadow-md bg-gray-50 dark:bg-gray-900"
                 />
-                <div className="absolute top-2 right-2 flex flex-col gap-2">
+                <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <button
-                    onClick={handleCropClick}
-                    className="bg-white/90 text-gray-800 rounded-md p-2 hover:bg-white transition shadow-sm dark:bg-gray-800/90 dark:text-white dark:hover:bg-gray-700"
-                    title="Crop Image"
+                    onClick={() => setIsCropping(true)}
+                    className="p-2.5 bg-white text-gray-700 rounded-full shadow-lg hover:bg-gray-50 hover:text-blue-600 transition-all transform hover:scale-110"
                   >
-                    <Crop size={18} />
+                    <Crop size={20} />
                   </button>
                   <button
                     onClick={removeImage}
-                    className="bg-red-500/90 text-white rounded-md p-2 hover:bg-red-600 transition shadow-sm"
-                    title="Delete Image"
+                    className="p-2.5 bg-white text-gray-700 rounded-full shadow-lg hover:bg-red-50 hover:text-red-600 transition-all transform hover:scale-110"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={20} />
                   </button>
                 </div>
-              </>
+              </div>
             ) : (
-              // --- โหมด Cropping (แสดงเครื่องมือตัด) ---
-              <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                <Cropper
-                  image={previewUrl}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                  cropShape="rect"
-                  showGrid={true}
-                  minZoom={1}
-                  maxZoom={3}
-                  restrictPosition={false}
-                />
-                <div className="absolute top-2 right-2 flex flex-col gap-2 z-10">
-                  <button
-                    onClick={handleApplyCrop}
-                    className="bg-green-500/90 text-white rounded-md p-2 hover:bg-green-600 transition shadow-sm"
-                    title="Apply"
-                  >
-                    <Check size={18} />
-                  </button>
-                  <button
-                    onClick={handleCancelCrop}
-                    className="bg-red-500/90 text-white rounded-md p-2 hover:bg-red-600 transition shadow-sm"
-                    title="Cancel"
-                  >
-                    <X size={18} />
-                  </button>
+              // --- CROP MODE (ปรับ h ลงเหลือ 300px) ---
+              <div className="flex flex-col gap-4">
+                <div className="relative h-[300px] w-full bg-black rounded-xl overflow-hidden shadow-inner border border-gray-200 dark:border-gray-700">
+                  <Cropper
+                    image={previewUrl}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                    showGrid={true}
+                  />
                 </div>
-                <input
-                  type="range"
-                  value={zoom}
-                  min={1}
-                  max={3}
-                  step={0.1}
-                  onChange={(e) => setZoom(parseFloat(e.target.value))}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5 z-10 accent-blue-500"
-                />
+                {/* Crop Controls */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center gap-3 w-full sm:w-1/2">
+                    <ZoomIn size={20} className="text-gray-500" />
+                    <input
+                      type="range"
+                      value={zoom}
+                      min={1}
+                      max={3}
+                      step={0.1}
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 dark:bg-gray-600"
+                    />
+                  </div>
+                  <div className="flex gap-3 w-full sm:w-auto justify-end">
+                    <button
+                      onClick={resetCropState}
+                      className="px-3 py-1.5 flex items-center gap-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
+                    >
+                      <X size={16} /> Cancel
+                    </button>
+                    <button
+                      onClick={handleApplyCrop}
+                      className="px-3 py-1.5 flex items-center gap-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm"
+                    >
+                      <Check size={16} /> Apply
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
         ) : (
-          // --- โหมด Upload (ปุ่มเลือกไฟล์/ถ่ายรูป) ---
-          <>
-            <div className="w-16 h-16 bg-blue-50 dark:bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-blue-500 dark:text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
+          // --- EMPTY STATE (UPLOAD) (ปรับ py ลงเหลือ py-6) ---
+          <div className="py-6">
+            <div className="w-16 h-16 bg-blue-50 dark:bg-gray-700/50 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse-slow">
+              <UploadCloud className="w-8 h-8 text-blue-500 dark:text-blue-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">
               {t.uploadTitle}
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+            <p className="text-gray-500 dark:text-gray-400 text-xs mb-6 max-w-sm mx-auto">
               {t.dragDrop}
             </p>
+
             <input
               type="file"
-              accept="image/jpeg,image/png"
+              accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
               className="hidden"
               id="fileInput"
+              ref={fileInputRef}
             />
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <label
                 htmlFor="fileInput"
-                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition shadow-md w-full sm:w-auto justify-center"
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-xl cursor-pointer hover:bg-blue-700 transition-all shadow-md w-full sm:w-auto text-sm group"
               >
-                <ImageIcon size={20} />
-                <span>{t.chooseFile}</span>
+                <ImageIcon
+                  size={18}
+                  className="group-hover:scale-110 transition-transform"
+                />
+                <span className="font-medium">{t.chooseFile}</span>
               </label>
+              <div className="text-gray-400 text-xs font-medium">OR</div>
               <button
                 type="button"
                 onClick={onOpenCamera}
-                className="flex items-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-lg cursor-pointer hover:bg-green-700 transition shadow-md w-full sm:w-auto justify-center"
+                className="flex items-center justify-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-xl cursor-pointer hover:bg-green-700 transition-all shadow-md w-full sm:w-auto text-sm group"
               >
-                <Camera size={20} />
-                <span>{t.takePhoto}</span>
+                <Camera
+                  size={18}
+                  className="group-hover:scale-110 transition-transform"
+                />
+                <span className="font-medium">{t.takePhoto}</span>
               </button>
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      <div className="flex items-start justify-center gap-3 mb-6 px-4">
-        <input
-          type="checkbox"
-          id="terms"
-          checked={agree}
-          onChange={(e) => setAgree(e.target.checked)}
-          className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
-        />
-        <label
-          htmlFor="terms"
-          className="text-sm text-gray-600 dark:text-gray-300 text-left"
-        >
-          {t.understandTerms}{" "}
-          <span className="font-semibold text-gray-800 dark:text-white">
-            {t.educationTerms}
-          </span>{" "}
-          {t.disclaimerTerms}
+      {/* --- Agreements & Analyze Button (เพิ่ม mt-8 เพื่อเว้นระยะห่าง) --- */}
+      <div className="flex flex-col items-center gap-6 mt-8">
+        <label className="flex items-start gap-3 cursor-pointer group p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+          <div className="relative flex items-center">
+            <input
+              type="checkbox"
+              checked={agree}
+              onChange={(e) => setAgree(e.target.checked)}
+              className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 shadow-sm checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+            />
+            <Check
+              size={14}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"
+            />
+          </div>
+          <span className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
+            {t.understandTerms}{" "}
+            <span className="font-semibold text-blue-600 dark:text-blue-400">
+              {t.educationTerms}
+            </span>{" "}
+            {t.disclaimerTerms}
+          </span>
         </label>
-      </div>
 
-      <div className="text-center">
         <button
-          onClick={handleAnalyze}
-          className={`px-12 py-3 text-lg font-semibold text-white rounded-lg shadow-lg transition-all transform ${
-            !selectedFile || !agree || isCropping
-              ? "bg-gray-300 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500"
-              : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5 cursor-pointer"
-          }`}
+          onClick={handleAnalyzeClick}
           disabled={!selectedFile || !agree || isCropping}
+          className={`w-full sm:w-auto px-12 py-3.5 text-lg font-bold text-white rounded-xl shadow-lg transition-all transform flex items-center justify-center gap-2 ${
+            !selectedFile || !agree || isCropping
+              ? "bg-gray-300 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed"
+              : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-1 hover:shadow-xl shadow-blue-500/30"
+          }`}
         >
           {t.analyzeBtn}
+          {!(!selectedFile || !agree) && (
+            <UploadCloud size={20} className="animate-bounce" />
+          )}
         </button>
       </div>
     </div>

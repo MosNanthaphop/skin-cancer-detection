@@ -1,3 +1,4 @@
+// src/pages/HomePage.jsx
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -12,6 +13,8 @@ import {
   Zap,
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+
+import StatsSection from "../components/StatsSection";
 
 const HomePage = () => {
   const { t } = useLanguage();
@@ -59,22 +62,18 @@ const HomePage = () => {
             {/* Badge: Animated Shine Effect */}
             <motion.div variants={fadeInUp} className="mb-6">
               <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-200 dark:border-blue-700/50 overflow-hidden shadow-sm">
-                {/* 1. Layer แสงวิบวับ (Shine Animation) */}
                 <motion.div
                   className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-blue-400/20 dark:via-blue-400/30 to-transparent skew-x-[-20deg]"
                   initial={{ x: "-150%" }}
                   animate={{ x: "150%" }}
                   transition={{
                     repeat: Infinity,
-                    duration: 1.5, // ความเร็วของแสง
+                    duration: 1.5,
                     ease: "linear",
-                    repeatDelay: 0.1, // เว้นช่วง 1 วินาทีก่อนวิบวับใหม่
+                    repeatDelay: 0.1,
                   }}
                 />
-
-                {/* 2. เนื้อหา Badge (ต้องใส่ relative z-10 เพื่อให้อยู่เหนือแสง) */}
                 <div className="relative z-10 flex items-center gap-2 text-blue-700 dark:text-blue-200 text-sm font-semibold">
-                  {/*  */}
                   <BrainCircuit
                     size={16}
                     className="text-blue-600 dark:text-blue-400"
@@ -103,7 +102,7 @@ const HomePage = () => {
             {/* Buttons */}
             <motion.div
               variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16"
+              className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-10"
             >
               <Link
                 to="/upload"
@@ -117,6 +116,19 @@ const HomePage = () => {
               >
                 {t.about}
               </Link>
+            </motion.div>
+
+            {/* [เปลี่ยนตรงนี้] ใส่ Section สถิติใหม่เข้าไปแทนอันเดิม */}
+            <motion.div
+              variants={fadeInUp}
+              className="mb-20 w-full" // เพิ่มระยะห่างหน่อย
+            >
+              <div className="text-center mb-6">
+                <span className="text-[10px] font-bold tracking-[0.2em] text-gray-400 dark:text-gray-500 uppercase">
+                  Real-time Community Impact
+                </span>
+              </div>
+              <StatsSection />
             </motion.div>
 
             {/* Hero Auto Slider (Modified) */}
@@ -183,18 +195,17 @@ const HomePage = () => {
   );
 };
 
-// --- [แก้ไข] Component: Hero Auto Slider (Slide Left Effect) ---
+// --- Helper Components (เหมือนเดิม) ---
+
 const HeroSlider = ({ t }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // ข้อมูล Slide พร้อมโทนสีใหม่ที่เข้ากับธีม
   const slides = [
     {
       id: 1,
       icon: <ScanFace size={48} />,
       title: t.slider1Title,
       desc: t.slider1Desc,
-      // [แก้สี] โทนน้ำเงิน -> ฟ้า (Tech & Trust)
       bg: "bg-gradient-to-br from-blue-600 to-blue-400 dark:from-blue-800 dark:to-blue-600",
     },
     {
@@ -202,7 +213,6 @@ const HeroSlider = ({ t }) => {
       icon: <Zap size={48} />,
       title: t.slider2Title,
       desc: t.slider2Desc,
-      // [แก้สี] โทนเขียวอมฟ้า -> ฟ้าสว่าง (Speed & Modern)
       bg: "bg-gradient-to-br from-teal-500 to-cyan-500 dark:from-teal-700 dark:to-cyan-700",
     },
     {
@@ -210,21 +220,17 @@ const HeroSlider = ({ t }) => {
       icon: <Lock size={48} />,
       title: t.slider3Title,
       desc: t.slider3Desc,
-      // [แก้สี] โทนอินดิโก้ -> ม่วง (Security & Premium) - แทนที่สีส้ม/ชมพูเดิม
       bg: "bg-gradient-to-br from-indigo-600 to-purple-500 dark:from-indigo-800 dark:to-purple-700",
     },
   ];
 
-  // Auto slide logic
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 4000);
-
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  // Variants สำหรับการสไลด์ซ้าย
   const slideVariants = {
     enter: { x: "100%", opacity: 0 },
     center: { x: 0, opacity: 1 },
@@ -232,7 +238,6 @@ const HeroSlider = ({ t }) => {
   };
 
   return (
-    // [แก้ไข] เพิ่ม border ให้ตัว container หลัก เพื่อให้ดูมีมิติขึ้นใน dark mode
     <div className="relative w-full h-48 md:h-75 rounded-2xl overflow-hidden shadow-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <AnimatePresence mode="popLayout">
         <motion.div
@@ -242,15 +247,12 @@ const HeroSlider = ({ t }) => {
           animate="center"
           exit="exit"
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          // [แก้ไข] เพิ่ม transition-colors เพื่อให้การเปลี่ยนสีระหว่าง dark/light mode นุ่มนวล
           className={`absolute inset-0 flex flex-col items-center justify-center text-white p-8 text-center transition-colors duration-300 ${slides[currentIndex].bg}`}
         >
-          {/* เนื้อหาข้างใน */}
           <motion.div
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            // [แก้ไข] ปรับสีพื้นหลังไอคอนให้โปร่งแสงขึ้นเล็กน้อย
             className=" mb-4 bg-white/25 p-3 rounded-full backdrop-blur-md shadow-inner"
           >
             {slides[currentIndex].icon}
@@ -267,7 +269,6 @@ const HeroSlider = ({ t }) => {
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            // [แก้ไข] ปรับสี text ให้ดูสว่างขึ้นเล็กน้อย
             className="mb-10 max-w-lg text-white/95 text-sm md:text-lg font-medium leading-relaxed"
           >
             {slides[currentIndex].desc}
@@ -275,13 +276,11 @@ const HeroSlider = ({ t }) => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Dots Indicator */}
       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            // [แก้ไข] ปรับสี Dots ให้ชัดขึ้น
             className={`h-2 rounded-full transition-all duration-300 ${
               index === currentIndex
                 ? "bg-white w-8"
@@ -294,7 +293,6 @@ const HeroSlider = ({ t }) => {
   );
 };
 
-// Helper: Feature Card
 const FeatureCard = ({ icon, title, desc }) => (
   <motion.div
     whileHover={{ y: -5, transition: { duration: 0 } }}
@@ -312,7 +310,6 @@ const FeatureCard = ({ icon, title, desc }) => (
   </motion.div>
 );
 
-// Helper: Step Item
 const StepItem = ({ number, title, desc }) => (
   <div className="flex flex-col items-center text-center relative z-10">
     <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-full border-4 border-blue-50 dark:border-gray-700 flex items-center justify-center mb-6 shadow-sm">

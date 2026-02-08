@@ -18,6 +18,8 @@ export const translations = {
     heroBadge: "ใครไม่ดีแต่สกินดี",
     heroDesc:
       "สัมผัสความชัดเจนของการวิเคราะห์ด้วย AI ขั้นสูง ตรวจสุขภาพผิวของคุณได้ทันทีด้วยเครื่องมือคัดกรองที่ชาญฉลาด ปลอดภัย และเป็นส่วนตัว",
+    visitCount: "ผู้เข้าชมทั้งหมด",
+    scanCount: "สแกนแล้วทั้งหมด",
     featureTitle: "ทำไมต้องเลือก SkinDee?",
     featureSubtitle: "เทคโนโลยีที่เชื่อถือได้ ออกแบบมาโดยคำนึงถึงสุขภาพของคุณ",
     slider1Title: "เทคโนโลยี AI ที่แม่นยำ",
@@ -375,6 +377,8 @@ export const translations = {
     heroBadge: "Not everyone is good, but your skin can be",
     heroDesc:
       "Experience the clarity of advanced AI analysis. Check your skin health instantly with our intelligent, secure, and private screening tool.",
+    visitCount: "Total Visitors",
+    scanCount: "Skin Scans Completed",
     featureTitle: "Why Choose SkinDee?",
     featureSubtitle:
       "Trusted technology designed with your well-being in mind.",

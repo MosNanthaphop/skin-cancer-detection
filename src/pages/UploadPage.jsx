@@ -7,6 +7,10 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import ResultPage from "./ResultPage";
 import CameraModal from "../components/CameraModal";
 
+// [1] Import Firebase
+import { ref, runTransaction } from "firebase/database";
+import { db } from "../firebase";
+
 const UploadPage = () => {
   const [showGuide, setShowGuide] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -15,8 +19,6 @@ const UploadPage = () => {
   const [analyzedFileUrl, setAnalyzedFileUrl] = useState(null);
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-
-  // [เพิ่ม 1] State สำหรับเก็บไฟล์ที่ถ่ายจากกล้องเพื่อส่งให้ Uploader
   const [capturedFile, setCapturedFile] = useState(null);
 
   const navigate = useNavigate();
@@ -33,21 +35,20 @@ const UploadPage = () => {
     return new File([u8arr], filename, { type: mime });
   };
 
-  // [แก้ไข 2] ถ่ายเสร็จเก็บลง State แทนการสั่ง Analyze ทันที
   const handleCameraCapture = (imgSrc) => {
     setIsCameraOpen(false);
     const file = dataURLtoFile(imgSrc, "camera-capture.jpg");
-    setCapturedFile(file); // ส่งไฟล์ไปให้ ImageUploader แสดงผล
+    setCapturedFile(file);
   };
 
   const handleAnalyze = async (file) => {
-    // ... (Code เดิมทั้งหมด ไม่ต้องแก้) ...
     setIsLoading(true);
     setIsFinalizing(false);
     setResult(null);
     setAnalyzedFileUrl(null);
-    navigate("/upload");
+    navigate("/upload"); // เปลี่ยน URL ไปที่หน้า Upload เพื่อรอผล
 
+    // แสดง Preview ระหว่างรอ
     const reader = new FileReader();
     reader.onloadend = () => {
       setAnalyzedFileUrl(reader.result);
@@ -57,21 +58,35 @@ const UploadPage = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
+
+      // สร้าง Promise จำลองเวลาโหลดขั้นต่ำ 3 วินาที (เพื่อให้ UX ดูสมูท ไม่เร็วไป)
       const minLoadingTime = new Promise((resolve) =>
         setTimeout(resolve, 3000),
       );
+
+      // ยิง API ไปที่ Backend
       const apiRequest = fetch("http://localhost:8000/predict", {
         method: "POST",
         body: formData,
       });
 
+      // รอให้ทั้ง API และ เวลาขั้นต่ำ เสร็จพร้อมกัน
       const [response] = await Promise.all([apiRequest, minLoadingTime]);
       const data = await response.json();
 
       if (data.success) {
         setResult(data);
         setIsLoading(false);
-        setIsFinalizing(true);
+        setIsFinalizing(true); // เริ่ม Animation จบการโหลด
+
+        // ✅ [เพิ่มส่วนนี้] บันทึกยอดการตรวจลง Firebase
+        // ใช้ runTransaction เพื่อให้แน่ใจว่าเลขไม่ชนกันถ้ามีคนตรวจพร้อมกัน
+        const analysisRef = ref(db, "analysis_count");
+        runTransaction(analysisRef, (currentCount) => {
+          return (currentCount || 0) + 1;
+        }).catch((err) => {
+          console.error("Failed to update analysis stats:", err);
+        });
       } else {
         alert("เกิดข้อผิดพลาด: " + data.error);
         setIsLoading(false);
@@ -91,7 +106,8 @@ const UploadPage = () => {
 
   const handleLoadingComplete = () => {
     setIsFinalizing(false);
-    navigate("/upload#result");
+    // เมื่อ LoadingSpinner หมุนจบ ให้แสดงผลลัพธ์
+    // (ResultPage จะถูก render ตามเงื่อนไขด้านล่างเพราะ result มีค่าแล้ว)
   };
 
   return (
@@ -104,8 +120,10 @@ const UploadPage = () => {
               onComplete={handleLoadingComplete}
             />
           ) : result ? (
+            // แสดงหน้าผลลัพธ์เมื่อมี result
             <ResultPage result={result} previewUrl={analyzedFileUrl} />
           ) : (
+            // แสดงหน้า Upload ปกติ
             <>
               {showGuide ? (
                 <UploadGuide onClose={handleGuideClose} />
@@ -113,7 +131,7 @@ const UploadPage = () => {
                 <ImageUploader
                   onAnalyze={handleAnalyze}
                   onOpenCamera={() => setIsCameraOpen(true)}
-                  externalFile={capturedFile} // [เพิ่ม 3] ส่ง prop ไฟล์ที่ถ่ายไป
+                  externalFile={capturedFile}
                 />
               )}
             </>
