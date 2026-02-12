@@ -8,6 +8,10 @@ import {
   Activity,
   ArrowRight,
   Info,
+  BookOpen,
+  FileText,
+  Quote,
+  ExternalLink, // [เพิ่ม] ไอคอนสำหรับลิงก์ภายนอก
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
@@ -15,7 +19,7 @@ import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { useLanguage } from "../context/LanguageContext";
 
-// --- ข้อมูล Reference Images (ใช้ URL เดิม) ---
+// --- ข้อมูล Reference Images (เก็บไว้ที่เดิม) ---
 const diseaseReferenceData = {
   melanoma: [
     "/public/assets/ref_mel/mel_01.jpg",
@@ -70,14 +74,22 @@ const diseaseReferenceData = {
 };
 
 const ResultPage = ({ result, previewUrl }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const printRef = useRef();
 
   const predictionName = result.prediction.toLowerCase();
-  const referenceImages = diseaseReferenceData[predictionName] || [];
-  const specificTreatments =
-    t.treatments[predictionName] || t.treatments.default;
 
+  // 1. ดึงรูปภาพ
+  const referenceImages = diseaseReferenceData[predictionName] || [];
+
+  // 2. ดึงคำแนะนำการรักษา
+  const specificTreatments =
+    t.treatments?.[predictionName] || t.treatments?.default || [];
+
+  // 3. ดึงข้อมูลรายละเอียดโรค
+  const diseaseDetails = t.disease_info?.[predictionName];
+
+  // Logic ความเสี่ยง
   const riskMap = new Map([
     ["melanoma", "high"],
     ["basal cell carcinoma", "high"],
@@ -93,6 +105,7 @@ const ResultPage = ({ result, previewUrl }) => {
 
   const riskCategory = riskMap.get(predictionName) || "moderate";
 
+  // Style Config
   const riskStyles = {
     high: {
       level: t.riskHigh,
@@ -161,40 +174,31 @@ const ResultPage = ({ result, previewUrl }) => {
     if (!element) return;
 
     try {
-      // 1. ซ่อนปุ่ม Export ชั่วคราว (ใช้ class 'export-exclude')
       const buttons = document.querySelectorAll(".export-exclude");
       buttons.forEach((el) => (el.style.display = "none"));
 
-      // 2. แปลง DOM เป็นรูปภาพ PNG
       const dataUrl = await toPng(element, {
-        quality: 0.95, // ลดลงนิดนึงเพื่อความเร็ว
+        quality: 0.95,
         backgroundColor: "#ffffff",
-        cacheBust: true, // บังคับโหลดรูปใหม่ (แก้ปัญหา cache)
-        // [สำคัญ] ตั้งค่าเพื่อพยายามโหลดรูปข้ามโดเมน
+        cacheBust: true,
         useCORS: true,
         allowTaint: true,
       });
 
-      // 3. แสดงปุ่มกลับมาเหมือนเดิม
       buttons.forEach((el) => (el.style.display = "block"));
 
-      // 4. สร้าง PDF
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      // ถ้าสูงเกินหน้ากระดาษ A4 ให้แบ่งหน้า (Optional: แต่ตอนนี้เอาแบบหน้าเดียวก่อน)
       pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`SkinDee-Result-${Date.now()}.pdf`);
     } catch (error) {
       console.error("Export PDF Failed:", error);
-
-      // คืนค่าปุ่มหากเกิด Error
       const buttons = document.querySelectorAll(".export-exclude");
       buttons.forEach((el) => (el.style.display = "block"));
-
       alert(
         "Failed to export PDF. Please try again or check your internet connection.",
       );
@@ -238,16 +242,16 @@ const ResultPage = ({ result, previewUrl }) => {
           <div className="lg:col-span-3 flex flex-col gap-8">
             {/* 1. Main Result Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
-              {/* Decorative Background Blob */}
+              {/* Background Blob */}
               <div
                 className={`absolute top-0 right-0 w-64 h-64 ${currentRisk.bg} rounded-full blur-3xl opacity-50 -mr-16 -mt-16 pointer-events-none`}
               ></div>
-
-              {/* Risk Strip */}
               <div
-                className={`h-1.5 w-full ${currentRisk.bg.replace("/20", "")} bg-opacity-100`}
+                className={`h-1.5 w-full ${currentRisk.bg.replace(
+                  "/20",
+                  "",
+                )} bg-opacity-100`}
               ></div>
-
               <div className="p-6 md:p-8 relative z-10">
                 <div className="flex flex-col md:flex-row gap-8 items-center">
                   {/* Image Block */}
@@ -263,8 +267,6 @@ const ResultPage = ({ result, previewUrl }) => {
                         No Image
                       </div>
                     )}
-
-                    {/* [แก้ไข] Bar ด้านล่าง: เพิ่ม rounded-b-[10px] เพื่อให้มุมโค้งรับกับกรอบพอดี ไม่ล้น */}
                     <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 py-1.5 backdrop-blur-sm rounded-b-[10px]">
                       <p className="text-white text-xs font-medium text-center shadow-sm tracking-wide">
                         {t.resAnalyzedImg}
@@ -339,7 +341,92 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
             </div>
 
-            {/* 2. Treatment Recommendations (Improved List) */}
+            {/* --- Disease Detail Info Section (แสดงเฉพาะที่มีข้อมูลใน t) --- */}
+            {diseaseDetails && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+                <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+                  <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg">
+                    <BookOpen
+                      className="text-indigo-600 dark:text-indigo-400"
+                      size={24}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white leading-none mb-1">
+                      {diseaseDetails.title}
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {language === "th"
+                        ? "ข้อมูลจำเพาะและสาระน่ารู้"
+                        : "Disease Information & Insights"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {diseaseDetails.sections &&
+                    diseaseDetails.sections.map((section, idx) => (
+                      <div key={idx} className="group">
+                        <div className="flex items-center gap-2 mb-2">
+                          <FileText
+                            size={16}
+                            className="text-gray-400 group-hover:text-indigo-500 transition-colors"
+                          />
+                          <h4 className="font-bold text-gray-800 dark:text-gray-200 text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            {section.title}
+                          </h4>
+                        </div>
+
+                        <div className="pl-6 border-l-2 border-gray-100 dark:border-gray-700 group-hover:border-indigo-100 dark:group-hover:border-indigo-900/50 transition-colors">
+                          {section.content && (
+                            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-2 text-justify">
+                              {section.content}
+                            </p>
+                          )}
+                          {section.list && (
+                            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-300 space-y-1 bg-gray-50 dark:bg-gray-700/30 p-3 rounded-lg">
+                              {section.list.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
+                {/* --- [แก้ไข] Reference Source (Linkable) --- */}
+                {diseaseDetails.source && (
+                  <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center justify-end gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 italic">
+                      <Quote size={10} className="transform rotate-180" />
+                      <span>
+                        {language === "th" ? "อ้างอิงข้อมูล:" : "Source:"}
+                      </span>
+
+                      {/* ตรวจสอบว่ามี URL หรือไม่ */}
+                      {diseaseDetails.source_url ? (
+                        <a
+                          href={diseaseDetails.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium not-italic text-blue-500 hover:text-blue-600 hover:underline flex items-center gap-1 transition-colors"
+                        >
+                          {diseaseDetails.source}
+                          <ExternalLink size={9} />
+                        </a>
+                      ) : (
+                        <span className="font-medium not-italic">
+                          {diseaseDetails.source}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 2. Treatment Recommendations */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
                 <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
@@ -357,21 +444,24 @@ const ResultPage = ({ result, previewUrl }) => {
                   </p>
                 </div>
               </div>
-
               <div className="grid gap-3">
-                {specificTreatments.map((item, index) => (
-                  <div
-                    key={index}
-                    className="group flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/20 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors border border-transparent hover:border-blue-100 dark:hover:border-gray-600"
-                  >
-                    <span className="flex-shrink-0 w-6 h-6 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border border-gray-100 dark:border-gray-600 mt-0.5 group-hover:scale-110 transition-transform">
-                      {index + 1}
-                    </span>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                      {item}
-                    </p>
-                  </div>
-                ))}
+                {specificTreatments.length > 0 ? (
+                  specificTreatments.map((item, index) => (
+                    <div
+                      key={index}
+                      className="group flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-700/20 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-colors border border-transparent hover:border-blue-100 dark:hover:border-gray-600"
+                    >
+                      <span className="flex-shrink-0 w-6 h-6 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border border-gray-100 dark:border-gray-600 mt-0.5 group-hover:scale-110 transition-transform">
+                        {index + 1}
+                      </span>
+                      <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                        {item}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500">No treatment info available.</p>
+                )}
               </div>
             </div>
 
@@ -414,11 +504,9 @@ const ResultPage = ({ result, previewUrl }) => {
             <div
               className={`rounded-2xl p-6 shadow-md border ${currentRisk.bg} ${currentRisk.border} relative overflow-hidden`}
             >
-              {/* Background Icon Watermark */}
               <currentRisk.Icon
                 className={`absolute -right-4 -bottom-4 w-32 h-32 opacity-10 ${currentRisk.iconColor} transform rotate-12`}
               />
-
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
                   <div
@@ -433,7 +521,6 @@ const ResultPage = ({ result, previewUrl }) => {
                     {currentRisk.level}
                   </h3>
                 </div>
-
                 <div className="bg-white/60 dark:bg-black/20 rounded-xl p-4 backdrop-blur-sm border border-white/20">
                   <p
                     className={`text-sm ${currentRisk.text} font-medium leading-relaxed`}
@@ -441,7 +528,6 @@ const ResultPage = ({ result, previewUrl }) => {
                     {currentRisk.message}
                   </p>
                 </div>
-
                 <div className="mt-4 flex items-center gap-2 text-xs opacity-70 font-medium">
                   <ArrowRight size={14} />
                   <span>{t.basedAI}</span>

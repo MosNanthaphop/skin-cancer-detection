@@ -12,9 +12,24 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(() => {
-    // อ่านค่าจาก localStorage ตอน init
-    const saved = localStorage.getItem("theme");
-    return saved === "dark";
+    // 1. ลองอ่านค่าจาก localStorage ก่อน
+    const savedTheme = localStorage.getItem("theme");
+
+    // ถ้าเคยบันทึกค่าไว้ ให้ใช้ค่านั้น (ไม่ว่าจะเป็น 'dark' หรือ 'light')
+    if (savedTheme) {
+      return savedTheme === "dark";
+    }
+
+    // 2. ถ้าไม่เคยบันทึก (เข้าครั้งแรก) ให้เช็คการตั้งค่าของ System/Browser
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      return true; // ถ้า System เป็น Dark ให้เริ่มด้วย Dark
+    }
+
+    // 3. ถ้าไม่มีทั้งคู่ ให้เริ่มด้วย Light (false)
+    return false;
   });
 
   // อัปเดต DOM และ localStorage เมื่อ darkMode เปลี่ยน
@@ -29,7 +44,7 @@ export const ThemeProvider = ({ children }) => {
   }, [darkMode]);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    setDarkMode((prev) => !prev);
   };
 
   return (
