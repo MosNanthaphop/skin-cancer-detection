@@ -11,7 +11,7 @@ import {
   BookOpen,
   FileText,
   Quote,
-  ExternalLink, // [เพิ่ม] ไอคอนสำหรับลิงก์ภายนอก
+  ExternalLink,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
@@ -78,18 +78,11 @@ const ResultPage = ({ result, previewUrl }) => {
   const printRef = useRef();
 
   const predictionName = result.prediction.toLowerCase();
-
-  // 1. ดึงรูปภาพ
   const referenceImages = diseaseReferenceData[predictionName] || [];
-
-  // 2. ดึงคำแนะนำการรักษา
   const specificTreatments =
     t.treatments?.[predictionName] || t.treatments?.default || [];
-
-  // 3. ดึงข้อมูลรายละเอียดโรค
   const diseaseDetails = t.disease_info?.[predictionName];
 
-  // Logic ความเสี่ยง
   const riskMap = new Map([
     ["melanoma", "high"],
     ["basal cell carcinoma", "high"],
@@ -105,7 +98,6 @@ const ResultPage = ({ result, previewUrl }) => {
 
   const riskCategory = riskMap.get(predictionName) || "moderate";
 
-  // Style Config
   const riskStyles = {
     high: {
       level: t.riskHigh,
@@ -169,36 +161,116 @@ const ResultPage = ({ result, previewUrl }) => {
     return () => clearTimeout(timer);
   }, [targetConfidence]);
 
+  // -------------------------------------------------------------
+  // 🌟 ฟังก์ชัน Export PDF ใหม่: ปรับสมดุลแบบ แนวตั้ง (Portrait) 🌟
+  // -------------------------------------------------------------
   const handleExportPDF = async () => {
     const element = printRef.current;
     if (!element) return;
 
     try {
+      // 1. ซ่อนปุ่มที่ไม่ต้องการใน PDF
       const buttons = document.querySelectorAll(".export-exclude");
       buttons.forEach((el) => (el.style.display = "none"));
 
+      // 2. บังคับ Light Mode ชั่วคราว (เพื่อไม่ให้ PDF มืด/เปลืองหมึก)
+      const htmlElement = document.documentElement;
+      const wasDarkMode = htmlElement.classList.contains("dark");
+      if (wasDarkMode) htmlElement.classList.remove("dark");
+
+      // 3. กำหนดความกว้างหน้าจอให้พอดีกับสัดส่วน A4 แนวตั้ง
+      const originalWidth = element.style.width;
+      const originalPadding = element.style.padding;
+      element.style.width = "900px";
+      element.style.padding = "20px";
+
+      // 4. เริ่มขั้นตอนย้ายตำแหน่งการ์ดให้สมดุล (DOM Balancing)
+      const gridContainer = document.getElementById("pdf-grid-container");
+      const leftCol = document.getElementById("pdf-left-col");
+      const rightCol = document.getElementById("pdf-right-col");
+      const diseaseCard = document.getElementById("pdf-disease-card");
+      const disclaimerBox = document.getElementById("pdf-disclaimer-box");
+
+      // เก็บ CSS เดิมไว้เพื่อคืนค่า
+      const origGridClass = gridContainer.className;
+      const origLeftClass = leftCol.className;
+      const origRightClass = rightCol.className;
+
+      // บังคับ Grid เป็น 2 คอลัมน์ 50:50 ชั่วคราว
+      gridContainer.className = "grid grid-cols-2 gap-6 items-start";
+      leftCol.className = "flex flex-col gap-6";
+      rightCol.className = "flex flex-col gap-6";
+
+      // ย้ายการ์ด "รายละเอียดโรค" ไปฝั่งขวา (ก่อนกล่องข้อควรระวัง)
+      if (diseaseCard && rightCol && disclaimerBox) {
+        rightCol.insertBefore(diseaseCard, disclaimerBox);
+      }
+
+      // รอ Browser เรียง Layout ให้เสร็จ
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // 5. แคปหน้าจอด้วยความละเอียดสูง
       const dataUrl = await toPng(element, {
-        quality: 0.95,
+        quality: 1.0,
+        pixelRatio: 2,
         backgroundColor: "#ffffff",
         cacheBust: true,
         useCORS: true,
         allowTaint: true,
       });
 
+      // 6. คืนสภาพหน้าเว็บกลับไปเหมือนเดิมทุกอย่างทันที
+      gridContainer.className = origGridClass;
+      leftCol.className = origLeftClass;
+      rightCol.className = origRightClass;
+
+      // ย้ายการ์ด "รายละเอียดโรค" กลับมาฝั่งซ้าย (ต่อจากการ์ดวิเคราะห์หลัก)
+      if (diseaseCard && leftCol) {
+        leftCol.insertBefore(diseaseCard, leftCol.children[1]);
+      }
+
+      element.style.width = originalWidth;
+      element.style.padding = originalPadding;
+      if (wasDarkMode) htmlElement.classList.add("dark");
       buttons.forEach((el) => (el.style.display = "block"));
 
+      // 7. จัดการสร้าง PDF แนวตั้ง ("p" = Portrait)
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const margin = 10;
+      const maxW = pdfWidth - margin * 2;
+      const maxH = pdfHeight - margin * 2;
+
+      let finalWidth = maxW;
+      let finalHeight = (imgProps.height * maxW) / imgProps.width;
+
+      if (finalHeight > maxH) {
+        finalHeight = maxH;
+        finalWidth = (imgProps.width * maxH) / imgProps.height;
+      }
+
+      // จัดกึ่งกลางตรงกลางกระดาษเป๊ะๆ
+      const xOffset = (pdfWidth - finalWidth) / 2;
+      const yOffset = (pdfHeight - finalHeight) / 2;
+
+      pdf.addImage(dataUrl, "PNG", xOffset, yOffset, finalWidth, finalHeight);
       pdf.save(`SkinDee-Result-${Date.now()}.pdf`);
     } catch (error) {
       console.error("Export PDF Failed:", error);
-      const buttons = document.querySelectorAll(".export-exclude");
-      buttons.forEach((el) => (el.style.display = "block"));
+      const htmlElement = document.documentElement;
+      if (
+        !htmlElement.classList.contains("dark") &&
+        localStorage.getItem("theme") === "dark"
+      ) {
+        htmlElement.classList.add("dark");
+      }
+      document
+        .querySelectorAll(".export-exclude")
+        .forEach((el) => (el.style.display = "block"));
       alert(
         "Failed to export PDF. Please try again or check your internet connection.",
       );
@@ -237,20 +309,21 @@ const ResultPage = ({ result, previewUrl }) => {
       </div>
 
       <div ref={printRef} className="bg-transparent dark:text-gray-100">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-          {/* --- Column Left (Main Content: 3 cols) --- */}
-          <div className="lg:col-span-3 flex flex-col gap-8">
+        {/* 👉 เพิ่ม ID ไว้สำหรับจัดระเบียบ Grid ตอนปริ้นท์ PDF */}
+        <div
+          id="pdf-grid-container"
+          className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start"
+        >
+          {/* --- Column Left --- */}
+          {/* 👉 เพิ่ม ID pdf-left-col */}
+          <div id="pdf-left-col" className="lg:col-span-3 flex flex-col gap-8">
             {/* 1. Main Result Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
-              {/* Background Blob */}
               <div
                 className={`absolute top-0 right-0 w-64 h-64 ${currentRisk.bg} rounded-full blur-3xl opacity-50 -mr-16 -mt-16 pointer-events-none`}
               ></div>
               <div
-                className={`h-1.5 w-full ${currentRisk.bg.replace(
-                  "/20",
-                  "",
-                )} bg-opacity-100`}
+                className={`h-1.5 w-full ${currentRisk.bg.replace("/20", "")} bg-opacity-100`}
               ></div>
               <div className="p-6 md:p-8 relative z-10">
                 <div className="flex flex-col md:flex-row gap-8 items-center">
@@ -341,9 +414,13 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
             </div>
 
-            {/* --- Disease Detail Info Section (แสดงเฉพาะที่มีข้อมูลใน t) --- */}
+            {/* --- Disease Detail Info Section --- */}
+            {/* 👉 เพิ่ม ID pdf-disease-card (ตัวนี้แหละที่โดนย้ายไปฝั่งขวาตอนปรินต์) */}
             {diseaseDetails && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+              <div
+                id="pdf-disease-card"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6"
+              >
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
                   <div className="bg-indigo-100 dark:bg-indigo-900/30 p-2 rounded-lg">
                     <BookOpen
@@ -376,7 +453,6 @@ const ResultPage = ({ result, previewUrl }) => {
                             {section.title}
                           </h4>
                         </div>
-
                         <div className="pl-6 border-l-2 border-gray-100 dark:border-gray-700 group-hover:border-indigo-100 dark:group-hover:border-indigo-900/50 transition-colors">
                           {section.content && (
                             <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-2 text-justify">
@@ -395,7 +471,6 @@ const ResultPage = ({ result, previewUrl }) => {
                     ))}
                 </div>
 
-                {/* --- [แก้ไข] Reference Source (Linkable) --- */}
                 {diseaseDetails.source && (
                   <div className="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
                     <div className="flex items-center justify-end gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 italic">
@@ -403,8 +478,6 @@ const ResultPage = ({ result, previewUrl }) => {
                       <span>
                         {language === "th" ? "อ้างอิงข้อมูล:" : "Source:"}
                       </span>
-
-                      {/* ตรวจสอบว่ามี URL หรือไม่ */}
                       {diseaseDetails.source_url ? (
                         <a
                           href={diseaseDetails.source_url}
@@ -412,8 +485,7 @@ const ResultPage = ({ result, previewUrl }) => {
                           rel="noopener noreferrer"
                           className="font-medium not-italic text-blue-500 hover:text-blue-600 hover:underline flex items-center gap-1 transition-colors"
                         >
-                          {diseaseDetails.source}
-                          <ExternalLink size={9} />
+                          {diseaseDetails.source} <ExternalLink size={9} />
                         </a>
                       ) : (
                         <span className="font-medium not-italic">
@@ -499,7 +571,11 @@ const ResultPage = ({ result, previewUrl }) => {
           </div>
 
           {/* --- Column Right (Sidebar - Sticky) --- */}
-          <div className="lg:col-span-2 flex flex-col gap-6 sticky top-24">
+          {/* 👉 เพิ่ม ID pdf-right-col */}
+          <div
+            id="pdf-right-col"
+            className="lg:col-span-2 flex flex-col gap-6 sticky top-24"
+          >
             {/* Risk Analysis Box */}
             <div
               className={`rounded-2xl p-6 shadow-md border ${currentRisk.bg} ${currentRisk.border} relative overflow-hidden`}
@@ -536,7 +612,11 @@ const ResultPage = ({ result, previewUrl }) => {
             </div>
 
             {/* Disclaimer Box */}
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-200 dark:border-gray-700/50">
+            {/* 👉 เพิ่ม ID pdf-disclaimer-box */}
+            <div
+              id="pdf-disclaimer-box"
+              className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-200 dark:border-gray-700/50"
+            >
               <h4 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                 <AlertTriangle size={14} />
                 {t.resDisclaimerTitle}
