@@ -26,11 +26,11 @@ app.add_middleware(
 CLASS_NAMES = [
     "Actinic keratosis",
     "Basal cell carcinoma",
-    "Seborrheic keratosis",
     "Dermatofibroma",
     "Eczema",
     "Melanoma",
     "Nevus",
+    "Seborrheic keratosis",
     "Squamous cell carcinoma",
     "Tinea",
     "Vascular lesion",
@@ -62,7 +62,7 @@ model = create_model(num_classes=len(CLASS_NAMES))
 
 # หา path ของ model
 BASE_DIR = Path(__file__).resolve().parent
-model_path = BASE_DIR.parent.parent / "model" / "final.pth"
+model_path = BASE_DIR.parent.parent / "model" / "skin_disease_effb2_260.pth"
 
 # ตรวจสอบว่าไฟล์มีจริง
 if not model_path.exists():
