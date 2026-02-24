@@ -12,6 +12,8 @@ import {
   FileText,
   Quote,
   ExternalLink,
+  Sparkles,
+  ScanLine,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
@@ -19,7 +21,7 @@ import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { useLanguage } from "../context/LanguageContext";
 
-// --- ข้อมูล Reference Images (เก็บไว้ที่เดิม) ---
+// --- ข้อมูล Reference Images ---
 const diseaseReferenceData = {
   melanoma: [
     "/public/assets/ref_mel/mel_01.jpg",
@@ -73,11 +75,25 @@ const diseaseReferenceData = {
   ],
 };
 
+// --- ชุดข้อมูลชื่อโรคภาษาไทย ---
+const thaiDiseaseNames = {
+  melanoma: "มะเร็งผิวหนังชนิดเมลาโนมา",
+  "basal cell carcinoma": "มะเร็งผิวหนังชนิดเบซัลเซลล์",
+  "actinic keratosis": "โรคผิวหนังจากแสงแดด",
+  "squamous cell carcinoma": "มะเร็งผิวหนังชนิดสความัสเซลล์",
+  nevus: "ไฝ หรือ ปาน",
+  "seborrheic keratosis": "โรคกระเนื้อ",
+  dermatofibroma: "เนื้องอกของเส้นใยในผิวหนัง",
+  "vascular lesion": "รอยโรคหลอดเลือดผิวหนัง",
+  tinea: "โรคกลากและเกลื้อน",
+  eczema: "โรคผื่นภูมิแพ้ผิวหนังชนิดเอคซิม่า",
+};
+
 const ResultPage = ({ result, previewUrl }) => {
   const { t, language } = useLanguage();
   const printRef = useRef();
 
-  const predictionName = result.prediction.toLowerCase();
+  const predictionName = result?.prediction?.toLowerCase() || "unknown";
   const referenceImages = diseaseReferenceData[predictionName] || [];
   const specificTreatments =
     t.treatments?.[predictionName] || t.treatments?.default || [];
@@ -152,7 +168,7 @@ const ResultPage = ({ result, previewUrl }) => {
         : "#22C55E";
 
   const [animatedConfidence, setAnimatedConfidence] = useState(0);
-  const targetConfidence = Math.round(result.confidence);
+  const targetConfidence = Math.round(result?.confidence || 0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -162,54 +178,46 @@ const ResultPage = ({ result, previewUrl }) => {
   }, [targetConfidence]);
 
   // -------------------------------------------------------------
-  // 🌟 ฟังก์ชัน Export PDF ใหม่: ปรับสมดุลแบบ แนวตั้ง (Portrait) 🌟
+  // 🌟 ฟังก์ชัน Export PDF
   // -------------------------------------------------------------
   const handleExportPDF = async () => {
     const element = printRef.current;
     if (!element) return;
 
     try {
-      // 1. ซ่อนปุ่มที่ไม่ต้องการใน PDF
       const buttons = document.querySelectorAll(".export-exclude");
       buttons.forEach((el) => (el.style.display = "none"));
 
-      // 2. บังคับ Light Mode ชั่วคราว (เพื่อไม่ให้ PDF มืด/เปลืองหมึก)
       const htmlElement = document.documentElement;
       const wasDarkMode = htmlElement.classList.contains("dark");
       if (wasDarkMode) htmlElement.classList.remove("dark");
 
-      // 3. กำหนดความกว้างหน้าจอให้พอดีกับสัดส่วน A4 แนวตั้ง
       const originalWidth = element.style.width;
       const originalPadding = element.style.padding;
-      element.style.width = "900px";
+      element.style.width = "1000px";
       element.style.padding = "20px";
 
-      // 4. เริ่มขั้นตอนย้ายตำแหน่งการ์ดให้สมดุล (DOM Balancing)
+      // --- 🌟 DOM Manipulation สำหรับจัด Layout ก่อน Print 🌟 ---
       const gridContainer = document.getElementById("pdf-grid-container");
       const leftCol = document.getElementById("pdf-left-col");
       const rightCol = document.getElementById("pdf-right-col");
-      const diseaseCard = document.getElementById("pdf-disease-card");
-      const disclaimerBox = document.getElementById("pdf-disclaimer-box");
+      const treatmentCard = document.getElementById("pdf-treatment-card");
 
-      // เก็บ CSS เดิมไว้เพื่อคืนค่า
       const origGridClass = gridContainer.className;
       const origLeftClass = leftCol.className;
       const origRightClass = rightCol.className;
 
-      // บังคับ Grid เป็น 2 คอลัมน์ 50:50 ชั่วคราว
       gridContainer.className = "grid grid-cols-2 gap-6 items-start";
       leftCol.className = "flex flex-col gap-6";
       rightCol.className = "flex flex-col gap-6";
 
-      // ย้ายการ์ด "รายละเอียดโรค" ไปฝั่งขวา (ก่อนกล่องข้อควรระวัง)
-      if (diseaseCard && rightCol && disclaimerBox) {
-        rightCol.insertBefore(diseaseCard, disclaimerBox);
+      if (treatmentCard && rightCol) {
+        rightCol.appendChild(treatmentCard);
       }
 
-      // รอ Browser เรียง Layout ให้เสร็จ
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // 5. แคปหน้าจอด้วยความละเอียดสูง
+      // --- 📸 ถ่ายภาพ ---
       const dataUrl = await toPng(element, {
         quality: 1.0,
         pixelRatio: 2,
@@ -219,14 +227,13 @@ const ResultPage = ({ result, previewUrl }) => {
         allowTaint: true,
       });
 
-      // 6. คืนสภาพหน้าเว็บกลับไปเหมือนเดิมทุกอย่างทันที
+      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม ---
       gridContainer.className = origGridClass;
       leftCol.className = origLeftClass;
       rightCol.className = origRightClass;
 
-      // ย้ายการ์ด "รายละเอียดโรค" กลับมาฝั่งซ้าย (ต่อจากการ์ดวิเคราะห์หลัก)
-      if (diseaseCard && leftCol) {
-        leftCol.insertBefore(diseaseCard, leftCol.children[1]);
+      if (treatmentCard && leftCol) {
+        leftCol.appendChild(treatmentCard);
       }
 
       element.style.width = originalWidth;
@@ -234,7 +241,7 @@ const ResultPage = ({ result, previewUrl }) => {
       if (wasDarkMode) htmlElement.classList.add("dark");
       buttons.forEach((el) => (el.style.display = "block"));
 
-      // 7. จัดการสร้าง PDF แนวตั้ง ("p" = Portrait)
+      // --- 📄 สร้าง PDF ---
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
 
@@ -253,7 +260,6 @@ const ResultPage = ({ result, previewUrl }) => {
         finalWidth = (imgProps.width * maxH) / imgProps.height;
       }
 
-      // จัดกึ่งกลางตรงกลางกระดาษเป๊ะๆ
       const xOffset = (pdfWidth - finalWidth) / 2;
       const yOffset = (pdfHeight - finalHeight) / 2;
 
@@ -308,114 +314,141 @@ const ResultPage = ({ result, previewUrl }) => {
         </div>
       </div>
 
-      <div ref={printRef} className="bg-transparent dark:text-gray-100">
-        {/* 👉 เพิ่ม ID ไว้สำหรับจัดระเบียบ Grid ตอนปริ้นท์ PDF */}
+      <div
+        ref={printRef}
+        className="bg-transparent dark:text-gray-100 flex flex-col gap-8"
+      >
+        {/* ======================================================== */}
+        {/* 🌟 1. TOP SECTION: Main Result Card 🌟 */}
+        {/* ======================================================== */}
+        <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
+          <div
+            className={`absolute top-0 inset-x-0 h-2 ${currentRisk.bg.replace("/20", "")} bg-opacity-100 z-20`}
+          ></div>
+
+          <div
+            className={`absolute top-0 right-0 w-80 h-80 ${currentRisk.bg} rounded-full blur-3xl opacity-30 -mr-20 -mt-20 pointer-events-none z-0`}
+          ></div>
+
+          <div className="p-6 md:p-8 relative z-10">
+            <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center justify-between">
+              {/* --- 1.1 Image Block --- */}
+              <div className="w-full md:w-56 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900">
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Analyzed"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    No Image
+                  </div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 backdrop-blur-sm rounded-b-[12px]">
+                  <p className="text-white text-xs font-medium text-center tracking-wide">
+                    {t.resAnalyzedImg}
+                  </p>
+                </div>
+              </div>
+
+              {/* --- 1.2 Result Details --- */}
+              <div className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left">
+                <span
+                  className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3 ${currentRisk.titleBg} ${currentRisk.titleText}`}
+                >
+                  <Activity size={14} />
+                  {currentRisk.conditionTitle}
+                </span>
+
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white capitalize leading-tight mb-1.5">
+                  {result.prediction}
+                </h2>
+
+                <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base font-semibold tracking-wide mb-5">
+                  {thaiDiseaseNames[predictionName] || t.resSkinDee}
+                </p>
+
+                {/* Tech Badges */}
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-[11px] font-semibold border border-indigo-100 dark:border-indigo-800 shadow-sm">
+                    <Sparkles size={14} />
+                    AI Deep Learning
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 rounded-lg text-[11px] font-semibold border border-gray-200 dark:border-gray-600 shadow-sm">
+                    <ScanLine size={14} />
+                    Pattern Analysis
+                  </span>
+                </div>
+              </div>
+
+              <div className="hidden md:block w-px h-36 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+
+              {/* --- 1.3 Confidence Gauge --- */}
+              <div className="w-full md:w-64 flex flex-col items-center justify-center flex-shrink-0 relative md:pr-8">
+                <h3 className="text-gray-500 dark:text-gray-400 font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
+                  <Activity size={14} className={currentRisk.iconColor} />
+                  {t.resAiScore}
+                </h3>
+
+                <div className="relative w-48 h-48 flex-shrink-0 z-10">
+                  <svg
+                    viewBox="0 0 120 120"
+                    className="w-full h-full transform -rotate-90 drop-shadow-sm"
+                  >
+                    {/* ✅ แก้ไข: บังคับให้เป็นสีเทาโดยตรง ป้องกันบั๊ก html-to-image ✅ */}
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="52"
+                      stroke="#e5e7eb"
+                      strokeWidth="8"
+                      fill="transparent"
+                      className="dark:stroke-gray-700"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="52"
+                      stroke={circleStroke}
+                      strokeWidth="8"
+                      fill="transparent"
+                      strokeDasharray="327"
+                      strokeDashoffset={
+                        327 - (327 * (animatedConfidence || 0)) / 100
+                      }
+                      strokeLinecap="round"
+                      className="transition-all duration-1000 ease-out"
+                    />
+                  </svg>
+
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span
+                      className={`text-6xl font-black ${circleColorClass} tracking-tighter`}
+                    >
+                      {Math.round(result?.confidence || 0)}
+                      <span className="text-3xl">%</span>
+                    </span>
+                    <span className="text-[11px] text-gray-500 dark:text-gray-400 font-bold mt-1 uppercase tracking-widest">
+                      {t.resConfidence}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 🌟 2. BOTTOM SECTION: Grid ซ้าย-ขวา 🌟 */}
+        {/* ======================================================== */}
         <div
           id="pdf-grid-container"
           className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start"
         >
           {/* --- Column Left --- */}
-          {/* 👉 เพิ่ม ID pdf-left-col */}
           <div id="pdf-left-col" className="lg:col-span-3 flex flex-col gap-8">
-            {/* 1. Main Result Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
-              <div
-                className={`absolute top-0 right-0 w-64 h-64 ${currentRisk.bg} rounded-full blur-3xl opacity-50 -mr-16 -mt-16 pointer-events-none`}
-              ></div>
-              <div
-                className={`h-1.5 w-full ${currentRisk.bg.replace("/20", "")} bg-opacity-100`}
-              ></div>
-              <div className="p-6 md:p-8 relative z-10">
-                <div className="flex flex-col md:flex-row gap-8 items-center">
-                  {/* Image Block */}
-                  <div className="w-full md:w-5/12 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900">
-                    {previewUrl ? (
-                      <img
-                        src={previewUrl}
-                        alt="Analyzed"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        No Image
-                      </div>
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 bg-black/60 p-2 py-1.5 backdrop-blur-sm rounded-b-[10px]">
-                      <p className="text-white text-xs font-medium text-center shadow-sm tracking-wide">
-                        {t.resAnalyzedImg}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Result Details */}
-                  <div className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left gap-6">
-                    <div>
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3 ${currentRisk.titleBg} ${currentRisk.titleText}`}
-                      >
-                        <Activity size={12} />
-                        {currentRisk.conditionTitle}
-                      </span>
-                      <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-1 capitalize leading-tight">
-                        {result.prediction}
-                      </h2>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
-                        {t.resSkinDee}
-                      </p>
-                    </div>
-
-                    {/* Confidence Gauge */}
-                    <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-700/30 p-3 rounded-xl border border-gray-100 dark:border-gray-600">
-                      <div className="relative w-16 h-16 flex-shrink-0">
-                        <svg className="w-full h-full transform -rotate-90">
-                          <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
-                            stroke="currentColor"
-                            strokeWidth="6"
-                            fill="transparent"
-                            className="text-gray-200 dark:text-gray-600"
-                          />
-                          <circle
-                            cx="32"
-                            cy="32"
-                            r="28"
-                            stroke={circleStroke}
-                            strokeWidth="6"
-                            fill="transparent"
-                            strokeDasharray={175.9}
-                            strokeDashoffset={
-                              175.9 - (175.9 * animatedConfidence) / 100
-                            }
-                            strokeLinecap="round"
-                            className="transition-all duration-1000 ease-out"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span
-                            className={`text-sm font-bold ${circleColorClass}`}
-                          >
-                            {Math.round(result.confidence)}%
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-left">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase font-semibold">
-                          {t.resConfidence}
-                        </p>
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                          {t.resAiScore}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* --- Disease Detail Info Section --- */}
-            {/* 👉 เพิ่ม ID pdf-disease-card (ตัวนี้แหละที่โดนย้ายไปฝั่งขวาตอนปรินต์) */}
+            {/* Disease Detail Info Section */}
             {diseaseDetails && (
               <div
                 id="pdf-disease-card"
@@ -498,8 +531,11 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
             )}
 
-            {/* 2. Treatment Recommendations */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
+            {/* Treatment Recommendations */}
+            <div
+              id="pdf-treatment-card"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6"
+            >
               <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
                 <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
                   <CheckCircle
@@ -536,8 +572,14 @@ const ResultPage = ({ result, previewUrl }) => {
                 )}
               </div>
             </div>
+          </div>
 
-            {/* 3. Reference Images */}
+          {/* --- Column Right --- */}
+          <div
+            id="pdf-right-col"
+            className="lg:col-span-2 flex flex-col gap-6 sticky top-24"
+          >
+            {/* Reference Images */}
             {referenceImages.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
                 <div className="flex items-center gap-2 mb-4">
@@ -568,14 +610,7 @@ const ResultPage = ({ result, previewUrl }) => {
                 </p>
               </div>
             )}
-          </div>
 
-          {/* --- Column Right (Sidebar - Sticky) --- */}
-          {/* 👉 เพิ่ม ID pdf-right-col */}
-          <div
-            id="pdf-right-col"
-            className="lg:col-span-2 flex flex-col gap-6 sticky top-24"
-          >
             {/* Risk Analysis Box */}
             <div
               className={`rounded-2xl p-6 shadow-md border ${currentRisk.bg} ${currentRisk.border} relative overflow-hidden`}
@@ -612,7 +647,6 @@ const ResultPage = ({ result, previewUrl }) => {
             </div>
 
             {/* Disclaimer Box */}
-            {/* 👉 เพิ่ม ID pdf-disclaimer-box */}
             <div
               id="pdf-disclaimer-box"
               className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-5 border border-gray-200 dark:border-gray-700/50"

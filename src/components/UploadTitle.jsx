@@ -10,10 +10,7 @@ const UploadTitle = () => {
           {t.uploadTop}
         </h1>
         <p className="text-center text-gray-600 text-base mb-9 dark:text-gray-300">
-          {t.uploadSuggest}{" "}
-          <a href="#" className="text-blue-500 hover:underline">
-            {t.uploadDetail}
-          </a>
+          {t.uploadSuggest}
         </p>
       </div>
     </div>

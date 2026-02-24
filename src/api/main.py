@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import torch
@@ -165,6 +166,12 @@ def health_check():
         "model_path": str(model_path),
         "model_exists": model_path.exists(),
     }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    # ส่งไฟล์ภาพว่างๆ (Empty content) กลับไปให้ Browser เลิกถามหา
+    return Response(content=b"", media_type="image/x-icon")
 
 
 if __name__ == "__main__":
