@@ -1,29 +1,9 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  User,
-  GraduationCap,
-  Target,
-  Layers,
-  Send,
-  CheckCircle2,
-} from "lucide-react";
+import { User, GraduationCap, Target, Layers } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 const AboutPage = () => {
   const { t } = useLanguage();
-  const [feedback, setFeedback] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmitFeedback = () => {
-    if (!feedback.trim()) return;
-    // ตรงนี้สามารถต่อ API เพื่อส่งข้อมูลจริงได้
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFeedback("");
-    }, 3000);
-  };
 
   // Animation Variants
   const containerVariant = {
@@ -182,62 +162,6 @@ const AboutPage = () => {
             <Tag color="blue">{t.tagFac}</Tag>
             <Tag color="blue">{t.tagYear}</Tag>
             <Tag color="green">{t.tagTech}</Tag>
-          </motion.div>
-
-          {/* Feedback Section */}
-          <motion.div
-            variants={itemVariant}
-            className="bg-white border border-gray-200 rounded-2xl p-8 shadow-xl relative overflow-hidden dark:bg-gray-800 dark:border-gray-700"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50 -mr-10 -mt-10 dark:bg-yellow-900/30"></div>
-
-            <div className="relative z-10">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2 dark:text-white flex items-center gap-2">
-                {t.feedTitle}
-              </h2>
-              <p className="text-gray-600 mb-6 dark:text-gray-300">
-                {t.feedDesc}
-              </p>
-              <div className="relative">
-                <textarea
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder={t.feedPlaceholder}
-                  disabled={isSubmitted}
-                  className="w-full h-32 p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base mb-4 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 transition-all shadow-inner disabled:opacity-50"
-                />
-                {isSubmitted && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-xl backdrop-blur-sm"
-                  >
-                    <CheckCircle2 className="w-12 h-12 text-green-500 mb-2" />
-                    <span className="text-green-600 font-bold text-lg">
-                      {t.feedThanks}
-                    </span>
-                  </motion.div>
-                )}
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  onClick={handleSubmitFeedback}
-                  disabled={isSubmitted || !feedback.trim()}
-                  className={`
-                        font-semibold px-8 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md
-                        ${
-                          isSubmitted || !feedback.trim()
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400"
-                            : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg transform hover:-translate-y-0.5"
-                        }
-                    `}
-                >
-                  <Send className="w-4 h-4" />
-                  {t.feedBtn}
-                </button>
-              </div>
-            </div>
           </motion.div>
         </motion.div>
       </section>
