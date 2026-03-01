@@ -118,7 +118,7 @@ const AboutPage = () => {
               <InfoItem label={t.infoTypeTitle} value={t.infoTypeVal} />
               <InfoItem
                 label={t.infoStatusTitle}
-                value={t.infoStatusVal}
+                value={t.infoStatusComplete}
                 color="text-green-600 dark:text-green-400"
               />
               <InfoItem label={t.infoStartTitle} value={t.infoStartVal} />

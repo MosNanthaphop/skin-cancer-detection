@@ -1629,7 +1629,7 @@ export const translations = {
     infoTypeVal: "Senior Project",
     infoStatusTitle: "Status",
     infoStatusVal: "In Development",
-    infoStatusCompTitle: "Completion",
+    infoStatusComplete: "Completion",
     infoStartTitle: "Start Date",
     infoStartVal: "July 2025",
     infoEndTitle: "Expected End",
