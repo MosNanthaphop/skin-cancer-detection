@@ -17,7 +17,7 @@ app = FastAPI()
 # เปิด CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -179,4 +179,4 @@ if __name__ == "__main__":
 
     print(f"Starting server...")
     print(f"Device: {device}")
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)

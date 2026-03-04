@@ -180,7 +180,7 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
                   alt="Preview"
                   className="max-h-[250px] w-full object-contain rounded-xl mx-auto shadow-md bg-gray-50 dark:bg-gray-900"
                 />
-                <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
                   <button
                     onClick={() => setIsCropping(true)}
                     className="p-2.5 bg-white text-gray-700 rounded-full shadow-lg hover:bg-gray-50 hover:text-blue-600 transition-all transform hover:scale-110"
