@@ -63,7 +63,7 @@ model = create_model(num_classes=len(CLASS_NAMES))
 
 # หา path ของ model
 BASE_DIR = Path(__file__).resolve().parent
-model_path = BASE_DIR.parent.parent / "model" / "all_white.pth"
+model_path = BASE_DIR.parent.parent / "model" / "baseline_standard.pth"
 
 # ตรวจสอบว่าไฟล์มีจริง
 if not model_path.exists():
