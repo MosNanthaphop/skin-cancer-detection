@@ -59,11 +59,11 @@ const Navbar = ({ isOpen = true }) => {
   return (
     <aside
       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col 
-                  transition-all duration-300 ease-in-out min-h-screen sticky top-0 h-screen z-50
+                  transition-all duration-300 ease-in-out sticky top-0 h-screen z-50 overflow-hidden
                   ${isOpen ? "w-64" : "w-20"}`}
     >
       {/* --- 1. Profile / Logo Section --- */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center flex-shrink-0">
         <div
           className={`rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-600 bg-white shadow-sm transition-all duration-300
                       ${isOpen ? "w-24 h-24 mb-3" : "w-10 h-10 mb-0"}`}
@@ -88,7 +88,7 @@ const Navbar = ({ isOpen = true }) => {
       </div>
 
       {/* --- 2. Navigation Menu (ใช้ Loop แบบใหม่) --- */}
-      <nav className="flex-1 py-4 px-3 space-y-2 overflow-y-auto">
+      <nav className="flex-1 py-4 px-3 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
         {menuItems.map((item) => (
           <Link
             key={item.path}
@@ -119,7 +119,7 @@ const Navbar = ({ isOpen = true }) => {
       </nav>
 
       {/* --- 3. Settings Section (คงไว้เหมือนเดิมตามคำขอ) --- */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-800">
         <div
           className={`flex items-center gap-4 ${isOpen ? "justify-between" : "flex-col"}`}
         >
