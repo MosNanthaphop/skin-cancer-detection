@@ -244,7 +244,7 @@ const ResultPage = ({ result, previewUrl }) => {
       if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // รูปอ้างอิงเป็น 3 คอลัมน์
 
       // 🌟 [สำคัญมาก] เพิ่มเวลาดีเลย์เป็น 1.5 วินาที เพื่อให้มือถือโหลดรูปเสร็จ (แก้บั๊กภาพขาว) 🌟
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือค้าง) ---
       const isMobile = window.innerWidth < 768;
@@ -369,14 +369,16 @@ const ResultPage = ({ result, previewUrl }) => {
 
           <div className="p-6 md:p-8 relative z-10">
             {/* [เพิ่ม ID] pdf-main-card-flex */}
+            {/* [เปลี่ยน md: เป็น lg: ทั้งหมดในส่วนนี้] */}
             <div
               id="pdf-main-card-flex"
-              className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center justify-between"
+              className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-between"
             >
               {/* --- 1.1 Image Block --- */}
               <div
                 id="pdf-uploaded-img-container"
-                className="w-full md:w-56 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900"
+                // ปรับให้มือถือเต็มจอ ไอแพดแนวตั้งกว้างกำลังดี(sm:w-80) และจอคอมกว้างเท่าเดิม(lg:w-64)
+                className="w-full sm:w-80 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900"
               >
                 {previewUrl ? (
                   <img
@@ -397,10 +399,9 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
 
               {/* --- 1.2 Result Details --- */}
-              {/* [เพิ่ม ID] pdf-result-details */}
               <div
                 id="pdf-result-details"
-                className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left"
+                className="flex-1 w-full flex flex-col items-center lg:items-start text-center lg:text-left"
               >
                 <span
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3 ${currentRisk.titleBg} ${currentRisk.titleText}`}
@@ -418,7 +419,7 @@ const ResultPage = ({ result, previewUrl }) => {
                 </p>
 
                 {/* Tech Badges */}
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-[11px] font-semibold border border-indigo-100 dark:border-indigo-800 shadow-sm">
                     <Sparkles size={14} />
                     AI Deep Learning
@@ -430,17 +431,16 @@ const ResultPage = ({ result, previewUrl }) => {
                 </div>
               </div>
 
-              {/* [เพิ่ม ID] pdf-divider */}
+              {/* เส้นคั่นตรงกลางจะโชว์แค่ในจอคอม (lg:block) */}
               <div
                 id="pdf-divider"
-                className="hidden md:block w-px h-36 bg-gray-200 dark:bg-gray-700 mx-2"
+                className="hidden lg:block w-px h-36 bg-gray-200 dark:bg-gray-700 mx-2"
               ></div>
 
               {/* --- 1.3 Confidence Gauge --- */}
-              {/* [เพิ่ม ID] pdf-gauge-container */}
               <div
                 id="pdf-gauge-container"
-                className="w-full md:w-64 flex flex-col items-center justify-center flex-shrink-0 relative md:pr-8"
+                className="w-full lg:w-64 flex flex-col items-center justify-center flex-shrink-0 relative lg:pr-8"
               >
                 <h3 className="text-gray-500 dark:text-gray-400 font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
                   <Activity size={14} className={currentRisk.iconColor} />
