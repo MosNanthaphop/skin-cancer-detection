@@ -238,7 +238,7 @@ const HeroSlider = ({ t }) => {
   };
 
   return (
-    <div className="relative w-full h-48 md:h-75 rounded-2xl overflow-hidden shadow-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <div className="relative w-full h-80 sm:h-96 md:h-[300px] rounded-2xl overflow-hidden shadow-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
       <AnimatePresence mode="popLayout">
         <motion.div
           key={currentIndex}

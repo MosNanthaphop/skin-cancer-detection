@@ -7,42 +7,59 @@ import Footer from "./Footer";
 import { useLanguage } from "../context/LanguageContext";
 
 const AppLayout = () => {
-  const { pathname } = useLocation(); // [ใหม่] ดึง path ปัจจุบัน
-  const mainContentRef = useRef(null); // [ใหม่] สร้าง ref เพื่อจับกล่องเนื้อหา
+  const { pathname } = useLocation();
+  const mainContentRef = useRef(null);
   const { t } = useLanguage();
-  const [isNavbarOpen, setIsNavbarOpen] = useState(true);
-  const [activePage, setActivePage] = useState("home");
-  const location = useLocation(); // 2. เรียกใช้ useLocation
 
-  // 3. [ใหม่] สร้าง State สำหรับ Breadcrumb โดยเฉพาะ
+  // 1. [แก้ไข] ตั้งค่าเริ่มต้นโดยเช็คขนาดจอ ถ้าจอใหญ่ให้กาง (true) ถ้าจอเล็กให้พับ (false)
+  const [isNavbarOpen, setIsNavbarOpen] = useState(window.innerWidth > 768);
+
+  const [activePage, setActivePage] = useState("home");
+  const location = useLocation();
   const [breadcrumb, setBreadcrumb] = useState([]);
 
-  // 4. [แก้ไข] แก้ไข useEffect ให้ตรวจจับ hash ด้วย
+  // 2. [เพิ่มใหม่] useEffect สำหรับดักจับการย่อ/ขยายหน้าจอแบบ Real-time
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsNavbarOpen(false); // จอเล็ก (มือถือ) -> สั่งพับ
+      } else {
+        setIsNavbarOpen(true); // จอใหญ่ (คอม) -> สั่งกาง
+      }
+    };
+
+    // แปะ Event Listener
+    window.addEventListener("resize", handleResize);
+
+    // คืนค่า Event Listener เมื่อ Component ถูกทำลาย
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // ------------------------------------------------------------------
+  // (โค้ดส่วนล่างนี้คือระบบเดิมของคุณทั้งหมด ไม่ได้แก้ไขอะไรครับ)
+  // ------------------------------------------------------------------
 
   useEffect(() => {
     if (mainContentRef.current) {
       mainContentRef.current.scrollTo(0, 0);
     }
-    // กันเหนียว: สั่ง Window scroll ด้วยเผื่อโครงสร้างเปลี่ยน
     window.scrollTo(0, 0);
   }, [pathname]);
 
   useEffect(() => {
-    const path = location.pathname; // เช่น "/upload"
-    const hash = location.hash; // เช่น "#result"
+    const path = location.pathname;
+    const hash = location.hash;
 
-    // 5. อัปเดต ActivePage (เหมือนเดิม)
     const currentPage = path.substring(1).split("/")[0] || "home";
     setActivePage(currentPage);
 
-    // 6. [ใหม่] สร้าง Array ของ Breadcrumb ตาม Path และ Hash
     let newBreadcrumb = [];
     if (currentPage === "home") {
-      newBreadcrumb = [t.home]; // หน้า Home ไม่มี breadcrumb
+      newBreadcrumb = [t.home];
     } else if (currentPage === "upload") {
-      newBreadcrumb = [t.upload]; // หน้า Upload พื้นฐาน
+      newBreadcrumb = [t.upload];
       if (hash === "#result") {
-        newBreadcrumb.push(t.result); // ถ้ามี #result ให้เพิ่ม "Result"
+        newBreadcrumb.push(t.result);
       }
     } else if (currentPage === "faq") {
       newBreadcrumb = [t.faq];
@@ -52,8 +69,8 @@ const AppLayout = () => {
       newBreadcrumb = [t.privacy];
     }
 
-    setBreadcrumb(newBreadcrumb); // 7. อัปเดต State ของ Breadcrumb
-  }, [location, t]); // 8. สั่งให้ useEffect ทำงานใหม่ทุกครั้งที่ location เปลี่ยน
+    setBreadcrumb(newBreadcrumb);
+  }, [location, t]);
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -71,10 +88,10 @@ const AppLayout = () => {
           >
             <HiMenu size={24} />
           </button>
-          {/* 9. [แก้ไข] ส่ง State (Array) ใหม่นี้ไปให้ Header */}
+
           <Header breadcrumb={breadcrumb} />
         </header>
-        {/* (ส่วน Outlet และ Footer เหมือนเดิม) */}
+
         <div className="min-h-full">
           <Outlet />
         </div>
@@ -83,4 +100,5 @@ const AppLayout = () => {
     </div>
   );
 };
+
 export default AppLayout;

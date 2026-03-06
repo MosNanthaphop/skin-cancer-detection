@@ -59,7 +59,7 @@ const Navbar = ({ isOpen = true }) => {
   return (
     <aside
       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col 
-                  transition-all duration-300 ease-in-out min-h-screen sticky top-0 h-screen
+                  transition-all duration-300 ease-in-out min-h-screen sticky top-0 h-screen z-50
                   ${isOpen ? "w-64" : "w-20"}`}
     >
       {/* --- 1. Profile / Logo Section --- */}
@@ -68,11 +68,13 @@ const Navbar = ({ isOpen = true }) => {
           className={`rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-600 bg-white shadow-sm transition-all duration-300
                       ${isOpen ? "w-24 h-24 mb-3" : "w-10 h-10 mb-0"}`}
         >
-          <img
-            src="/Logo3.png"
-            alt="SkinDee Logo"
-            className="w-full h-full object-cover"
-          />
+          <a href="/">
+            <img
+              src="/Logo3.png"
+              alt="SkinDee Logo"
+              className="w-full h-full object-cover"
+            />
+          </a>
         </div>
 
         {/* ชื่อแอป */}
@@ -157,7 +159,7 @@ const Navbar = ({ isOpen = true }) => {
             {/* Language Menu */}
             {showLanguageMenu && (
               <div
-                className={`absolute w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden z-50
+                className={`absolute w-40 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 overflow-hidden z-[60]
                   ${isOpen ? "bottom-full left-0 mb-2" : "bottom-0 left-full ml-2"}
                 `}
               >
