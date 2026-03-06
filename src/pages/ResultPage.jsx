@@ -21,7 +21,7 @@ import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
 import { useLanguage } from "../context/LanguageContext";
 
-// --- ข้อมูล Reference Images ---
+// --- ข้อมูล Reference Images (Path ถูกแก้ให้ไม่มี /public) ---
 const diseaseReferenceData = {
   melanoma: [
     "/assets/ref_mel/mel_01.jpg",
@@ -178,7 +178,7 @@ const ResultPage = ({ result, previewUrl }) => {
   }, [targetConfidence]);
 
   // -------------------------------------------------------------
-  // 🌟 ฟังก์ชัน Export PDF (อัปเกรด บังคับ Layout คอมพิวเตอร์)
+  // 🌟 ฟังก์ชัน Export PDF (แก้ไข Layout และ บั๊กภาพขาว)
   // -------------------------------------------------------------
   const handleExportPDF = async () => {
     const element = printRef.current;
@@ -192,16 +192,16 @@ const ResultPage = ({ result, previewUrl }) => {
       const wasDarkMode = htmlElement.classList.contains("dark");
       if (wasDarkMode) htmlElement.classList.remove("dark");
 
-      // กำหนดขนาดให้เหมือนหน้าจอคอมพิวเตอร์
       const originalWidth = element.style.width;
       const originalPadding = element.style.padding;
       element.style.width = "1000px";
       element.style.padding = "20px";
 
-      // --- 🌟 DOM Manipulation สำหรับบังคับ Layout แบบ Desktop 🌟 ---
+      // --- 🌟 DOM Manipulation สำหรับจัด Layout ก่อน Print 🌟 ---
       const gridContainer = document.getElementById("pdf-grid-container");
       const leftCol = document.getElementById("pdf-left-col");
       const rightCol = document.getElementById("pdf-right-col");
+      const treatmentCard = document.getElementById("pdf-treatment-card");
       const uploadedImg = document.getElementById("pdf-uploaded-img-container");
       const mainCardFlex = document.getElementById("pdf-main-card-flex");
       const divider = document.getElementById("pdf-divider");
@@ -209,7 +209,6 @@ const ResultPage = ({ result, previewUrl }) => {
       const refImgGrid = document.getElementById("pdf-ref-img-grid");
       const resultDetails = document.getElementById("pdf-result-details");
 
-      // เก็บค่า Class ต้นฉบับไว้คืนร่างทีหลัง
       const origGridClass = gridContainer?.className || "";
       const origLeftClass = leftCol?.className || "";
       const origRightClass = rightCol?.className || "";
@@ -220,16 +219,16 @@ const ResultPage = ({ result, previewUrl }) => {
       const origRefImgGridClass = refImgGrid?.className || "";
       const origResultDetailsClass = resultDetails?.className || "";
 
-      // 🔥 สลับ Class บังคับให้เป็นรูปแบบเดียวกับจอคอม 100% 🔥
+      // 🔥 บังคับให้เป็น Desktop Layout 100% 🔥
       if (gridContainer)
-        gridContainer.className = "grid grid-cols-5 gap-8 items-start"; // บังคับแบ่ง 5 ส่วน (ซ้าย 3 ขวา 2)
+        gridContainer.className = "grid grid-cols-5 gap-8 items-start";
       if (leftCol) leftCol.className = "col-span-3 flex flex-col gap-8";
       if (rightCol) rightCol.className = "col-span-2 flex flex-col gap-6";
 
-      // ปรับขนาดรูปที่อัปโหลดให้พอดีในโหมด Desktop
+      // ย่อขนาดรูปรอยโรคที่อัปโหลดให้พอดีในโหมด Desktop PDF
       if (uploadedImg)
         uploadedImg.className =
-          "w-56 h-56 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 shadow-inner relative bg-gray-50";
+          "w-56 h-56 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 shadow-inner relative bg-gray-50 mb-4";
 
       // บังคับการเรียงตัวของ Main Card ด้านบนให้เรียงแนวนอน (Desktop Mode)
       if (mainCardFlex)
@@ -242,12 +241,12 @@ const ResultPage = ({ result, previewUrl }) => {
       if (gaugeContainer)
         gaugeContainer.className =
           "w-64 flex flex-col items-center justify-center flex-shrink-0 relative pr-4";
-      if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // บังคับรูปอ้างอิงให้เป็น 3 คอลัมน์
+      if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // รูปอ้างอิงเป็น 3 คอลัมน์
 
-      // รอ 1.5 วินาที ให้การสลับ Class และโหลดรูปเสร็จสมบูรณ์
+      // 🌟 [สำคัญมาก] เพิ่มเวลาดีเลย์เป็น 1.5 วินาที เพื่อให้มือถือโหลดรูปเสร็จ (แก้บั๊กภาพขาว) 🌟
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // --- 📸 ถ่ายภาพ ---
+      // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือค้าง) ---
       const isMobile = window.innerWidth < 768;
       const dataUrl = await toPng(element, {
         quality: 0.9,
@@ -263,7 +262,7 @@ const ResultPage = ({ result, previewUrl }) => {
         },
       });
 
-      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม (Mobile Responsive เหมือนเดิม) ---
+      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม (Mobile Responsive) ---
       if (gridContainer) gridContainer.className = origGridClass;
       if (leftCol) leftCol.className = origLeftClass;
       if (rightCol) rightCol.className = origRightClass;
