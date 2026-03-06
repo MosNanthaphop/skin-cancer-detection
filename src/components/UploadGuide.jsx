@@ -81,7 +81,7 @@ const UploadGuide = ({ onClose }) => {
             <IoChevronBack size={24} />
           </button>
 
-          <h2 className="text-lg font-bold text-gray-800 dark:text-white">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-white text-center">
             {t.guideTitle}
           </h2>
 
