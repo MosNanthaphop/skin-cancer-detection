@@ -203,33 +203,41 @@ const ResultPage = ({ result, previewUrl }) => {
       const rightCol = document.getElementById("pdf-right-col");
       const treatmentCard = document.getElementById("pdf-treatment-card");
 
+      // ดึงกล่องรูปที่เราอัปโหลดมาเตรียมย่อขนาด
+      const uploadedImg = document.getElementById("pdf-uploaded-img-container");
+
       const origGridClass = gridContainer.className;
       const origLeftClass = leftCol.className;
       const origRightClass = rightCol.className;
+      const origUploadedImgClass = uploadedImg ? uploadedImg.className : "";
 
       gridContainer.className = "grid grid-cols-2 gap-6 items-start";
       leftCol.className = "flex flex-col gap-6";
       rightCol.className = "flex flex-col gap-6";
 
+      // ย่อขนาดรูปรอยโรคที่อัปโหลดให้เล็กลงเฉพาะใน PDF
+      if (uploadedImg) {
+        uploadedImg.className =
+          "w-32 h-32 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 shadow-inner relative bg-gray-50 mb-4";
+      }
+
       if (treatmentCard && rightCol) {
         rightCol.appendChild(treatmentCard);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือ) ---
-      // 1. เช็คว่าเป็นมือถือหรือไม่ ถ้าใช่ให้ใช้ความละเอียดแค่ 1 เท่าเพื่อเซฟ RAM
-      const isMobile = window.innerWidth < 768;
+      // ดีเลย์ 1.5 วิ ให้รูปภาพโหลดเสร็จก่อนค่อยแคป (แก้บั๊กภาพขาวบนมือถือ)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // --- 📸 ถ่ายภาพ ---
+      const isMobile = window.innerWidth < 768;
       const dataUrl = await toPng(element, {
-        quality: 0.9, // ลดคุณภาพนิดนึงเพื่อไม่ให้ไฟล์หนักเกินไป
-        pixelRatio: isMobile ? 1 : 2, // 🌟 จุดสำคัญ: มือถือใช้ 1 คอมใช้ 2
+        quality: 0.9,
+        pixelRatio: isMobile ? 1 : 2,
         backgroundColor: "#ffffff",
         cacheBust: true,
         useCORS: true,
         allowTaint: true,
-        // 🌟 ปิดเอฟเฟกต์ที่มักทำให้มือถือค้าง (Safari iOS เกลียด Backdrop blur ตอนทำ Canvas)
+        // ปิดเอฟเฟกต์ที่มักทำให้มือถือค้าง
         style: {
           backdropFilter: "none",
           WebkitBackdropFilter: "none",
@@ -241,6 +249,10 @@ const ResultPage = ({ result, previewUrl }) => {
       gridContainer.className = origGridClass;
       leftCol.className = origLeftClass;
       rightCol.className = origRightClass;
+
+      if (uploadedImg) {
+        uploadedImg.className = origUploadedImgClass;
+      }
 
       if (treatmentCard && leftCol) {
         leftCol.appendChild(treatmentCard);
@@ -343,7 +355,10 @@ const ResultPage = ({ result, previewUrl }) => {
           <div className="p-6 md:p-8 relative z-10">
             <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center justify-between">
               {/* --- 1.1 Image Block --- */}
-              <div className="w-full md:w-56 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900">
+              <div
+                id="pdf-uploaded-img-container"
+                className="w-full md:w-56 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900"
+              >
                 {previewUrl ? (
                   <img
                     src={previewUrl}
@@ -406,7 +421,6 @@ const ResultPage = ({ result, previewUrl }) => {
                     viewBox="0 0 120 120"
                     className="w-full h-full transform -rotate-90 drop-shadow-sm"
                   >
-                    {/* ✅ แก้ไข: บังคับให้เป็นสีเทาโดยตรง ป้องกันบั๊ก html-to-image ✅ */}
                     <circle
                       cx="60"
                       cy="60"
@@ -598,18 +612,17 @@ const ResultPage = ({ result, previewUrl }) => {
                     {t.resRefImg}
                   </h3>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {referenceImages.map((imgSrc, index) => (
                     <div
                       key={index}
-                      className="aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative"
+                      className="aspect-video sm:aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative"
                       onClick={() => window.open(imgSrc, "_blank")}
                     >
                       <img
                         src={imgSrc}
                         alt={`Ref ${index}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        crossOrigin="anonymous"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     </div>
