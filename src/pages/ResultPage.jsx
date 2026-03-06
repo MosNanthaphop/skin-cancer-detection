@@ -244,7 +244,7 @@ const ResultPage = ({ result, previewUrl }) => {
       if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // รูปอ้างอิงเป็น 3 คอลัมน์
 
       // 🌟 [สำคัญมาก] เพิ่มเวลาดีเลย์เป็น 1.5 วินาที เพื่อให้มือถือโหลดรูปเสร็จ (แก้บั๊กภาพขาว) 🌟
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือค้าง) ---
       const isMobile = window.innerWidth < 768;
