@@ -58,8 +58,9 @@ const Navbar = ({ isOpen = true }) => {
 
   return (
     <aside
+      // 🌟 [แก้จุดที่ 1] ลบ min-h-screen ทิ้ง และเปลี่ยน h-screen เป็น h-[100dvh]
       className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col 
-                  transition-all duration-300 ease-in-out min-h-screen sticky top-0 h-screen z-50
+                  transition-all duration-300 ease-in-out sticky top-0 h-[100dvh] z-50
                   ${isOpen ? "w-64" : "w-20"}`}
     >
       {/* --- 1. Profile / Logo Section --- */}
@@ -87,8 +88,9 @@ const Navbar = ({ isOpen = true }) => {
         </div>
       </div>
 
-      {/* --- 2. Navigation Menu (ใช้ Loop แบบใหม่) --- */}
-      <nav className="flex-1 py-4 px-3 space-y-2 overflow-y-auto">
+      {/* --- 2. Navigation Menu --- */}
+      {/* 🌟 [แก้จุดที่ 2] เติม min-h-0 ลงไปเพื่อให้กล่องนี้หดตัวได้เมื่อเจอจอเล็ก */}
+      <nav className="flex-1 min-h-0 py-4 px-3 space-y-2 overflow-y-auto">
         {menuItems.map((item) => (
           <Link
             key={item.path}
@@ -118,12 +120,12 @@ const Navbar = ({ isOpen = true }) => {
         ))}
       </nav>
 
-      {/* --- 3. Settings Section (คงไว้เหมือนเดิมตามคำขอ) --- */}
+      {/* --- 3. Settings Section --- */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <div
           className={`flex items-center gap-4 ${isOpen ? "justify-between" : "flex-col"}`}
         >
-          {/* Language Dropdown (แบบเดิม) */}
+          {/* Language Dropdown */}
           <div
             className={`relative ${isOpen ? "flex-1" : "w-full"}`}
             ref={dropdownRef}
@@ -183,7 +185,7 @@ const Navbar = ({ isOpen = true }) => {
             )}
           </div>
 
-          {/* Theme Toggle Icons (แบบเดิม 3 ปุ่ม) */}
+          {/* Theme Toggle Icons */}
           <div className={`flex items-center gap-2 ${!isOpen && "flex-col"}`}>
             <button
               onClick={() => setDarkMode(false)}
