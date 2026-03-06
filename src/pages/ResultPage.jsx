@@ -217,14 +217,24 @@ const ResultPage = ({ result, previewUrl }) => {
 
       await new Promise((resolve) => setTimeout(resolve, 300));
 
+      // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือ) ---
+      // 1. เช็คว่าเป็นมือถือหรือไม่ ถ้าใช่ให้ใช้ความละเอียดแค่ 1 เท่าเพื่อเซฟ RAM
+      const isMobile = window.innerWidth < 768;
+
       // --- 📸 ถ่ายภาพ ---
       const dataUrl = await toPng(element, {
-        quality: 1.0,
-        pixelRatio: 2,
+        quality: 0.9, // ลดคุณภาพนิดนึงเพื่อไม่ให้ไฟล์หนักเกินไป
+        pixelRatio: isMobile ? 1 : 2, // 🌟 จุดสำคัญ: มือถือใช้ 1 คอมใช้ 2
         backgroundColor: "#ffffff",
         cacheBust: true,
         useCORS: true,
         allowTaint: true,
+        // 🌟 ปิดเอฟเฟกต์ที่มักทำให้มือถือค้าง (Safari iOS เกลียด Backdrop blur ตอนทำ Canvas)
+        style: {
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+          transform: "none",
+        },
       });
 
       // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม ---
@@ -278,7 +288,7 @@ const ResultPage = ({ result, previewUrl }) => {
         .querySelectorAll(".export-exclude")
         .forEach((el) => (el.style.display = "block"));
       alert(
-        "Failed to export PDF. Please try again or check your internet connection.",
+        `Failed to export PDF. Error: ${error.message || "Unknown error"}. Please try again.`,
       );
     }
   };
