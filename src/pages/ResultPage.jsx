@@ -178,7 +178,7 @@ const ResultPage = ({ result, previewUrl }) => {
   }, [targetConfidence]);
 
   // -------------------------------------------------------------
-  // 🌟 ฟังก์ชัน Export PDF
+  // 🌟 ฟังก์ชัน Export PDF (อัปเกรด บังคับ Layout คอมพิวเตอร์)
   // -------------------------------------------------------------
   const handleExportPDF = async () => {
     const element = printRef.current;
@@ -192,40 +192,59 @@ const ResultPage = ({ result, previewUrl }) => {
       const wasDarkMode = htmlElement.classList.contains("dark");
       if (wasDarkMode) htmlElement.classList.remove("dark");
 
+      // กำหนดขนาดให้เหมือนหน้าจอคอมพิวเตอร์
       const originalWidth = element.style.width;
       const originalPadding = element.style.padding;
       element.style.width = "1000px";
       element.style.padding = "20px";
 
-      // --- 🌟 DOM Manipulation สำหรับจัด Layout ก่อน Print 🌟 ---
+      // --- 🌟 DOM Manipulation สำหรับบังคับ Layout แบบ Desktop 🌟 ---
       const gridContainer = document.getElementById("pdf-grid-container");
       const leftCol = document.getElementById("pdf-left-col");
       const rightCol = document.getElementById("pdf-right-col");
-      const treatmentCard = document.getElementById("pdf-treatment-card");
-
-      // ดึงกล่องรูปที่เราอัปโหลดมาเตรียมย่อขนาด
       const uploadedImg = document.getElementById("pdf-uploaded-img-container");
+      const mainCardFlex = document.getElementById("pdf-main-card-flex");
+      const divider = document.getElementById("pdf-divider");
+      const gaugeContainer = document.getElementById("pdf-gauge-container");
+      const refImgGrid = document.getElementById("pdf-ref-img-grid");
+      const resultDetails = document.getElementById("pdf-result-details");
 
-      const origGridClass = gridContainer.className;
-      const origLeftClass = leftCol.className;
-      const origRightClass = rightCol.className;
-      const origUploadedImgClass = uploadedImg ? uploadedImg.className : "";
+      // เก็บค่า Class ต้นฉบับไว้คืนร่างทีหลัง
+      const origGridClass = gridContainer?.className || "";
+      const origLeftClass = leftCol?.className || "";
+      const origRightClass = rightCol?.className || "";
+      const origUploadedImgClass = uploadedImg?.className || "";
+      const origMainCardFlexClass = mainCardFlex?.className || "";
+      const origDividerClass = divider?.className || "";
+      const origGaugeContainerClass = gaugeContainer?.className || "";
+      const origRefImgGridClass = refImgGrid?.className || "";
+      const origResultDetailsClass = resultDetails?.className || "";
 
-      gridContainer.className = "grid grid-cols-2 gap-6 items-start";
-      leftCol.className = "flex flex-col gap-6";
-      rightCol.className = "flex flex-col gap-6";
+      // 🔥 สลับ Class บังคับให้เป็นรูปแบบเดียวกับจอคอม 100% 🔥
+      if (gridContainer)
+        gridContainer.className = "grid grid-cols-5 gap-8 items-start"; // บังคับแบ่ง 5 ส่วน (ซ้าย 3 ขวา 2)
+      if (leftCol) leftCol.className = "col-span-3 flex flex-col gap-8";
+      if (rightCol) rightCol.className = "col-span-2 flex flex-col gap-6";
 
-      // ย่อขนาดรูปรอยโรคที่อัปโหลดให้เล็กลงเฉพาะใน PDF
-      if (uploadedImg) {
+      // ปรับขนาดรูปที่อัปโหลดให้พอดีในโหมด Desktop
+      if (uploadedImg)
         uploadedImg.className =
-          "w-32 h-32 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 shadow-inner relative bg-gray-50 mb-4";
-      }
+          "w-56 h-56 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 shadow-inner relative bg-gray-50";
 
-      if (treatmentCard && rightCol) {
-        rightCol.appendChild(treatmentCard);
-      }
+      // บังคับการเรียงตัวของ Main Card ด้านบนให้เรียงแนวนอน (Desktop Mode)
+      if (mainCardFlex)
+        mainCardFlex.className =
+          "flex flex-row gap-8 items-center justify-between";
+      if (resultDetails)
+        resultDetails.className =
+          "flex-1 w-full flex flex-col items-start text-left";
+      if (divider) divider.className = "block w-px h-36 bg-gray-200 mx-2";
+      if (gaugeContainer)
+        gaugeContainer.className =
+          "w-64 flex flex-col items-center justify-center flex-shrink-0 relative pr-4";
+      if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // บังคับรูปอ้างอิงให้เป็น 3 คอลัมน์
 
-      // ดีเลย์ 1.5 วิ ให้รูปภาพโหลดเสร็จก่อนค่อยแคป (แก้บั๊กภาพขาวบนมือถือ)
+      // รอ 1.5 วินาที ให้การสลับ Class และโหลดรูปเสร็จสมบูรณ์
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // --- 📸 ถ่ายภาพ ---
@@ -237,7 +256,6 @@ const ResultPage = ({ result, previewUrl }) => {
         cacheBust: true,
         useCORS: true,
         allowTaint: true,
-        // ปิดเอฟเฟกต์ที่มักทำให้มือถือค้าง
         style: {
           backdropFilter: "none",
           WebkitBackdropFilter: "none",
@@ -245,18 +263,16 @@ const ResultPage = ({ result, previewUrl }) => {
         },
       });
 
-      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม ---
-      gridContainer.className = origGridClass;
-      leftCol.className = origLeftClass;
-      rightCol.className = origRightClass;
-
-      if (uploadedImg) {
-        uploadedImg.className = origUploadedImgClass;
-      }
-
-      if (treatmentCard && leftCol) {
-        leftCol.appendChild(treatmentCard);
-      }
+      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม (Mobile Responsive เหมือนเดิม) ---
+      if (gridContainer) gridContainer.className = origGridClass;
+      if (leftCol) leftCol.className = origLeftClass;
+      if (rightCol) rightCol.className = origRightClass;
+      if (uploadedImg) uploadedImg.className = origUploadedImgClass;
+      if (mainCardFlex) mainCardFlex.className = origMainCardFlexClass;
+      if (divider) divider.className = origDividerClass;
+      if (gaugeContainer) gaugeContainer.className = origGaugeContainerClass;
+      if (refImgGrid) refImgGrid.className = origRefImgGridClass;
+      if (resultDetails) resultDetails.className = origResultDetailsClass;
 
       element.style.width = originalWidth;
       element.style.padding = originalPadding;
@@ -353,7 +369,11 @@ const ResultPage = ({ result, previewUrl }) => {
           ></div>
 
           <div className="p-6 md:p-8 relative z-10">
-            <div className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center justify-between">
+            {/* [เพิ่ม ID] pdf-main-card-flex */}
+            <div
+              id="pdf-main-card-flex"
+              className="flex flex-col md:flex-row gap-6 lg:gap-10 items-center justify-between"
+            >
               {/* --- 1.1 Image Block --- */}
               <div
                 id="pdf-uploaded-img-container"
@@ -378,7 +398,11 @@ const ResultPage = ({ result, previewUrl }) => {
               </div>
 
               {/* --- 1.2 Result Details --- */}
-              <div className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left">
+              {/* [เพิ่ม ID] pdf-result-details */}
+              <div
+                id="pdf-result-details"
+                className="flex-1 w-full flex flex-col items-center md:items-start text-center md:text-left"
+              >
                 <span
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3 ${currentRisk.titleBg} ${currentRisk.titleText}`}
                 >
@@ -407,10 +431,18 @@ const ResultPage = ({ result, previewUrl }) => {
                 </div>
               </div>
 
-              <div className="hidden md:block w-px h-36 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+              {/* [เพิ่ม ID] pdf-divider */}
+              <div
+                id="pdf-divider"
+                className="hidden md:block w-px h-36 bg-gray-200 dark:bg-gray-700 mx-2"
+              ></div>
 
               {/* --- 1.3 Confidence Gauge --- */}
-              <div className="w-full md:w-64 flex flex-col items-center justify-center flex-shrink-0 relative md:pr-8">
+              {/* [เพิ่ม ID] pdf-gauge-container */}
+              <div
+                id="pdf-gauge-container"
+                className="w-full md:w-64 flex flex-col items-center justify-center flex-shrink-0 relative md:pr-8"
+              >
                 <h3 className="text-gray-500 dark:text-gray-400 font-bold mb-3 uppercase tracking-wider text-xs flex items-center gap-1.5">
                   <Activity size={14} className={currentRisk.iconColor} />
                   {t.resAiScore}
@@ -612,7 +644,11 @@ const ResultPage = ({ result, previewUrl }) => {
                     {t.resRefImg}
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* [เพิ่ม ID] pdf-ref-img-grid */}
+                <div
+                  id="pdf-ref-img-grid"
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                >
                   {referenceImages.map((imgSrc, index) => (
                     <div
                       key={index}
