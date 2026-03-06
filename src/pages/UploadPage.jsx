@@ -64,8 +64,13 @@ const UploadPage = () => {
         setTimeout(resolve, 3000),
       );
 
+      // กำหนด URL ของ API โดยให้ความสำคัญกับตัวแปรบน Vercel ก่อน ถ้าไม่มีให้ใช้ลิงก์ Hugging Face
+      const apiUrl =
+        import.meta.env.VITE_API_URL ||
+        "https://nanthaphopp-skindee-api.hf.space";
+
       // ยิง API ไปที่ Backend
-      const apiRequest = fetch("http://localhost:8000/predict", {
+      const apiRequest = fetch(`${apiUrl}/predict`, {
         method: "POST",
         body: formData,
       });

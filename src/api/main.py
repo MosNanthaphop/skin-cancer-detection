@@ -17,7 +17,7 @@ app = FastAPI()
 # เปิด CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -63,7 +63,7 @@ model = create_model(num_classes=len(CLASS_NAMES))
 
 # หา path ของ model
 BASE_DIR = Path(__file__).resolve().parent
-model_path = BASE_DIR.parent.parent / "model" / "baseline_standard.pth"
+model_path = BASE_DIR.parent.parent / "model" / "skindee_final_model.pth"
 
 # ตรวจสอบว่าไฟล์มีจริง
 if not model_path.exists():
