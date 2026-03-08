@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { ref, onValue, runTransaction } from "firebase/database";
 import { db } from "../firebase";
-import { Users, ScanLine, Activity } from "lucide-react";
+import { Users, ScanLine } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -15,7 +15,7 @@ const StatsSection = () => {
   useEffect(() => {
     // 1. เชื่อมต่อ Firebase (ดึง 2 ค่าพร้อมกัน)
     const visitorRef = ref(db, "visitor_count");
-    const analysisRef = ref(db, "analysis_count"); // Node ใหม่สำหรับนับจำนวนการตรวจ
+    const analysisRef = ref(db, "analysis_count");
 
     // Listener สำหรับ Visitor
     const unsubVisitor = onValue(visitorRef, (snapshot) => {
@@ -27,7 +27,7 @@ const StatsSection = () => {
       setAnalyses(snapshot.val() || 0);
     });
 
-    // Logic นับคนเข้าชม (เหมือนเดิม)
+    // Logic นับคนเข้าชม
     const storageKey = "visited_skindee_firebase_v1";
     if (!localStorage.getItem(storageKey)) {
       localStorage.setItem(storageKey, "true");
@@ -58,7 +58,7 @@ const StatsSection = () => {
         icon={
           <ScanLine size={32} className="text-green-600 dark:text-green-400" />
         }
-        label={t.scanCount} // ใช้คำว่า Scans Completed ดูดีกว่า Cancer Detected (เพราะบางคนอาจปกติ)
+        label={t.scanCount}
         value={analyses}
         loading={loading}
         color="bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800"
@@ -70,13 +70,8 @@ const StatsSection = () => {
 // Sub-component สำหรับการ์ดแต่ละใบ
 const StatCard = ({ icon, label, value, loading, color }) => (
   <motion.div
-    // [แก้ไข 1] ปรับระยะ y และเพิ่ม scale นิดหน่อยให้ดูมีมิติขึ้น
     whileHover={{ y: -4, scale: 1.01 }}
-    // [แก้ไข 2] เพิ่ม transition setting เพื่อบังคับความสมูท
-    // ใช้ duration สั้นๆ (0.2s) และ easeOut เพื่อให้เริ่มเร็วและจบแบบนุ่มนวล
     transition={{ duration: 0.2, ease: "easeOut" }}
-    // [แก้ไข 3] ลบ class "transition-all" ออก! (ตัวการทำหน่วง)
-    // และเพิ่ม cursor-pointer ให้รู้ว่าชี้ได้
     className={`flex items-center justify-center gap-6 p-6 rounded-2xl border shadow-sm ${color} cursor-pointer`}
   >
     <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-inner transition-colors duration-300">
@@ -84,7 +79,6 @@ const StatCard = ({ icon, label, value, loading, color }) => (
     </div>
     <div>
       <motion.h4
-        // (Optional) เพิ่ม animation ให้ตัวเลขขยับนิดๆ ตอน hover
         transition={{ duration: 0.2 }}
         className="text-4xl font-bold text-gray-900 dark:text-white mb-1 font-mono tracking-tight"
       >

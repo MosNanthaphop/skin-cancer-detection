@@ -11,14 +11,14 @@ const AppLayout = () => {
   const mainContentRef = useRef(null);
   const { t } = useLanguage();
 
-  // 1. [แก้ไข] ตั้งค่าเริ่มต้นโดยเช็คขนาดจอ ถ้าจอใหญ่ให้กาง (true) ถ้าจอเล็กให้พับ (false)
+  // ตั้งค่าเริ่มต้นโดยเช็คขนาดจอ ถ้าจอใหญ่ให้กาง (true) ถ้าจอเล็กให้พับ (false)
   const [isNavbarOpen, setIsNavbarOpen] = useState(window.innerWidth > 768);
 
   const [activePage, setActivePage] = useState("home");
   const location = useLocation();
   const [breadcrumb, setBreadcrumb] = useState([]);
 
-  // 2. [เพิ่มใหม่] useEffect สำหรับดักจับการย่อ/ขยายหน้าจอแบบ Real-time
+  // useEffect สำหรับดักจับการย่อ/ขยายหน้าจอแบบ Real-time
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -34,10 +34,6 @@ const AppLayout = () => {
     // คืนค่า Event Listener เมื่อ Component ถูกทำลาย
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  // ------------------------------------------------------------------
-  // (โค้ดส่วนล่างนี้คือระบบเดิมของคุณทั้งหมด ไม่ได้แก้ไขอะไรครับ)
-  // ------------------------------------------------------------------
 
   useEffect(() => {
     if (mainContentRef.current) {
