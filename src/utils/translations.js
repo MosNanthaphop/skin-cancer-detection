@@ -753,7 +753,7 @@ export const translations = {
     objTitle: "วัตถุประสงค์ของโครงการ",
     objList: [
       "เพื่อพัฒนาโมเดล Deep Learning ให้สามารถคัดกรองมะเร็งหรือโรคผิวหนังที่ลักษณะคล้ายคลึงกันได้",
-      "เพื่อพัฒนาโมเดล Deep Learning ให้รองรับโทนสีผิวที่หลากหลาย โดยเฉพาะกลุ่มคนผิวคล้ำ",
+      "เพื่อพัฒนาโมเดล Deep Learning ให้รองรับโทนสีผิวที่หลากหลาย โดยเฉพาะกลุ่มคนที่มีผิวเข้ม",
       "เพื่อให้ชาวบ้านหรือคนที่อยู่ห่างไกลสามารถประเมินความเสี่ยงเบื้องต้นได้ เข้ารับการรักษาได้ทันเวลา",
     ],
 
@@ -1611,7 +1611,7 @@ export const translations = {
     objTitle: "Project Objective",
     objList: [
       "Develop Deep Learning models to screen for skin cancer and similar conditions.",
-      "Develop Deep Learning models that accommodate diverse skin tones, especially darker skin types.",
+      "Develop Deep Learning models that are accurate for all skin tones, especially darker skin tones.",
       "Enable rural and underserved populations to perform preliminary risk assessments and seek timely care.",
     ],
 
