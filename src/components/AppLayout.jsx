@@ -11,8 +11,19 @@ const AppLayout = () => {
   const mainContentRef = useRef(null);
   const { t } = useLanguage();
 
-  // ตั้งค่าเริ่มต้นโดยเช็คขนาดจอ ถ้าจอใหญ่ให้กาง (true) ถ้าจอเล็กให้พับ (false)
-  const [isNavbarOpen, setIsNavbarOpen] = useState(window.innerWidth > 768);
+  // 🌟 1. ดึงค่าจาก localStorage เป็นค่าเริ่มต้น ถ้าไม่มีให้เช็คขนาดจอแทน
+  const [isNavbarOpen, setIsNavbarOpen] = useState(() => {
+    const savedState = localStorage.getItem("isNavbarOpen");
+    if (savedState !== null) {
+      return JSON.parse(savedState);
+    }
+    return window.innerWidth > 768;
+  });
+
+  // 🌟 2. บันทึกค่าลง localStorage ทุกครั้งที่ isNavbarOpen มีการเปลี่ยนแปลง
+  useEffect(() => {
+    localStorage.setItem("isNavbarOpen", JSON.stringify(isNavbarOpen));
+  }, [isNavbarOpen]);
 
   const [activePage, setActivePage] = useState("home");
   const location = useLocation();
