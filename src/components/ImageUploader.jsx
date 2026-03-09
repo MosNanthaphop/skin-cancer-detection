@@ -61,12 +61,9 @@ const ImageUploader = ({ onAnalyze, onOpenCamera, externalFile }) => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  const onCropComplete = useCallback(
-    (croppedArea, currentCroppedAreaPixels) => {
-      setCroppedAreaPixels(currentCroppedAreaPixels);
-    },
-    [],
-  );
+  const onCropComplete = useCallback((currentCroppedAreaPixels) => {
+    setCroppedAreaPixels(currentCroppedAreaPixels);
+  }, []);
 
   const resetCropState = () => {
     setIsCropping(false);
