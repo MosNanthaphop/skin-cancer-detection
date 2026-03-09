@@ -703,45 +703,45 @@ export const translations = {
     faqList: [
       {
         category: "General",
-        question: "เครื่องมือนี้คืออะไร?",
+        question: "SkinDee คืออะไร?",
         answer:
-          "SkinDee คือผู้ช่วยดูแลสุขภาพผิวด้วย AI ที่ช่วยวิเคราะห์รอยโรคทางผิวหนังเบื้องต้นจากรูปภาพ และให้คำแนะนำในการดูแลรักษาที่เหมาะสม เพื่อให้คุณเข้าใจสุขภาพผิวของตนเองได้ดียิ่งขึ้น",
+          "SkinDee คือผู้ช่วยประเมินความเสี่ยงโรคผิวหนังด้วยเทคโนโลยี AI ที่ถูกพัฒนาขึ้นมาเพื่อแก้ไขปัญหาความลำเอียงของ AI (AI Bias) ทำให้สามารถวิเคราะห์รอยโรคทางผิวหนังเบื้องต้นได้อย่างแม่นยำ ครอบคลุมผู้ใช้งานทุกกลุ่มไม่ว่าจะมีเฉดสีผิวใดก็ตาม",
       },
       {
         category: "General",
-        question: "ใครควรใช้งาน SkinDee?",
+        question: "SkinDee สามารถวิเคราะห์โรคผิวหนังประเภทใดได้บ้าง?",
         answer:
-          "เหมาะสำหรับทุกคนที่กังวลเรื่องสุขภาพผิว ต้องการคัดกรองความเสี่ยงเบื้องต้น หรือต้องการข้อมูลเกี่ยวกับโรคผิวหนัง อย่างไรก็ตาม หากมีอาการรุนแรง ควรพบแพทย์ทันที",
+          "AI ของเราครอบคลุมรอยโรคผิวหนังที่พบบ่อย 10 ประเภท แบ่งเป็นกลุ่มรอยโรคทั่วไป เช่น ผื่นผิวหนังอักเสบ (Eczema), กลาก (Tinea), หูดหรือไฝ (Nevus) และกลุ่มที่มีความเสี่ยงเป็นมะเร็งผิวหนัง เช่น เมลาโนมา (Melanoma) และมะเร็งเซลล์ฐาน (BCC)",
       },
       {
         category: "Medical",
         question: "เชื่อถือผลลัพธ์ได้แค่ไหน เป็นเครื่องมือแพทย์หรือไม่?",
         answer:
-          "SkinDee เป็นเครื่องมือเพื่อการศึกษา (Educational Tool) เท่านั้น ไม่ใช่อุปกรณ์ทางการแพทย์ ผลการวิเคราะห์มีความแม่นยำสูงในระดับคัดกรอง แต่ไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ผู้เชี่ยวชาญได้",
+          "SkinDee เป็นเครื่องมือเพื่อการคัดกรองเบื้องต้นและการศึกษา (Educational Tool) เท่านั้น ไม่ใช่อุปกรณ์ทางการแพทย์ แม้ระบบจะมีความแม่นยำสูง แต่ไม่สามารถใช้แทนการวินิจฉัยจากแพทย์ได้ หากรอยโรคมีอาการเจ็บปวด มีเลือดออก หรือเปลี่ยนแปลงอย่างรวดเร็ว ควรพบแพทย์ผิวหนังทันที",
       },
       {
-        category: "Privacy",
-        question: "เก็บรูปภาพหรือข้อมูลส่วนตัวของฉันไว้หรือไม่?",
+        category: "Technology",
+        question: "ความแม่นยำของ SkinDee แตกต่างจากแอปอื่นอย่างไร?",
         answer:
-          "เราให้ความสำคัญกับความเป็นส่วนตัวสูงสุด รูปภาพจะถูกประมวลผลแบบ Real-time และจะถูกลบออกจากหน่วยความจำทันทีหลังวิเคราะห์เสร็จสิ้น ไม่มีการเก็บไฟล์รูปภาพถาวรบนเซิร์ฟเวอร์",
+          "โมเดล AI ทั่วไปมักมีข้อจำกัดในการวิเคราะห์รอยโรคบนผิวสีเข้ม แต่ SkinDee ได้รับการฝึกสอนด้วยเทคนิคพิเศษ (Generative Data Augmentation) ทำให้ AI ของเราเข้าใจและให้ผลลัพธ์ที่แม่นยำแม้บนผิวสีเข้ม (Fitzpatrick Skin Type V-VI)",
       },
       {
         category: "Usage",
-        question: "เริ่มต้นใช้งานอย่างไร?",
+        question: "ควรถ่ายภาพอย่างไรให้ AI วิเคราะห์ได้แม่นยำที่สุด?",
         answer:
-          "ง่ายมาก! เพียงไปที่หน้า 'อัปโหลด' ถ่ายภาพหรือเลือกรูปภาพผิวหนังของคุณ ระบบจะวิเคราะห์และแสดงผลลัพธ์ภายในไม่กี่วินาที",
+          "ควรถ่ายภาพในที่ที่มีแสงสว่างเพียงพอ (แสงธรรมชาติจะดีที่สุด) ให้กล้องโฟกัสที่รอยโรคอย่างชัดเจน และใช้เครื่องมือ 'ครอบตัด (Crop)' ของเราเพื่อซูมให้เห็นเฉพาะบริเวณรอยโรคและผิวหนังรอบๆ โดยหลีกเลี่ยงการติดภาพพื้นหลังหรือเสื้อผ้า",
       },
       {
-        category: "Technical",
-        question: "รองรับไฟล์รูปภาพแบบไหนบ้าง?",
+        category: "Privacy",
+        question: "รูปภาพหรือข้อมูลส่วนตัวของฉันจะถูกเก็บไว้หรือไม่?",
         answer:
-          "รองรับไฟล์มาตรฐาน เช่น JPG, JPEG, PNG และ WebP ขนาดไม่เกิน 10 MB เพื่อความแม่นยำสูงสุด ควรใช้ภาพที่คมชัดและมีแสงสว่างเพียงพอ",
+          "เราให้ความสำคัญกับความเป็นส่วนตัวสูงสุด รูปภาพของคุณจะถูกประมวลผลแบบ Real-time และจะถูกลบออกจากหน่วยความจำทันทีหลังวิเคราะห์เสร็จสิ้น ไม่มีการเก็บไฟล์รูปภาพหรือข้อมูลระบุตัวตนของคุณไว้บนเซิร์ฟเวอร์",
       },
       {
         category: "Pricing",
-        question: "มีค่าใช้จ่ายหรือไม่?",
+        question: "มีค่าใช้จ่ายในการใช้งานหรือไม่?",
         answer:
-          "SkinDee เปิดให้ใช้งานฟรีสำหรับการวิเคราะห์พื้นฐาน เพื่อให้ทุกคนสามารถเข้าถึงการดูแลสุขภาพผิวเบื้องต้นได้",
+          "SkinDee เปิดให้ใช้งานฟรีสำหรับการวิเคราะห์พื้นฐาน เพื่อให้ทุกคนสามารถเข้าถึงการดูแลสุขภาพผิวและประเมินความเสี่ยงเบื้องต้นได้อย่างเท่าเทียม",
       },
     ],
 
@@ -1556,50 +1556,50 @@ export const translations = {
     faqCatMedical: "Medical",
     faqCatPrivacy: "Privacy",
     faqCatUsage: "Usage",
-    faqCatTechnical: "Technical",
+    faqCatTechnical: "Technology",
     faqCatPricing: "Pricing",
     faqList: [
       {
         category: "General",
         question: "What is SkinDee?",
         answer:
-          "SkinDee is an AI-powered skin health assistant that analyzes skin lesions from images and provides personalized care recommendations and risk assessments.",
+          "SkinDee is an AI-powered skin health assessment assistant designed to eliminate AI bias. It provides a preliminary analysis of skin lesions with high accuracy, ensuring reliable results for users of all skin tones.",
       },
       {
         category: "General",
-        question: "Who is this for?",
+        question: "What types of skin conditions can SkinDee analyze?",
         answer:
-          "It is suitable for anyone concerned about skin health, wanting a preliminary screening, or seeking information. However, for severe conditions, always consult a doctor.",
+          "Our AI covers 10 common types of skin lesions. This includes general conditions like Eczema, Tinea, and Nevus (moles), as well as potential skin cancer risks such as Melanoma and Basal Cell Carcinoma (BCC).",
       },
       {
         category: "Medical",
-        question: "Is this a medical diagnosis?",
+        question: "How reliable are the results? Is this a medical device?",
         answer:
-          "No. SkinDee is an educational tool for informational purposes only. It is NOT a medical device and should not replace professional medical advice or diagnosis.",
+          "SkinDee is purely an educational and preliminary screening tool, not a medical device. While our system offers high accuracy, it cannot replace a professional medical diagnosis. If a lesion is painful, bleeding, or changing rapidly, please consult a dermatologist immediately.",
       },
       {
-        category: "Privacy",
-        question: "Do you store my photos?",
+        category: "Technology",
+        question: "How does SkinDee's accuracy differ from other apps?",
         answer:
-          "We prioritize your privacy. Images are processed in real-time for analysis and are immediately discarded. We do not permanently store your personal skin images.",
+          "Standard AI models often struggle to analyze lesions on darker skin tones accurately. SkinDee, however, was trained using advanced Generative Data Augmentation techniques, making our AI highly accurate and inclusive, even for darker skin tones (Fitzpatrick Skin Type V-VI).",
       },
       {
         category: "Usage",
-        question: "How do I start?",
+        question: "How should I take a photo for the best AI analysis?",
         answer:
-          "Simply navigate to the 'Upload' page, take a photo or upload an image of the skin concern. The AI will analyze it and provide results in seconds.",
+          "Take the photo in a well-lit area (natural light is best) and ensure the camera focuses clearly on the lesion. Please use our 'Crop' tool to zoom in closely on the affected area and surrounding skin, avoiding background objects or clothing.",
       },
       {
-        category: "Technical",
-        question: "What file formats are supported?",
+        category: "Privacy",
+        question: "Are my photos or personal data stored?",
         answer:
-          "We support standard formats like JPG, JPEG, PNG, and WebP (Max 10MB). Clear, well-lit photos provide the best accuracy.",
+          "We prioritize your privacy above all. Your photos are processed in real-time and deleted from memory immediately after the analysis is complete. We do not store your images or any personally identifiable information on our servers.",
       },
       {
         category: "Pricing",
-        question: "Is it free?",
+        question: "Is there any cost to use SkinDee?",
         answer:
-          "Yes, SkinDee is free to use for standard analysis, aiming to make preliminary skin health screening accessible to everyone.",
+          "SkinDee is completely free to use for basic analysis. We believe everyone should have equal access to preliminary skin health assessments.",
       },
     ],
 

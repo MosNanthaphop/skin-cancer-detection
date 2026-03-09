@@ -26,7 +26,7 @@ const FAQPage = () => {
     Medical: t.faqCatMedical || "Medical",
     Privacy: t.faqCatPrivacy || "Privacy",
     Usage: t.faqCatUsage || "Usage",
-    Technical: t.faqCatTechnical || "Technical",
+    Technology: t.faqCatTechnical || "Technology",
     Pricing: t.faqCatPricing || "Pricing",
   };
 
@@ -126,7 +126,7 @@ const FAQPage = () => {
                   : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
             >
-              {/* [แก้ไข] แสดงผลโดยใช้คำที่แปลแล้ว */}
+              {/* แสดงผลโดยใช้คำที่แปลแล้ว */}
               {categoryLabels[cat] || cat}
             </button>
           ))}
@@ -158,7 +158,7 @@ const FAQPage = () => {
                           ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
                           : faq.category === "Medical"
                             ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
-                            : faq.category === "Technical"
+                            : faq.category === "Technology"
                               ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
                               : "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
                       }`}
@@ -167,7 +167,7 @@ const FAQPage = () => {
                         <Shield size={20} />
                       ) : faq.category === "Medical" ? (
                         <ActivityIcon size={20} />
-                      ) : faq.category === "Technical" ? (
+                      ) : faq.category === "Technology" ? (
                         <Zap size={20} />
                       ) : (
                         <HelpCircle size={20} />
@@ -178,7 +178,7 @@ const FAQPage = () => {
                         {faq.question}
                       </div>
                       <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                        {/* [แก้ไข] แสดงหมวดหมู่ภาษาไทยตรงนี้ด้วย */}
+                        {/* แสดงหมวดหมู่ภาษาไทยตรงนี้ด้วย */}
                         {categoryLabels[faq.category] || faq.category}
                       </span>
                     </div>
