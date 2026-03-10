@@ -199,6 +199,7 @@ const HomePage = () => {
 
 const HeroSlider = ({ t }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false); // 🌟 State สำหรับเช็คว่าหยุดเวลาอยู่หรือไม่
 
   const slides = [
     {
@@ -224,12 +225,19 @@ const HeroSlider = ({ t }) => {
     },
   ];
 
+  // 🌟 อัปเดต useEffect ให้ตรวจสอบค่า isPaused ก่อนตั้งเวลา
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+    let timer;
+    if (!isPaused) {
+      timer = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % slides.length);
+      }, 4000);
+    }
+    // ลบ interval ทิ้งทุกครั้งที่มีการกดหยุด หรือ component ถูกทำลาย
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [slides.length, isPaused]);
 
   const slideVariants = {
     enter: { x: "100%", opacity: 0 },
@@ -238,7 +246,17 @@ const HeroSlider = ({ t }) => {
   };
 
   return (
-    <div className="relative w-full h-80 sm:h-96 md:h-[300px] rounded-2xl overflow-hidden shadow-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <div
+      className="relative w-full h-80 sm:h-96 md:h-[300px] rounded-2xl overflow-hidden shadow-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 select-none cursor-grab active:cursor-grabbing"
+      // 🌟 Event สำหรับ Desktop (คลิกเมาส์)
+      onMouseDown={() => setIsPaused(true)}
+      onMouseUp={() => setIsPaused(false)}
+      onMouseLeave={() => setIsPaused(false)} // กันเหนียวกรณีลากเมาส์ออกนอกกล่อง
+      // 🌟 Event สำหรับ Mobile (แตะหน้าจอ)
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+      onTouchCancel={() => setIsPaused(false)}
+    >
       <AnimatePresence mode="popLayout">
         <motion.div
           key={currentIndex}
@@ -280,7 +298,10 @@ const HeroSlider = ({ t }) => {
         {slides.map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentIndex(index)}
+            onClick={(e) => {
+              e.stopPropagation(); // ป้องกันการชนกับ Event กดค้างของกล่องแม่
+              setCurrentIndex(index);
+            }}
             className={`h-2 rounded-full transition-all duration-300 ${
               index === currentIndex
                 ? "bg-white w-8"
