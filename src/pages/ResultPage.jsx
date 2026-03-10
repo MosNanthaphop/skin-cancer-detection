@@ -209,6 +209,9 @@ const ResultPage = ({ result, previewUrl }) => {
       const refImgGrid = document.getElementById("pdf-ref-img-grid");
       const resultDetails = document.getElementById("pdf-result-details");
 
+      // ดึง element รูปภาพอ้างอิงทั้งหมดเพื่อบังคับสัดส่วน
+      const refImgItems = document.querySelectorAll(".pdf-ref-img-item");
+
       // เก็บตำแหน่งเดิมของ treatmentCard เพื่อดึงกลับมาหลังปริ้นเสร็จ
       const origTreatmentParent = treatmentCard?.parentNode;
       const origTreatmentSibling = treatmentCard?.nextSibling;
@@ -222,6 +225,8 @@ const ResultPage = ({ result, previewUrl }) => {
       const origGaugeContainerClass = gaugeContainer?.className || "";
       const origRefImgGridClass = refImgGrid?.className || "";
       const origResultDetailsClass = resultDetails?.className || "";
+
+      const origRefImgItemsClasses = [];
 
       // 🔥 บังคับให้เป็น Desktop Layout 100% 🔥
       if (gridContainer)
@@ -252,8 +257,15 @@ const ResultPage = ({ result, previewUrl }) => {
           "w-64 flex flex-col items-center justify-center flex-shrink-0 relative pr-4";
       if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // รูปอ้างอิงเป็น 3 คอลัมน์
 
+      // 👉 บังคับสัดส่วน Reference Images ให้เป็น aspect-square ตัด aspect-video ของมือถือทิ้ง
+      refImgItems.forEach((el, idx) => {
+        origRefImgItemsClasses[idx] = el.className;
+        el.className =
+          "pdf-ref-img-item aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 relative";
+      });
+
       // 🌟 [สำคัญมาก] เพิ่มเวลาดีเลย์เป็น 1.5 วินาที เพื่อให้มือถือโหลดรูปเสร็จ (แก้บั๊กภาพขาว) 🌟
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือค้าง) ---
       const isMobile = window.innerWidth < 768;
@@ -281,6 +293,11 @@ const ResultPage = ({ result, previewUrl }) => {
       if (gaugeContainer) gaugeContainer.className = origGaugeContainerClass;
       if (refImgGrid) refImgGrid.className = origRefImgGridClass;
       if (resultDetails) resultDetails.className = origResultDetailsClass;
+
+      // คืนค่า class ให้ Reference Images
+      refImgItems.forEach((el, idx) => {
+        el.className = origRefImgItemsClasses[idx];
+      });
 
       // ดึง Treatment Card กลับมาไว้ที่คอลัมน์ซ้ายเหมือนเดิม
       if (origTreatmentParent && treatmentCard) {
@@ -335,6 +352,13 @@ const ResultPage = ({ result, previewUrl }) => {
       if (treatmentCard && leftCol && treatmentCard.parentNode !== leftCol) {
         leftCol.appendChild(treatmentCard);
       }
+
+      // คืนค่ารูปอ้างอิงให้กลับมาเป็นเหมือนเดิมเมื่อมี Error
+      const refImgItems = document.querySelectorAll(".pdf-ref-img-item");
+      refImgItems.forEach((el) => {
+        el.className =
+          "pdf-ref-img-item aspect-video sm:aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative";
+      });
 
       alert(
         `Failed to export PDF. Error: ${error.message || "Unknown error"}. Please try again.`,
@@ -673,7 +697,7 @@ const ResultPage = ({ result, previewUrl }) => {
                   {referenceImages.map((imgSrc, index) => (
                     <div
                       key={index}
-                      className="aspect-video sm:aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative"
+                      className="pdf-ref-img-item aspect-video sm:aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all cursor-pointer group relative"
                       onClick={() => window.open(imgSrc, "_blank")}
                     >
                       <img
