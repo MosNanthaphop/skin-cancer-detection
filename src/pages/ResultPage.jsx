@@ -209,6 +209,10 @@ const ResultPage = ({ result, previewUrl }) => {
       const refImgGrid = document.getElementById("pdf-ref-img-grid");
       const resultDetails = document.getElementById("pdf-result-details");
 
+      // เก็บตำแหน่งเดิมของ treatmentCard เพื่อดึงกลับมาหลังปริ้นเสร็จ
+      const origTreatmentParent = treatmentCard?.parentNode;
+      const origTreatmentSibling = treatmentCard?.nextSibling;
+
       const origGridClass = gridContainer?.className || "";
       const origLeftClass = leftCol?.className || "";
       const origRightClass = rightCol?.className || "";
@@ -224,6 +228,11 @@ const ResultPage = ({ result, previewUrl }) => {
         gridContainer.className = "grid grid-cols-5 gap-8 items-start";
       if (leftCol) leftCol.className = "col-span-3 flex flex-col gap-8";
       if (rightCol) rightCol.className = "col-span-2 flex flex-col gap-6";
+
+      // 👉 ย้าย Treatment Card ไปอยู่ด้านบนสุดของคอลัมน์ขวา เฉพาะตอน Export PDF
+      if (treatmentCard && rightCol) {
+        rightCol.insertBefore(treatmentCard, rightCol.firstChild);
+      }
 
       // ย่อขนาดรูปรอยโรคที่อัปโหลดให้พอดีในโหมด Desktop PDF
       if (uploadedImg)
@@ -273,6 +282,11 @@ const ResultPage = ({ result, previewUrl }) => {
       if (refImgGrid) refImgGrid.className = origRefImgGridClass;
       if (resultDetails) resultDetails.className = origResultDetailsClass;
 
+      // ดึง Treatment Card กลับมาไว้ที่คอลัมน์ซ้ายเหมือนเดิม
+      if (origTreatmentParent && treatmentCard) {
+        origTreatmentParent.insertBefore(treatmentCard, origTreatmentSibling);
+      }
+
       element.style.width = originalWidth;
       element.style.padding = originalPadding;
       if (wasDarkMode) htmlElement.classList.add("dark");
@@ -314,6 +328,14 @@ const ResultPage = ({ result, previewUrl }) => {
       document
         .querySelectorAll(".export-exclude")
         .forEach((el) => (el.style.display = "block"));
+
+      // ดึง Treatment Card กลับมาที่เดิมในกรณีที่เกิด Error ระหว่างถ่ายภาพ
+      const treatmentCard = document.getElementById("pdf-treatment-card");
+      const leftCol = document.getElementById("pdf-left-col");
+      if (treatmentCard && leftCol && treatmentCard.parentNode !== leftCol) {
+        leftCol.appendChild(treatmentCard);
+      }
+
       alert(
         `Failed to export PDF. Error: ${error.message || "Unknown error"}. Please try again.`,
       );
