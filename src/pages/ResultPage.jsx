@@ -177,9 +177,9 @@ const ResultPage = ({ result, previewUrl }) => {
     return () => clearTimeout(timer);
   }, [targetConfidence]);
 
-  // -------------------------------------------------------------
-  // 🌟 ฟังก์ชัน Export PDF (แก้ไข Layout และ บั๊กภาพขาว)
-  // -------------------------------------------------------------
+  // ------------------------------
+  //  ฟังก์ชัน Export PDF
+  // ------------------------------
   const handleExportPDF = async () => {
     const element = printRef.current;
     if (!element) return;
@@ -197,7 +197,7 @@ const ResultPage = ({ result, previewUrl }) => {
       element.style.width = "1000px";
       element.style.padding = "20px";
 
-      // --- 🌟 DOM Manipulation สำหรับจัด Layout ก่อน Print 🌟 ---
+      // ---  DOM Manipulation สำหรับจัด Layout ก่อน Print  ---
       const gridContainer = document.getElementById("pdf-grid-container");
       const leftCol = document.getElementById("pdf-left-col");
       const rightCol = document.getElementById("pdf-right-col");
@@ -228,13 +228,11 @@ const ResultPage = ({ result, previewUrl }) => {
 
       const origRefImgItemsClasses = [];
 
-      // 🔥 บังคับให้เป็น Desktop Layout 100% 🔥
       if (gridContainer)
         gridContainer.className = "grid grid-cols-5 gap-8 items-start";
       if (leftCol) leftCol.className = "col-span-3 flex flex-col gap-8";
       if (rightCol) rightCol.className = "col-span-2 flex flex-col gap-6";
 
-      // 👉 ย้าย Treatment Card ไปอยู่ด้านบนสุดของคอลัมน์ขวา เฉพาะตอน Export PDF
       if (treatmentCard && rightCol) {
         rightCol.insertBefore(treatmentCard, rightCol.firstChild);
       }
@@ -257,17 +255,15 @@ const ResultPage = ({ result, previewUrl }) => {
           "w-64 flex flex-col items-center justify-center flex-shrink-0 relative pr-4";
       if (refImgGrid) refImgGrid.className = "grid grid-cols-3 gap-4"; // รูปอ้างอิงเป็น 3 คอลัมน์
 
-      // 👉 บังคับสัดส่วน Reference Images ให้เป็น aspect-square ตัด aspect-video ของมือถือทิ้ง
       refImgItems.forEach((el, idx) => {
         origRefImgItemsClasses[idx] = el.className;
         el.className =
           "pdf-ref-img-item aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600 relative";
       });
 
-      // 🌟 [สำคัญมาก] เพิ่มเวลาดีเลย์เป็น 1.5 วินาที เพื่อให้มือถือโหลดรูปเสร็จ (แก้บั๊กภาพขาว) 🌟
+      // รอตอน Save PDF สักครู่เพื่อให้ DOM ปรับเรียบร้อยก่อนถ่ายภาพ (แก้บั๊กภาพขาวบางส่วน)
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // --- 📸 ถ่ายภาพ (เวอร์ชันอัปเกรด แก้บั๊กมือถือค้าง) ---
       const isMobile = window.innerWidth < 768;
       const dataUrl = await toPng(element, {
         quality: 0.9,
@@ -283,7 +279,6 @@ const ResultPage = ({ result, previewUrl }) => {
         },
       });
 
-      // --- 🔄 คืนค่า Layout กลับสู่สภาพเดิม (Mobile Responsive) ---
       if (gridContainer) gridContainer.className = origGridClass;
       if (leftCol) leftCol.className = origLeftClass;
       if (rightCol) rightCol.className = origRightClass;
@@ -309,7 +304,7 @@ const ResultPage = ({ result, previewUrl }) => {
       if (wasDarkMode) htmlElement.classList.add("dark");
       buttons.forEach((el) => (el.style.display = "block"));
 
-      // --- 📄 สร้าง PDF ---
+      // --- สร้าง PDF ---
       const pdf = new jsPDF("p", "mm", "a4");
       const imgProps = pdf.getImageProperties(dataUrl);
 
@@ -402,7 +397,7 @@ const ResultPage = ({ result, previewUrl }) => {
         className="bg-transparent dark:text-gray-100 flex flex-col gap-8"
       >
         {/* ======================================================== */}
-        {/* 🌟 1. TOP SECTION: Main Result Card 🌟 */}
+        {/*  1. TOP SECTION: Main Result Card  */}
         {/* ======================================================== */}
         <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
           <div
@@ -414,8 +409,6 @@ const ResultPage = ({ result, previewUrl }) => {
           ></div>
 
           <div className="p-6 md:p-8 relative z-10">
-            {/* [เพิ่ม ID] pdf-main-card-flex */}
-            {/* [เปลี่ยน md: เป็น lg: ทั้งหมดในส่วนนี้] */}
             <div
               id="pdf-main-card-flex"
               className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-between"
@@ -423,7 +416,6 @@ const ResultPage = ({ result, previewUrl }) => {
               {/* --- 1.1 Image Block --- */}
               <div
                 id="pdf-uploaded-img-container"
-                // ปรับให้มือถือเต็มจอ ไอแพดแนวตั้งกว้างกำลังดี(sm:w-80) และจอคอมกว้างเท่าเดิม(lg:w-64)
                 className="w-full sm:w-80 lg:w-64 flex-shrink-0 aspect-square rounded-xl overflow-hidden border-2 border-gray-100 dark:border-gray-600 shadow-inner relative group bg-gray-50 dark:bg-gray-900"
               >
                 {previewUrl ? (
@@ -541,7 +533,7 @@ const ResultPage = ({ result, previewUrl }) => {
         </div>
 
         {/* ======================================================== */}
-        {/* 🌟 2. BOTTOM SECTION: Grid ซ้าย-ขวา 🌟 */}
+        {/*  2. BOTTOM SECTION: Grid ซ้าย-ขวา  */}
         {/* ======================================================== */}
         <div
           id="pdf-grid-container"
@@ -689,7 +681,6 @@ const ResultPage = ({ result, previewUrl }) => {
                     {t.resRefImg}
                   </h3>
                 </div>
-                {/* [เพิ่ม ID] pdf-ref-img-grid */}
                 <div
                   id="pdf-ref-img-grid"
                   className="grid grid-cols-1 sm:grid-cols-3 gap-4"
