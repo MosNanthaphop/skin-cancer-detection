@@ -84,7 +84,7 @@ const UploadPage = () => {
         setIsLoading(false);
         setIsFinalizing(true); // เริ่ม Animation จบการโหลด
 
-        // ✅ [เพิ่มส่วนนี้] บันทึกยอดการตรวจลง Firebase
+        // บันทึกยอดการตรวจลง Firebase
         // ใช้ runTransaction เพื่อให้แน่ใจว่าเลขไม่ชนกันถ้ามีคนตรวจพร้อมกัน
         const analysisRef = ref(db, "analysis_count");
         runTransaction(analysisRef, (currentCount) => {
